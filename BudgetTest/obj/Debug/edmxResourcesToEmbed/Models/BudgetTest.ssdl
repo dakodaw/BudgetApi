@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BudgetTestModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Budget">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BudgetTypeId" Type="int" Nullable="false" />
+    <Property Name="Date" Type="date" Nullable="false" />
+    <Property Name="Amount" Type="money" Nullable="false" />
+  </EntityType>
+  <EntityType Name="BudgetType">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BudgetType" Type="text" Nullable="false" />
+  </EntityType>
+  <EntityType Name="GiftCard">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Place" Type="text" Nullable="false" />
+    <Property Name="InitialAmount" Type="money" Nullable="false" />
+    <Property Name="CardNumber" Type="varchar" MaxLength="255" Nullable="false" />
+    <Property Name="AccessCode" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Income">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SourceId" Type="int" Nullable="false" />
+    <Property Name="SourceDetails" Type="text" />
+    <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+    <Property Name="Date" Type="date" Nullable="false" />
+    <Property Name="IsReimbursement" Type="bit" Nullable="false" />
+    <Property Name="PurchaseId" Type="int" />
+    <Property Name="IsCash" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="IncomeSource">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SourceName" Type="text" Nullable="false" />
+    <Property Name="JobOf" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="PositionName" Type="varchar" MaxLength="100" />
+    <Property Name="ActiveJob" Type="bit" Nullable="false" />
+    <Property Name="EstimatedIncome" Type="money" />
+    <Property Name="PayFrequency" Type="nchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Purchases">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="PurchaseTypeId" Type="int" Nullable="false" />
+    <Property Name="Description" Type="text" />
+    <Property Name="Amount" Type="money" Nullable="false" />
+    <Property Name="PaymentType" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="GiftCardId" Type="int" />
+    <Property Name="Date" Type="date" Nullable="false" />
+    <Property Name="FutureReimbursement" Type="bit" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Budget_BudgetType">
+    <End Role="BudgetType" Type="Self.BudgetType" Multiplicity="1" />
+    <End Role="Budget" Type="Self.Budget" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="BudgetType">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Budget">
+        <PropertyRef Name="BudgetTypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Income_IncomeSource">
+    <End Role="IncomeSource" Type="Self.IncomeSource" Multiplicity="1" />
+    <End Role="Income" Type="Self.Income" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="IncomeSource">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Income">
+        <PropertyRef Name="SourceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="BudgetTestModelStoreContainer">
+    <EntitySet Name="Budget" EntityType="Self.Budget" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="BudgetType" EntityType="Self.BudgetType" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="GiftCard" EntityType="Self.GiftCard" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Income" EntityType="Self.Income" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="IncomeSource" EntityType="Self.IncomeSource" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Purchases" EntityType="Self.Purchases" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Budget_BudgetType" Association="Self.FK_Budget_BudgetType">
+      <End Role="BudgetType" EntitySet="BudgetType" />
+      <End Role="Budget" EntitySet="Budget" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Income_IncomeSource" Association="Self.FK_Income_IncomeSource">
+      <End Role="IncomeSource" EntitySet="IncomeSource" />
+      <End Role="Income" EntitySet="Income" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
