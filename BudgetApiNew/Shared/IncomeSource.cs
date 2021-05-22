@@ -11,7 +11,8 @@ namespace BudgetApi.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class IncomeSource
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -20,6 +21,7 @@ namespace BudgetApi.Models
             this.Incomes = new HashSet<Income>();
         }
     
+        [Key]
         public int Id { get; set; }
         public string SourceName { get; set; }
         public string JobOf { get; set; }

@@ -11,10 +11,14 @@ namespace BudgetApi.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public partial class Income
     {
+        [Key]
         public int Id { get; set; }
+        [Column("SourceId")]
         public int SourceId { get; set; }
         public string SourceDetails { get; set; }
         public decimal Amount { get; set; }
@@ -23,6 +27,7 @@ namespace BudgetApi.Models
         public Nullable<int> PurchaseId { get; set; }
         public bool IsCash { get; set; }
     
+        [ForeignKey("SourceId")]
         public virtual IncomeSource IncomeSource { get; set; }
     }
 }

@@ -39,11 +39,11 @@ namespace BudgetApi.Shared
         public decimal Amount { get; set; }
     }
 
-    //public class IncomeSources : IncomeSourceLine
-    //{
-    //    public decimal EstimatedIncome { get; set; }
-    //    public string PayFrequency { get; set; }
-    //}
+    public class IncomeSources : IncomeSourceLine
+    {
+        public decimal EstimatedIncome { get; set; }
+        public string PayFrequency { get; set; }
+    }
 
     public class ScenarioInput
     {
@@ -71,30 +71,30 @@ namespace BudgetApi.Shared
         public decimal PurchaseAmount { get; set; }
     }
 
-    //public class IncomeSourceLine
-    //{
-    //    public int IncomeSourceId { get; set; }
-    //    public string IncomeSource { get; set; }
-    //    public string JobOf { get; set; }
-    //    public string Position { get; set; }
-    //    public bool IsCurrentJob { get; set; }
-    //}
+    public class IncomeSourceLine
+    {
+        public int IncomeSourceId { get; set; }
+        public string IncomeSource { get; set; }
+        public string JobOf { get; set; }
+        public string Position { get; set; }
+        public bool IsCurrentJob { get; set; }
+    }
 
-    //public class ShortIncomeLine
-    //{
-    //    public int IncomeId { get; set; }
-    //    public int IncomeSourceId { get; set; }
-    //    public decimal Amount { get; set; }
-    //    public DateTime IncomeDate { get; set; }
-    //}
-    //public class IncomeLine : ShortIncomeLine
-    //{
-    //    public IncomeSourceLine IncomeSource { get; set; }
-    //    public string Details { get; set; }
-    //    public bool IsReimbursement { get; set; }
-    //    public int PurchaseId { get; set; }
-    //    public bool IsCash { get; set; }
-    //}
+    public class ShortIncomeLine
+    {
+        public int IncomeId { get; set; }
+        public int IncomeSourceId { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime IncomeDate { get; set; }
+    }
+    public class IncomeLine : ShortIncomeLine
+    {
+        public IncomeSourceLine IncomeSource { get; set; }
+        public string Details { get; set; }
+        public bool IsReimbursement { get; set; }
+        public int PurchaseId { get; set; }
+        public bool IsCash { get; set; }
+    }
     public class PurchaseLine
     {
         public int Id { get; set; }
