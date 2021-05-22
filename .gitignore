@@ -1,12 +1,10 @@
 
-BudgetTest/bin/
+BudgetApi/bin/*
 
-BudgetTest/obj/Debug/
+BudgetApi/obj/*
 
-.vs/BudgetTest/v16/
+.vs/*
 
-BudgetApi/bin/
+BudgetApiNew/obj/*
 
-BudgetApi/obj/Debug/
-
-.vs/BudgetApi/v16/
+BudgetApiNew/bin/*
