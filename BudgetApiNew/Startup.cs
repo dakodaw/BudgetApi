@@ -1,5 +1,6 @@
 using BudgetApi.Budgeting.Services;
 using BudgetApi.GiftCards.Services;
+using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +41,7 @@ namespace BudgetApi
                 options.UseSqlServer(Configuration.GetValue<string>("BudgetDB")));
             services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
+            services.AddScoped<IIncomeService, IncomeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Income\" />
     <Folder Include="Purchase\" />
   </ItemGroup>
 
