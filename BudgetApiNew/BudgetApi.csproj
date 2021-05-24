@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GiftCard\" />
     <Folder Include="Income\" />
     <Folder Include="Purchase\" />
   </ItemGroup>
