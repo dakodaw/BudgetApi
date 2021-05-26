@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetApi", "BudgetApi\BudgetApi.csproj", "{F061B0B5-31B5-43CD-8F95-405E313F7C8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetApi", "BudgetApi\BudgetApi.csproj", "{E1CD15F7-D26D-4786-9BCD-325C9829ADC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F061B0B5-31B5-43CD-8F95-405E313F7C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F061B0B5-31B5-43CD-8F95-405E313F7C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F061B0B5-31B5-43CD-8F95-405E313F7C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F061B0B5-31B5-43CD-8F95-405E313F7C8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1CD15F7-D26D-4786-9BCD-325C9829ADC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1CD15F7-D26D-4786-9BCD-325C9829ADC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1CD15F7-D26D-4786-9BCD-325C9829ADC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1CD15F7-D26D-4786-9BCD-325C9829ADC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6471B3B3-74C7-434B-BCF4-F3A6EA12C58F}
+		SolutionGuid = {230B29CF-6DD6-47BD-955B-7A379C7DE8F2}
 	EndGlobalSection
 EndGlobal
