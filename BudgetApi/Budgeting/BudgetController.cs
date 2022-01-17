@@ -36,7 +36,7 @@ namespace BudgetApi.Budgeting
         [HttpPost]
         public bool AddUpdateBudget([FromBody] Budget inputBudget, [FromQuery] int budgetId = -1)
         {
-            return _budgetService.AddUpdateBudget(inputBudget);
+            return _budgetService.AddUpdateBudget(inputBudget, budgetId);
         }
 
         [Route("deleteBudgetEntry")]
