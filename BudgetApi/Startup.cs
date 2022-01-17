@@ -3,6 +3,7 @@ using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Services;
+using BudgetApi.Settings.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -47,6 +48,7 @@ namespace BudgetApi
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPurchasesService, PurchasesService>();
+            services.AddSingleton<ISettingsService, SettingsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
