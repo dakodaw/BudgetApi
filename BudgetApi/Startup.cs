@@ -35,7 +35,8 @@ namespace BudgetApi
             {
                 jsonOptions.JsonSerializerOptions.PropertyNamingPolicy = null;
             })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0); services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0); 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -44,11 +45,12 @@ namespace BudgetApi
             });
             services.AddDbContext<BudgetEntities>(options =>
                 options.UseSqlServer(Configuration.GetValue<string>("BudgetDB")));
+            
             services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPurchasesService, PurchasesService>();
-            services.AddSingleton<ISettingsService, SettingsService>();
+            services.AddScoped<ISettingsService, SettingsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -15,9 +15,9 @@ namespace BudgetApi.Settings
 
         [HttpGet]
         [Route("")]
-        public string GetEnvironmentName()
+        public string GetSetting(string settingName)
         {
-            return _settingsService.GetEnvironmentName();
+            return _settingsService.GetSetting(settingName);
         }
     }
 }

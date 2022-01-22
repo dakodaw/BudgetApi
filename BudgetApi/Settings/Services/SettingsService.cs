@@ -1,18 +1,30 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BudgetApi.Models;
+using BudgetApi.Settings.Cache;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BudgetApi.Settings.Services
 {
     public class SettingsService: ISettingsService
     {
-        IConfiguration _configuration;
-        public SettingsService(IConfiguration configuration)
+        public SettingsService(IConfiguration configuration, BudgetEntities db)
         {
-            _configuration = configuration;
+            var settings = db.Settings.ToList();
+            foreach (var setting in settings)
+            {
+                SettingsCache.AddSetting(setting.KeyName, setting.Value);
+            }
         }
 
-        public string GetEnvironmentName()
+        public string GetSetting(string environmentName)
         {
-            return _configuration.GetSection("EnvironmentName").Value;
+            return SettingsCache.GetSetting(environmentName);
+        }
+
+        public Dictionary<string, string> GetAllSettings()
+        {
+            return SettingsCache.GetAllSettings();
         }
     }
 }
