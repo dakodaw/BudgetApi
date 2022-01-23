@@ -1,5 +1,7 @@
-﻿using BudgetApi.GiftCards.Services;
+﻿using BudgetApi.GiftCards.Models;
+using BudgetApi.GiftCards.Services;
 using BudgetApi.Models;
+using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System;

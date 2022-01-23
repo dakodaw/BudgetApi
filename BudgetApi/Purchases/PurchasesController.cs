@@ -1,4 +1,5 @@
 ﻿using BudgetApi.Models;
+using BudgetApi.Purchases.Models;
 using BudgetApi.Purchases.Services;
 using BudgetApi.Shared;
 using Microsoft.AspNetCore.Mvc;
