@@ -1,6 +1,6 @@
 ﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
-using BudgetApi.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +15,6 @@ namespace BudgetApi.Budgeting.Services
         {
             _db = db;
         }
-        // GET: Budget
-        public List<BudgetTypes> GetBudgetTypes()
-        {
-            var budgetTypes = (from bt in _db.BudgetTypes
-                               select new BudgetTypes
-                               {
-                                   BudgetTypeId = bt.Id,
-                                   BudgetTypeName = bt.BudgetType1
-                               }).ToList();
-            return budgetTypes.OrderBy(i => i.BudgetTypeName).ToList();
-        }
 
         public List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear)
         {
@@ -37,7 +26,7 @@ namespace BudgetApi.Budgeting.Services
                                select new BudgetWithPurchaseInfo
                                {
                                    BudgetLineId = b.Id,
-                                   BudgetType = new BudgetTypes
+                                   BudgetType = new BudgetType
                                    {
                                        BudgetTypeId = bt.Id,
                                        BudgetTypeName = bt.BudgetType1
@@ -84,7 +73,7 @@ namespace BudgetApi.Budgeting.Services
                 {
                     unBudgetedPurchases.Add(new BudgetWithPurchaseInfo
                     {
-                        BudgetType = new BudgetTypes
+                        BudgetType = new BudgetType
                         {
                             BudgetTypeName = _db.BudgetTypes.Where(i => i.Id == p.PurchaseTypeId).FirstOrDefault().BudgetType1
                         },
@@ -98,7 +87,7 @@ namespace BudgetApi.Budgeting.Services
             {
                 budgetLines.Add(new BudgetWithPurchaseInfo
                 {
-                    BudgetType = new BudgetTypes
+                    BudgetType = new BudgetType
                     {
                         BudgetTypeName = t.FirstOrDefault().BudgetType.BudgetTypeName
                     },
@@ -110,7 +99,7 @@ namespace BudgetApi.Budgeting.Services
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
             budgetLines.Add(new BudgetWithPurchaseInfo
             {
-                BudgetType = new BudgetTypes
+                BudgetType = new BudgetType
                 {
                     BudgetTypeName = BudgetTypeStatics.Totals
                 },
@@ -187,7 +176,7 @@ namespace BudgetApi.Budgeting.Services
                                     {
                                         Amount = b.Amount,
                                         BudgetDate = b.Date,
-                                        BudgetType = new BudgetTypes
+                                        BudgetType = new BudgetType
                                         {
                                             BudgetTypeId = b.BudgetType.Id,
                                             BudgetTypeName = b.BudgetType.BudgetType1
@@ -229,65 +218,6 @@ namespace BudgetApi.Budgeting.Services
             }
 
             return (scenarioInput.initialAmount + amountPlannedToEarn - amountPlannedToSpend);
-        }
-
-        public bool AddUpdateBudgetType(BudgetType budgetType, int budgetTypeId = -1)
-        {
-            if (budgetTypeId == -1)
-            {
-                try
-                {
-                    _db.BudgetTypes.Add(new BudgetType
-                    {
-                        BudgetType1 = budgetType.BudgetType1
-                    });
-                    _db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                try
-                {
-                    _db.BudgetTypes.Find(budgetTypeId).BudgetType1 = budgetType.BudgetType1;
-                    _db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public bool DeleteBudgetTypeEntry(int budgetTypeId)
-        {
-            try
-            {
-                var toDelete = _db.BudgetTypes.Find(budgetTypeId);
-                _db.BudgetTypes.Remove(toDelete);
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
-        public BudgetTypes GetBudgetType(int budgetTypeId)
-        {
-            return (from b in _db.BudgetTypes
-                    where b.Id == budgetTypeId
-                    select new BudgetTypes
-                    {
-                        BudgetTypeId = b.Id,
-                        BudgetTypeName = b.BudgetType1
-                    }).FirstOrDefault();
         }
     }
 }

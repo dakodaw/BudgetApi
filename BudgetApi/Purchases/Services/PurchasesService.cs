@@ -1,4 +1,5 @@
 ﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
@@ -22,7 +23,7 @@ namespace BudgetApi.Purchases.Services
                              join t in _db.BudgetTypes on p.PurchaseTypeId equals t.Id
                              select new PurchaseLine
                              {
-                                 PurchaseType = new BudgetTypes
+                                 PurchaseType = new BudgetType
                                  {
                                      BudgetTypeId = p.PurchaseTypeId,
                                      BudgetTypeName = t.BudgetType1
@@ -109,7 +110,7 @@ namespace BudgetApi.Purchases.Services
                                     {
                                         Amount = p.Amount,
                                         Date = p.Date,
-                                        PurchaseType = new BudgetTypes
+                                        PurchaseType = new BudgetType
                                         {
                                             BudgetTypeId = p.PurchaseTypeId,
                                         },

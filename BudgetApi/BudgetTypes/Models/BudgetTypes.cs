@@ -1,6 +1,6 @@
-﻿namespace BudgetApi.Budgeting.Models
+﻿namespace BudgetApi.BudgetTypes
 {
-    public class BudgetTypes
+    public class BudgetType
     {
         public int BudgetTypeId { get; set; }
         public string BudgetTypeName { get; set; }

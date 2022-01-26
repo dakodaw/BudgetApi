@@ -21,7 +21,7 @@ namespace BudgetApi.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Budget>().ToTable("Budget");
-            modelBuilder.Entity<BudgetType>().ToTable("BudgetType");
+            modelBuilder.Entity<BudgetTypeEntity>().ToTable("BudgetType");
             modelBuilder.Entity<GiftCard>().ToTable("GiftCard");
             modelBuilder.Entity<Income>().ToTable("Income");
             modelBuilder.Entity<IncomeSource>().ToTable("IncomeSource");
@@ -30,7 +30,7 @@ namespace BudgetApi.Models
         }
     
         public virtual DbSet<Budget> Budgets { get; set; }
-        public virtual DbSet<BudgetType> BudgetTypes { get; set; }
+        public virtual DbSet<BudgetTypeEntity> BudgetTypes { get; set; }
         public virtual DbSet<GiftCard> GiftCards { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
         public virtual DbSet<IncomeSource> IncomeSources { get; set; }

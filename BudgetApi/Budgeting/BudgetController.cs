@@ -1,7 +1,6 @@
 ﻿using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.Models;
-using BudgetApi.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,13 +16,6 @@ namespace BudgetApi.Budgeting
         public BudgetController(IBudgetService budgetService)
         {
             _budgetService = budgetService;
-        }
-        // GET: Budget
-        [Route("getBudgetTypes")]
-        [HttpGet]
-        public List<BudgetTypes> GetBudgetTypes()
-        {
-            return _budgetService.GetBudgetTypes();
         }
 
         [Route("getBudgetLines")]
@@ -59,27 +51,6 @@ namespace BudgetApi.Budgeting
         public double ScenarioCheck([FromBody] ScenarioInput scenarioInput)
         {
             return _budgetService.ScenarioCheck(scenarioInput);
-        }
-
-        [Route("addUpdateBudgetType")]
-        [HttpPost]
-        public bool AddUpdateBudgetType([FromBody] BudgetType budgetType, [FromQuery] int budgetTypeId = -1)
-        {
-            return _budgetService.AddUpdateBudgetType(budgetType, budgetTypeId);
-        }
-
-        [Route("deleteBudgetTypeEntry")]
-        [HttpGet]
-        public bool DeleteBudgetTypeEntry([FromQuery] int budgetTypeId)
-        {
-            return _budgetService.DeleteBudgetTypeEntry(budgetTypeId);
-        }
-
-        [Route("getBudgetType")]
-        [HttpGet]
-        public BudgetTypes GetBudgetType([FromQuery] int budgetTypeId)
-        {
-            return _budgetService.GetBudgetType(budgetTypeId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.BudgetTypes;
 using BudgetApi.GiftCards.Models;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
@@ -88,7 +89,7 @@ namespace BudgetApi.GiftCards.Services
                              join t in _db.BudgetTypes on p.PurchaseTypeId equals t.Id
                              select new PurchaseLine
                              {
-                                 PurchaseType = new BudgetTypes
+                                 PurchaseType = new BudgetType
                                  {
                                      BudgetTypeId = p.PurchaseTypeId,
                                      BudgetTypeName = t.BudgetType1

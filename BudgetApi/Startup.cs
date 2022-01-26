@@ -1,4 +1,5 @@
 using BudgetApi.Budgeting.Services;
+using BudgetApi.BudgetTypes;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
@@ -39,6 +40,7 @@ namespace BudgetApi
                 options.UseSqlServer(Configuration.GetValue<string>("BudgetDB")));
             
             services.AddScoped<IBudgetService, BudgetService>();
+            services.AddScoped<IBudgetTypeService, BudgetTypeService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPurchasesService, PurchasesService>();

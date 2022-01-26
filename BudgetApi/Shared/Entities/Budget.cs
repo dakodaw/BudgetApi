@@ -19,6 +19,6 @@ namespace BudgetApi.Models
         public System.DateTime Date { get; set; }
         public decimal Amount { get; set; }
     
-        public virtual BudgetType BudgetType { get; set; }
+        public virtual BudgetTypeEntity BudgetType { get; set; }
     }
 }

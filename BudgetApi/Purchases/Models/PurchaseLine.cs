@@ -1,4 +1,5 @@
 ﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.BudgetTypes;
 using System;
 
 namespace BudgetApi.Purchases.Models
@@ -6,7 +7,7 @@ namespace BudgetApi.Purchases.Models
     public class PurchaseLine
     {
         public int Id { get; set; }
-        public BudgetTypes PurchaseType { get; set; }
+        public BudgetType PurchaseType { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public bool IsReimbursement { get; set; }

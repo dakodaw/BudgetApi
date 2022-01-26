@@ -13,10 +13,10 @@ namespace BudgetApi.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class BudgetType
+    public partial class BudgetTypeEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public BudgetType()
+        public BudgetTypeEntity()
         {
             this.Budgets = new HashSet<Budget>();
         }

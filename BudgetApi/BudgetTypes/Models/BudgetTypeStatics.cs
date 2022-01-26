@@ -1,4 +1,4 @@
-﻿namespace BudgetApi.Budgeting.Models
+﻿namespace BudgetApi.BudgetTypes
 {
     public static class BudgetTypeStatics
     {
