@@ -25,16 +25,23 @@ namespace BudgetApi.Budgeting
             return _budgetService.GetBudgetLines(monthYear);
         }
 
-        [Route("addUpdateBudget")]
+        [Route("")]
         [HttpPost]
-        public bool AddUpdateBudget([FromBody] Budget inputBudget, [FromQuery] int budgetId = -1)
+        public bool AddBudget([FromBody] Budget inputBudget)
         {
-            return _budgetService.AddUpdateBudget(inputBudget, budgetId);
+            return _budgetService.AddBudget(inputBudget);
         }
 
-        [Route("deleteBudgetEntry")]
-        [HttpGet]
-        public bool DeleteBudgetEntry([FromQuery] int budgetId)
+        [Route("{budgetId}")]
+        [HttpPut]
+        public bool UpdateBudget([FromBody] Budget inputBudget, int budgetId)
+        {
+            return _budgetService.UpdateBudget(inputBudget, budgetId);
+        }
+
+        [Route("{budgetId}")]
+        [HttpDelete]
+        public bool DeleteBudgetEntry(int budgetId)
         {
             return _budgetService.DeleteBudgetEntry(budgetId);
         }

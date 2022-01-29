@@ -109,48 +109,46 @@ namespace BudgetApi.Budgeting.Services
             return budgetLines;
         }
 
-        public bool AddUpdateBudget(Budget inputBudget, int budgetId = -1)
+        public bool AddBudget(Budget inputBudget)
         {
-            if (budgetId == -1)
+            bool success = false;
+            _db.Budgets.Add(inputBudget);
+            _db.SaveChanges();
+            try
             {
-                bool success = false;
-                _db.Budgets.Add(inputBudget);
-                _db.SaveChanges();
-                try
-                {
-                    var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                    success = true;
-                }
-                catch
-                {
-
-                }
-                return success;
+                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
+                success = true;
             }
-            else
+            catch
             {
-                bool success = false;
-                //Get the Budget from the Database with a given id
-                //Update the Budget that matches the one from the database
-                var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
-                _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Amount = inputBudget.Amount;
-                _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
-                _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetType = inputBudget.BudgetType;
-                _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
 
-                //Save Changes
-                _db.SaveChanges();
-                try
-                {
-                    var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                    success = true;
-                }
-                catch
-                {
-
-                }
-                return success;
             }
+            return success;
+        }
+
+        public bool UpdateBudget(Budget inputBudget, int budgetId)
+        {
+            bool success = false;
+            //Get the Budget from the Database with a given id
+            //Update the Budget that matches the one from the database
+            var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
+            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Amount = inputBudget.Amount;
+            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
+            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetType = inputBudget.BudgetType;
+            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
+
+            //Save Changes
+            _db.SaveChanges();
+            try
+            {
+                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
+                success = true;
+            }
+            catch
+            {
+
+            }
+            return success;
         }
 
         public bool DeleteBudgetEntry(int budgetId)
