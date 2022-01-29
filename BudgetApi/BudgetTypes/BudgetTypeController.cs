@@ -15,13 +15,6 @@ namespace BudgetApi.BudgetTypes
             _budgetService = budgetService;
         }
 
-        [Route("getBudgetTypes")]
-        [HttpGet]
-        public List<BudgetType> GetBudgetTypes()
-        {
-            return _budgetService.GetBudgetTypes();
-        }
-
         [Route("")]
         [HttpPost]
         public bool AddBudgetType([FromBody] BudgetTypeEntity budgetType)
