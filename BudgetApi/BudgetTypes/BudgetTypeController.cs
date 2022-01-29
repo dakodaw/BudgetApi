@@ -15,7 +15,6 @@ namespace BudgetApi.BudgetTypes
             _budgetService = budgetService;
         }
 
-        // GET: Budget
         [Route("getBudgetTypes")]
         [HttpGet]
         public List<BudgetType> GetBudgetTypes()
@@ -23,23 +22,30 @@ namespace BudgetApi.BudgetTypes
             return _budgetService.GetBudgetTypes();
         }
 
-        [Route("addUpdateBudgetType")]
+        [Route("")]
         [HttpPost]
-        public bool AddUpdateBudgetType([FromBody] BudgetTypeEntity budgetType, [FromQuery] int budgetTypeId = -1)
+        public bool AddBudgetType([FromBody] BudgetTypeEntity budgetType)
+        {
+            return _budgetService.AddUpdateBudgetType(budgetType);
+        }
+
+        [Route("{budgetTypeId}")]
+        [HttpPut]
+        public bool UpdateBudgetType([FromBody] BudgetTypeEntity budgetType, int budgetTypeId = -1)
         {
             return _budgetService.AddUpdateBudgetType(budgetType, budgetTypeId);
         }
 
-        [Route("deleteBudgetTypeEntry")]
-        [HttpGet]
-        public bool DeleteBudgetTypeEntry([FromQuery] int budgetTypeId)
+        [Route("{budgetTypeId}")]
+        [HttpDelete]
+        public bool DeleteBudgetTypeEntry(int budgetTypeId)
         {
             return _budgetService.DeleteBudgetTypeEntry(budgetTypeId);
         }
 
-        [Route("getBudgetType")]
+        [Route("{budgetTypeId}")]
         [HttpGet]
-        public BudgetType GetBudgetType([FromQuery] int budgetTypeId)
+        public BudgetType GetBudgetType(int budgetTypeId)
         {
             return _budgetService.GetBudgetType(budgetTypeId);
         }
