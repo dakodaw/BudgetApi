@@ -1,5 +1,6 @@
 using BudgetApi.Budgeting.Services;
 using BudgetApi.BudgetTypes;
+using BudgetApi.Copy.Services;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
@@ -41,6 +42,7 @@ namespace BudgetApi
             
             services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<IBudgetTypeService, BudgetTypeService>();
+            services.AddScoped<IBudgetCopyService, BudgetCopyService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPurchasesService, PurchasesService>();

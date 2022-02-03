@@ -126,6 +126,23 @@ namespace BudgetApi.Budgeting.Services
             return success;
         }
 
+        public bool AddBudgetLines(IEnumerable<Budget> inputBudgetLines)
+        {
+            bool success = false;
+            try
+            {
+                _db.Budgets.AddRange(inputBudgetLines);
+                _db.SaveChanges();
+
+                success = true;
+            }
+            catch
+            {
+
+            }
+            return success;
+        }
+
         public bool UpdateBudget(Budget inputBudget, int budgetId)
         {
             bool success = false;
@@ -136,6 +153,15 @@ namespace BudgetApi.Budgeting.Services
             _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
             _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetType = inputBudget.BudgetType;
             _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
+
+            //// Alternate approach
+            //_db.Entry(selectedBudgetEntry).CurrentValues.SetValues(new
+            //{
+            //    Amount = inputBudget.Amount,
+            //    BudgetTypeId = selectedBudgetEntry.BudgetTypeId,
+            //    BudgetType = selectedBudgetEntry?.BudgetType,
+            //    Date = inputBudget.Date
+            //});
 
             //Save Changes
             _db.SaveChanges();
