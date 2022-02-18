@@ -3,7 +3,6 @@ using BudgetApi.Budgeting.Services;
 using BudgetApi.CopyTo.Models;
 using BudgetApi.CopyTo.Services;
 using BudgetApi.Models;
-using BudgetApi.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

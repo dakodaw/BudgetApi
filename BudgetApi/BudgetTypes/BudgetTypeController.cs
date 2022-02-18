@@ -1,5 +1,4 @@
 ﻿using BudgetApi.Models;
-using BudgetApi.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,12 +10,10 @@ namespace BudgetApi.BudgetTypes
     public class BudgetTypeController : ControllerBase
     {
         IBudgetTypeService _budgetService;
-        ISchedulerService _schedulerService;
 
-        public BudgetTypeController(IBudgetTypeService budgetService, ISchedulerService schedulerService)
+        public BudgetTypeController(IBudgetTypeService budgetService)
         {
             _budgetService = budgetService;
-            _schedulerService = schedulerService;
         }
 
         [Route("")]
