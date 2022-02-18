@@ -1,22 +1,32 @@
 ﻿using BudgetApi.Budgeting.Services;
+using BudgetApi.CopyTo.Models;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BudgetApi.Copy.Services
+namespace BudgetApi.CopyTo.Services
 {
-    public class BudgetCopyService: IBudgetCopyService
+    public class BudgetCopyToService: IBudgetCopyToService
     {
         private readonly IBudgetService _budgetService;
-        public BudgetCopyService(IBudgetService budgetService)
+        public BudgetCopyToService(IBudgetService budgetService)
         {
             _budgetService = budgetService;
         }
 
-        public void CopyBudgetFromPreviousMonth(DateTime monthYear)
+        public void CopyFrom(DateTime monthYear, CopyFromRequest request)
         {
-            var lastMonth = monthYear.AddMonths(-1);
+            var defaultLastMonth = monthYear.AddMonths(-1);
+            var lastMonth = request.FromMethod switch
+            {
+                CopyFromEnum.PreviousMonth => defaultLastMonth,
+                CopyFromEnum.PreviousYear => monthYear.AddYears(-1),
+                CopyFromEnum.SpecificMonthDate => request.MonthYear.HasValue ? request.MonthYear.Value : defaultLastMonth,
+                _ => defaultLastMonth
+            };
+
+
             var lastMonthBudgetLines = _budgetService.GetBudgetLines(lastMonth);
 
             var copiedBudgetLines = new List<Budget>();

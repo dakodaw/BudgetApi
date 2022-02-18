@@ -46,9 +46,9 @@ namespace BudgetApi.Budgeting
             return _budgetService.DeleteBudgetEntry(budgetId);
         }
 
-        [Route("getExistingBudget")]
+        [Route("{budgetId}")]
         [HttpGet]
-        public BudgetInfo GetExistingBudget([FromQuery] int budgetId)
+        public BudgetInfo GetExistingBudget(int budgetId)
         {
             return _budgetService.GetExistingBudget(budgetId);
         }

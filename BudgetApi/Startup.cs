@@ -1,11 +1,12 @@
 using BudgetApi.Budgeting.Services;
 using BudgetApi.BudgetTypes;
-using BudgetApi.Copy.Services;
+using BudgetApi.CopyTo.Services;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Services;
 using BudgetApi.Settings.Services;
+using BudgetApi.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +43,7 @@ namespace BudgetApi
             
             services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<IBudgetTypeService, BudgetTypeService>();
-            services.AddScoped<IBudgetCopyService, BudgetCopyService>();
+            services.AddScoped<IBudgetCopyToService, BudgetCopyToService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPurchasesService, PurchasesService>();

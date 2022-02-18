@@ -1,20 +1,22 @@
 ﻿using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
-using BudgetApi.Copy.Services;
+using BudgetApi.CopyTo.Models;
+using BudgetApi.CopyTo.Services;
 using BudgetApi.Models;
+using BudgetApi.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-namespace BudgetApi.Copy
+namespace BudgetApi.CopyTo
 {
     [ApiController]
     [Route("[controller]")]
-    public class CopyController : ControllerBase
+    public class CopyToController : ControllerBase
     {
-        private readonly IBudgetCopyService _budgetCopyService;
-        public CopyController(IBudgetCopyService budgetCopyService)
+        private readonly IBudgetCopyToService _budgetCopyToService;
+        public CopyToController(IBudgetCopyToService budgetCopyService)
         {
-            _budgetCopyService = budgetCopyService;
+            _budgetCopyToService = budgetCopyService;
         }
 
         // Initial thoughts: just pass in monthYear
@@ -23,10 +25,10 @@ namespace BudgetApi.Copy
         //  2. Pass in list of budgets that are based on retreived old budgets
         //      This option would pass list into other controller, maybe budget. this controller wouldn't do anything
         [Route("{monthYear}")]
-        [HttpGet]
-        public void CopyBudgetFromMonth(DateTime monthYear)
+        [HttpPost]
+        public void CopyBudgetFromMonth(DateTime monthYear, [FromBody] CopyFromRequest request)
         {
-            _budgetCopyService.CopyBudgetFromPreviousMonth(monthYear);
+            _budgetCopyToService.CopyFrom(monthYear, request);
         }
     }
 }
