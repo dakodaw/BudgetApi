@@ -210,38 +210,57 @@ namespace BudgetApi.Budgeting.Services
             return existingPurchase;
         }
 
-        public double ScenarioCheck(ScenarioInput scenarioInput)
+        public decimal ScenarioCheck(ScenarioInput scenarioInput)
         {
-            var applicableBudget = _db.Budgets.Where(i => i.Date >= scenarioInput.startMonth && i.Date <= scenarioInput.endMonth).ToList();
-            double amountPlannedToSpend = 0.00;
-            foreach (var budg in applicableBudget)
+            var applicableBudget = _db.Budgets
+                .Where(i => 
+                    i.Date >= scenarioInput.startMonth &&
+                    i.Date <= scenarioInput.endMonth)
+                .ToList();
+
+            decimal amountPlannedToSpend = default;
+            foreach (var budgetItem in applicableBudget)
             {
-                amountPlannedToSpend += (double)budg.Amount;
+                amountPlannedToSpend += budgetItem.Amount;
             }
+            
             var income = _db.IncomeSources.Where(i => i.ActiveJob == true && i.EstimatedIncome != null).ToList();
-            double amountPlannedToEarn = 0.00;
+            decimal amountPlannedToEarn = default;
             foreach (var inc in income)
             {
-                int multiplyNumber = 1;
+                var payFrequency = inc.PayFrequency.Trim();
+                var endOfEndMonth = scenarioInput.endMonth.AddMonths(1);
+
                 //Check if the income is biweekly or monthly
-                //  If the income is monthly, multiply the estimated income by the number of months
-                if (inc.PayFrequency.Contains(PaymentFrequency.Monthly))
-                {
-                    multiplyNumber = Convert.ToInt32((scenarioInput.endMonth.AddMonths(1) - scenarioInput.startMonth).TotalDays / 30);
-                }
-                //  If the income is biweekly, multiply the estimated income by the number of weeks divided by two
-                else if (inc.PayFrequency.Contains(PaymentFrequency.Biweekly))
-                {
-                    multiplyNumber = Convert.ToInt32((scenarioInput.endMonth.AddMonths(1) - scenarioInput.startMonth).TotalDays / 14);
-                }
-                else if (inc.PayFrequency.Contains(PaymentFrequency.TwiceAMonth))
-                {
-                    multiplyNumber = Convert.ToInt32((scenarioInput.endMonth.AddMonths(1) - scenarioInput.startMonth));
-                }
-                amountPlannedToEarn += (double)(inc.EstimatedIncome * multiplyNumber);
+                var multiplyNumber = (decimal)GetMultiplyNumber(inc.PayFrequency, scenarioInput.startMonth, endOfEndMonth);
+
+                if(inc.EstimatedIncome.HasValue)
+                    amountPlannedToEarn += inc.EstimatedIncome.Value * multiplyNumber;
             }
 
-            return (scenarioInput.initialAmount + amountPlannedToEarn - amountPlannedToSpend);
+            return ((decimal)scenarioInput.initialAmount) + amountPlannedToEarn - amountPlannedToSpend;
+        }
+
+        private int GetNumberOfMonths(DateTime startDate, DateTime endDate)
+        {
+            var monthDifference = endDate.Month - startDate.Month;
+            var yearDifference = endDate.Year - startDate.Year;
+
+            // Twice a month should be 2 * number of months
+            return yearDifference == 0
+                ? monthDifference
+                : (yearDifference * 12) + monthDifference;
+        }
+
+        private double GetMultiplyNumber(string paymentFrequency, DateTime startMonth, DateTime endMonth)
+        {
+            return paymentFrequency switch
+            {
+                PaymentFrequency.Monthly => (endMonth - startMonth).TotalDays / 30,
+                PaymentFrequency.Biweekly => (endMonth - startMonth).TotalDays / 14,
+                PaymentFrequency.TwiceAMonth => GetNumberOfMonths(startMonth, endMonth) * 2,
+                _ => 1
+            };
         }
     }
 }

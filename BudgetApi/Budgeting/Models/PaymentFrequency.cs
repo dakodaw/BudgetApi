@@ -2,8 +2,8 @@
 {
     public static class PaymentFrequency
     {
-        public static string Biweekly = "Biweekly";
-        public static string Monthly = "Monthly";
-        public static string TwiceAMonth = "TwiceAMonth";
+        public const string Biweekly = "Biweekly";
+        public const string Monthly = "Monthly";
+        public const string TwiceAMonth = "TwiceAMonth";
     }
 }

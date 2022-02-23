@@ -13,6 +13,6 @@ namespace BudgetApi.Budgeting.Services
         bool AddBudgetLines(IEnumerable<Budget> inputBudgetLines);
         bool DeleteBudgetEntry(int budgetId);
         BudgetInfo GetExistingBudget(int budgetId);
-        double ScenarioCheck(ScenarioInput scenarioInput);
+        decimal ScenarioCheck(ScenarioInput scenarioInput);
     }
 }

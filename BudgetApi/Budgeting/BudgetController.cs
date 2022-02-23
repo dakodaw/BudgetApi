@@ -55,7 +55,7 @@ namespace BudgetApi.Budgeting
 
         [Route("scenarioCheck")]
         [HttpPost]
-        public double ScenarioCheck([FromBody] ScenarioInput scenarioInput)
+        public decimal ScenarioCheck([FromBody] ScenarioInput scenarioInput)
         {
             return _budgetService.ScenarioCheck(scenarioInput);
         }
