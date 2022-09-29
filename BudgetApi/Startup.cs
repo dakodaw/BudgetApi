@@ -31,6 +31,7 @@ namespace BudgetApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllers();
@@ -60,6 +61,14 @@ namespace BudgetApi
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "BudgetApi v1"));
+
+            app.UseCors(builder =>
+            {
+                builder
+                .WithOrigins("https://localhost:4200", "http://localhost:8080")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
 
             app.UseHttpsRedirection();
 
