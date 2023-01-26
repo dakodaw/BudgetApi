@@ -8,3 +8,7 @@ BudgetApi/obj/*
 BudgetApiNew/obj/*
 
 BudgetApiNew/bin/*
+
+Budget.DB/obj/
+
+**/obj/**
