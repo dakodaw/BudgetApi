@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Budget.DB.Income
+namespace Budget.DB.Incomes
 {
 	public interface IIncomeProvider
 	{
