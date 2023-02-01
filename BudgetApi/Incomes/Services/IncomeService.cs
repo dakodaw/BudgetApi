@@ -1,4 +1,6 @@
-﻿using BudgetApi.Incomes.Models;
+﻿using Budget.DB.Incomes;
+using Budget.Models;
+using BudgetApi.Incomes.Models;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
@@ -10,69 +12,67 @@ namespace BudgetApi.Incomes.Services
 {
     public class IncomeService: IIncomeService
     {
-        BudgetEntities _db;
-        public IncomeService(BudgetEntities db)
+        //BudgetEntities _db;
+        IIncomeProvider _incomeProvider;
+        IIncomeSourceProvider _incomeSourceProvider;
+        public IncomeService(IIncomeProvider incomeProvider, IIncomeSourceProvider incomeSourceProvider BudgetEntities db)
         {
-            _db = db;
+            //_db = db;
+            _incomeProvider = incomeProvider;
+            _incomeSourceProvider = incomeSourceProvider;
         }
 
         public List<IncomeSourceLine> GetIncomeTypes()
         {
-            var incomeSources = (from it in _db.IncomeSources
-                                 select new IncomeSourceLine
-                                 {
-                                     IncomeSourceId = it.Id,
-                                     IncomeSource = it.SourceName,
-                                     Position = it.PositionName,
-                                     JobOf = it.JobOf,
-                                     IsCurrentJob = it.ActiveJob
-                                 }).ToList();
+            var incomeSources = _incomeSourceProvider.GetIncomeTypes()
+                .Select(it => new IncomeSourceLine
+                {
+                    IncomeSourceId = it.Id,
+                    IncomeSource = it.SourceName,
+                    Position = it.PositionName,
+                    JobOf = it.JobOf,
+                    IsCurrentJob = it.ActiveJob
+                }).ToList();
             return incomeSources.OrderBy(i => i.IncomeSource).ToList();
         }
 
         public List<IncomeLine> GetIncomeLines(DateTime monthYear)
         {
-            var incomeLines = (from i in _db.Incomes.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year)
-                               join it in _db.IncomeSources on i.SourceId equals it.Id
-                               select new IncomeLine
-                               {
-                                   IncomeId = i.Id,
-                                   IncomeSource = new IncomeSourceLine
-                                   {
-                                       IncomeSourceId = it.Id,
-                                       IncomeSource = it.SourceName,
-                                       JobOf = it.JobOf,
-                                       IsCurrentJob = it.ActiveJob,
-                                       Position = it.PositionName
-                                   },
-                                   IncomeDate = i.Date,
-                                   Details = i.SourceDetails,
-                                   Amount = i.Amount,
-                                   IsReimbursement = i.IsReimbursement,
-                                   IsCash = i.IsCash
-                               }).ToList();
-            foreach (var line in incomeLines)
-            {
-                if (line.IsReimbursement)
-                {
-                    line.PurchaseId = (int)_db.Incomes.Where(i => i.Id == line.IncomeId).FirstOrDefault().PurchaseId;
-                }
-            }
-            return incomeLines;
+            // TODO: Probably fix this. It may have problems with mixing contexts.
+            return (from i in _incomeProvider.GetIncomes(monthYear)
+                    join it in _incomeSourceProvider.GetIncomeTypes() on i.SourceId equals it.Id
+                    select new IncomeLine
+                    {
+                        IncomeId = i.Id,
+                        IncomeSource = new IncomeSourceLine
+                        {
+                            IncomeSourceId = it.Id,
+                            IncomeSource = it.SourceName,
+                            JobOf = it.JobOf,
+                            IsCurrentJob = it.ActiveJob,
+                            Position = it.PositionName
+                        },
+                        IncomeDate = i.Date,
+                        Details = i.SourceDetails,
+                        Amount = i.Amount,
+                        IsReimbursement = i.IsReimbursement,
+                        IsCash = i.IsCash,
+                        PurchaseId = i.PurchaseId
+                    }).ToList();
         }
 
         public List<IncomeSourceLine> GetIncomeSources()
         {
-            var incomeSourceLines = (from it in _db.IncomeSources.Where(i => i.ActiveJob == true)
-                                     select new IncomeSourceLine
-                                     {
-                                         IncomeSourceId = it.Id,
-                                         IncomeSource = it.SourceName,
-                                         JobOf = it.JobOf,
-                                         IsCurrentJob = it.ActiveJob,
-                                         Position = it.PositionName
-                                     }).ToList();
-            return incomeSourceLines;
+            return _incomeSourceProvider.GetIncomeTypes().ToList()
+                .Where(i => i.ActiveJob == true).Select(it => 
+                    new IncomeSourceLine
+                    {
+                        IncomeSourceId = it.Id,
+                        IncomeSource = it.SourceName,
+                        JobOf = it.JobOf,
+                        IsCurrentJob = it.ActiveJob,
+                        Position = it.PositionName
+                    }).ToList();
         }
 
         public List<IncomeSources> GetFullIncomeSources()

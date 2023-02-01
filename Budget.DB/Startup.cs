@@ -1,4 +1,4 @@
-﻿using Budget.DB.Income;
+﻿using Budget.DB.Incomes;
 using BudgetApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,5 +14,6 @@ public class Startup
             options.UseSqlServer(configuration.GetValue<string>("BudgetDB")));
 
         services.AddScoped<IIncomeProvider, IncomeProvider>();
+        services.AddScoped<IIncomeSourceProvider, IncomeSourceProvider>();
     }
 }

@@ -9,8 +9,6 @@
   <ItemGroup>
     <None Remove="Purchase\" />
     <None Remove="Purchases\Entities\" />
-    <None Remove="Income\" />
-    <None Remove="Income\Entities\" />
     <None Remove="Budget\" />
     <None Remove="Budget\Entities\" />
     <None Remove="GiftCards\Entities\" />
@@ -26,8 +24,6 @@
   <ItemGroup>
     <Folder Include="Purchases\" />
     <Folder Include="Purchases\Entities\" />
-    <Folder Include="Income\" />
-    <Folder Include="Income\Entities\" />
     <Folder Include="Budget\" />
     <Folder Include="Budget\Entities\" />
     <Folder Include="GiftCards\" />
