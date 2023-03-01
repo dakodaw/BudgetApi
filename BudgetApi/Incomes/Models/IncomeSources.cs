@@ -1,10 +1,7 @@
-﻿using BudgetApi.Shared;
+﻿namespace BudgetApi.Incomes.Models;
 
-namespace BudgetApi.Incomes.Models
+public class IncomeSources : IncomeSourceLine
 {
-    public class IncomeSources : IncomeSourceLine
-    {
-        public decimal EstimatedIncome { get; set; }
-        public string PayFrequency { get; set; }
-    }
+    public decimal? EstimatedIncome { get; set; }
+    public string PayFrequency { get; set; }
 }

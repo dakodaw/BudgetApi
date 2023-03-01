@@ -15,5 +15,6 @@ public class Startup
 
         services.AddScoped<IIncomeProvider, IncomeProvider>();
         services.AddScoped<IIncomeSourceProvider, IncomeSourceProvider>();
+        services.AddScoped<IPurchaseProvider, PurchaseProvider>();
     }
 }
