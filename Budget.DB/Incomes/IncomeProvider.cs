@@ -93,7 +93,7 @@ public class IncomeProvider: IIncomeProvider
         else
         {
             bool success = false;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IncomeSource = inputIncome.IncomeSource;
+            //_db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IncomeSource = inputIncome.SourceDetails;
             _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IsCash = inputIncome.IsCash;
             _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IsReimbursement = inputIncome.IsReimbursement;
             _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().SourceDetails = inputIncome.SourceDetails;

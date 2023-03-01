@@ -12,3 +12,5 @@ BudgetApiNew/bin/*
 Budget.DB/obj/
 
 **/obj/**
+
+Budget.Models/bin/*
