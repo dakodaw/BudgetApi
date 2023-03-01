@@ -22,10 +22,8 @@ namespace BudgetApi.Incomes.Services
             IIncomeProvider incomeProvider,
             IIncomeSourceProvider incomeSourceProvider,
             IPurchaseProvider purchaseProvider,
-            IBudgetProvider budgetProvider,
-            BudgetEntities db)
+            IBudgetProvider budgetProvider)
         {
-            //_db = db;
             _incomeProvider = incomeProvider;
             _incomeSourceProvider = incomeSourceProvider;
             _purchaseProvider = purchaseProvider;
