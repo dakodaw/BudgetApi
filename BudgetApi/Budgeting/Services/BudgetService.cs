@@ -1,4 +1,7 @@
-﻿using BudgetApi.Budgeting.Models;
+﻿using Budget.DB;
+using Budget.DB.Budget;
+using Budget.DB.Incomes;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
 using System;
@@ -9,11 +12,21 @@ namespace BudgetApi.Budgeting.Services
 {
     public class BudgetService: IBudgetService
     {
-        BudgetEntities _db;
+        //BudgetEntities _db;
+        IBudgetProvider _budgetProvider;
+        IPurchaseProvider _purchaseProvider;
+        IIncomeProvider _incomeProvider;
 
-        public BudgetService(BudgetEntities db)
+        public BudgetService(
+            //BudgetEntities db,
+            IBudgetProvider budgetProvider,
+            IPurchaseProvider purchaseProvider,
+            IIncomeProvider incomeProvider)
         {
-            _db = db;
+            //_db = db;
+            _budgetProvider = budgetProvider;
+            _purchaseProvider = purchaseProvider;
+            _incomeProvider = incomeProvider;
         }
 
         public List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear)
@@ -21,53 +34,62 @@ namespace BudgetApi.Budgeting.Services
             // Should refactor all of this. It's a lot.
             decimal totalBudgeted = (decimal)0;
             decimal totalSpent = (decimal)0;
-            var budgetPurchases = _db.Purchases.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year).ToList();
-            var budgetLines = (from b in _db.Budgets.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Date.Year)
-                               join bt in _db.BudgetTypes on b.BudgetTypeId equals bt.Id
+            var budgetEntries = _purchaseProvider.GetPurchasesByMonthYear(monthYear);
+            var budgetLines = (from b in budgetEntries
+                               join bt in _budgetProvider.GetBudgetTypes() on b.PurchaseTypeId equals bt.BudgetTypeId
                                select new BudgetWithPurchaseInfo
                                {
                                    BudgetLineId = b.Id,
                                    BudgetType = new BudgetType
                                    {
-                                       BudgetTypeId = bt.Id,
-                                       BudgetTypeName = bt.BudgetType1
+                                       BudgetTypeId = bt.BudgetTypeId,
+                                       BudgetTypeName = bt.BudgetTypeName
                                    },
                                    BudgetDate = b.Date,
                                    Amount = b.Amount
                                }).ToList();
+
             totalBudgeted = budgetLines.Sum(i => i.Amount);
 
             //Get the income that is marked as a reimbursement for the month/year
-            var applicableincome = _db.Incomes.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year).ToList();
+            var applicableincome = _incomeProvider.GetIncomes(monthYear);
             //go through all budgetlines and find the matching purchase amount
             foreach (var budget in budgetLines)
             {
-                var applicablePurchases = budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId);
+                var applicablePurchases = budgetEntries
+                    .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId);
+
                 decimal reimbursement = (decimal)0;
 
                 if (applicableincome != null)
                 {
                     //Find any income that is a reimbursement and has a matching purchase id from this month/year
-                    //var incomeToReimburse = applicableincome.Where(i => budgetPurchases.Any(j => j.Id == i.PurchaseId)).ToList();
+                    //var incomeToReimburse = applicableincome.Where(i => budgetEntries.Any(j => j.Id == i.PurchaseId)).ToList();
                     foreach (var myI in applicableincome)
                     {
-                        var purchasesToReimburse = applicablePurchases.Where(i => i.Id == myI.PurchaseId);
+                        var purchasesToReimburse = applicablePurchases
+                            .Where(i => i.Id == myI.PurchaseId);
+
                         if (purchasesToReimburse.Count() > 0)
                         {
                             reimbursement += myI.Amount;
                         }
                     }
-                    budget.PurchaseAmount = (budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal").Sum(i => i.Amount) - reimbursement);
+                    budget.PurchaseAmount = budgetEntries
+                        .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal")
+                        .Sum(i => i.Amount) - reimbursement;
                     totalSpent += budget.PurchaseAmount;
                 }
                 else
                 {
-                    budget.PurchaseAmount = budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal").Sum(i => i.Amount);
+                    budget.PurchaseAmount = budgetEntries
+                        .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal")
+                        .Sum(i => i.Amount);
                     totalSpent += budget.PurchaseAmount;
                 }
             }
 
-            AddUnbudgetedPurchases(ref totalSpent, budgetPurchases, ref budgetLines);
+            AddUnbudgetedPurchases(ref totalSpent, budgetEntries, ref budgetLines);
 
             // Adds a line with a total - more a UI concern I think.
             budgetLines.Add(new BudgetWithPurchaseInfo
@@ -82,7 +104,7 @@ namespace BudgetApi.Budgeting.Services
             return budgetLines;
         }
 
-        private void AddUnbudgetedPurchases(ref decimal totalSpent, List<Purchase> budgetPurchases, ref List<BudgetWithPurchaseInfo> budgetLines)
+        private void AddUnbudgetedPurchases(ref decimal totalSpent, IEnumerable<Purchase> budgetPurchases, ref List<BudgetWithPurchaseInfo> budgetLines)
         {
             var unBudgetedPurchases = new List<BudgetWithPurchaseInfo>();
             foreach (var p in budgetPurchases)
@@ -119,24 +141,12 @@ namespace BudgetApi.Budgeting.Services
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
         }
 
-        public bool AddBudget(Budget inputBudget)
+        public bool AddBudget(BudgetEntry inputBudget)
         {
-            bool success = false;
-            _db.Budgets.Add(inputBudget);
-            _db.SaveChanges();
-            try
-            {
-                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            return _budgetProvider.AddBudget(inputBudget);
         }
 
-        public bool AddBudgetLines(IEnumerable<Budget> inputBudgetLines)
+        public bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines)
         {
             bool success = false;
             try

@@ -1,6 +1,6 @@
 namespace BudgetApi.Models;
 
-public partial class Budget
+public partial class BudgetEntry
 {
     public int Id { get; set; }
     public int BudgetTypeId { get; set; }

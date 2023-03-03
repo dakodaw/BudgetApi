@@ -104,11 +104,11 @@ namespace BudgetApi.Incomes.Services
         public List<ApplicablePurchase> GetApplicablePurchases(DateTime monthYear)
         {
             var applicablePurchases = (from it in _purchaseProvider.GetPurchasesByMonthYear(monthYear)
-                                       join pt in _budgetProvider.GetBudgetTypes() on it.PurchaseTypeId equals pt.Id
+                                       join pt in _budgetProvider.GetBudgetTypes() on it.PurchaseTypeId equals pt.BudgetTypeId
                                        select new ApplicablePurchase
                                        {
                                            Id = it.Id,
-                                           PurchaseType = pt.BudgetType1,
+                                           PurchaseType = pt.BudgetTypeName,
                                            Amount = it.Amount
                                        }).ToList();
             return applicablePurchases;
