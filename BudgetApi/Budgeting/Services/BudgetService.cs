@@ -114,16 +114,15 @@ namespace BudgetApi.Budgeting.Services
                 {
                     unBudgetedPurchases.Add(new BudgetWithPurchaseInfo
                     {
-                        BudgetType = new BudgetType
-                        {
-                            BudgetTypeName = _db.BudgetTypes.Where(i => i.Id == p.PurchaseTypeId).FirstOrDefault().BudgetType1
-                        },
+                        BudgetType = _budgetProvider.GetBudgetType(p.PurchaseTypeId),
                         Amount = 0,
                         PurchaseAmount = p.Amount
                     });
                 }
             }
-            var groupedPurchases = unBudgetedPurchases.GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
+            var groupedPurchases = unBudgetedPurchases
+                .GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
+
             foreach (var t in groupedPurchases)
             {
                 budgetLines.Add(new BudgetWithPurchaseInfo
@@ -148,86 +147,33 @@ namespace BudgetApi.Budgeting.Services
 
         public bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines)
         {
-            bool success = false;
-            try
-            {
-                _db.Budgets.AddRange(inputBudgetLines);
-                _db.SaveChanges();
-
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            return _budgetProvider.AddBudgetEntries(inputBudgetLines);
         }
 
-        public bool UpdateBudget(Budget inputBudget, int budgetId)
+        public bool UpdateBudget(BudgetEntry inputBudget)
         {
-            bool success = false;
-            //Get the Budget from the Database with a given id
-            //Update the Budget that matches the one from the database
-            var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Amount = inputBudget.Amount;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetType = inputBudget.BudgetType;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
-
-            //// Alternate approach
-            //_db.Entry(selectedBudgetEntry).CurrentValues.SetValues(new
-            //{
-            //    Amount = inputBudget.Amount,
-            //    BudgetTypeId = selectedBudgetEntry.BudgetTypeId,
-            //    BudgetType = selectedBudgetEntry?.BudgetType,
-            //    Date = inputBudget.Date
-            //});
-
-            //Save Changes
-            _db.SaveChanges();
-            try
-            {
-                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            return _budgetProvider.UpdateBudget(inputBudget);
         }
 
         public bool DeleteBudgetEntry(int budgetId)
         {
-            bool success = true;
-            try
-            {
-                var toDelete = _db.Budgets.Find(budgetId);
-                _db.Budgets.Remove(toDelete);
-                _db.SaveChanges();
-            }
-            catch
-            {
-
-            }
-            return success;
+            return _budgetProvider.DeleteBudgetEntry(budgetId);
         }
 
         public BudgetInfo GetExistingBudget(int budgetId)
         {
-            var existingPurchase = (from b in _db.Budgets.Where(i => i.Id == budgetId)
-                                    select new BudgetInfo
-                                    {
-                                        Amount = b.Amount,
-                                        BudgetDate = b.Date,
-                                        BudgetType = new BudgetType
-                                        {
-                                            BudgetTypeId = b.BudgetType.Id,
-                                            BudgetTypeName = b.BudgetType.BudgetType1
-                                        }
-                                    }).FirstOrDefault();
-            existingPurchase.BudgetMonthYear = existingPurchase.BudgetDate.ToString("yyyy-MM");
-            return existingPurchase;
+            var existingBudget = _budgetProvider.GetBudgetEntry(budgetId);
+            return new BudgetInfo
+            {
+                Amount = existingBudget.Amount,
+                BudgetDate = existingBudget.Date,
+                BudgetType = new BudgetType
+                {
+                    BudgetTypeId = existingBudget.BudgetTypeId,
+                    BudgetTypeName = existingBudget.BudgetType.BudgetTypeName
+                },
+                BudgetMonthYear = existingBudget.Date.ToString("yyyy-MM")
+            };
         }
 
         public decimal ScenarioCheck(ScenarioInput scenarioInput)
