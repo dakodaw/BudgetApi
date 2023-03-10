@@ -32,6 +32,55 @@ namespace Budget.DB.Budget
             };
         }
 
+        public bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1)
+        {
+            if (budgetTypeId == -1)
+            {
+                try
+                {
+                    _db.BudgetTypes.Add(new BudgetTypeEntity
+                    {
+                        BudgetType1 = budgetType.BudgetType1
+                    });
+                    _db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                try
+                {
+                    _db.BudgetTypes.Find(budgetTypeId).BudgetType1 = budgetType.BudgetType1;
+                    _db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool DeleteBudgetEntry(int budgetId)
+        {
+            bool success = true;
+            try
+            {
+                var toDelete = _db.Budgets.Find(budgetId);
+                _db.Budgets.Remove(toDelete);
+                _db.SaveChanges();
+            }
+            catch
+            {
+
+            }
+            return success;
+        }
+
         public BudgetEntry GetBudgetEntry(int budgetId)
         {
             return (from b in _db.Budgets.Where(i => i.Id == budgetId)
@@ -117,6 +166,20 @@ namespace Budget.DB.Budget
              }).ToList();
         }
 
+        public IEnumerable<BudgetEntry> GetBudgetEntriesInTimeSpan(DateTime startMonth, DateTime endMonth)
+        {
+            return _db.Budgets
+                .Where(i =>
+                    i.Date >= startMonth &&
+                    i.Date <= endMonth).Select(x => new BudgetEntry
+                    {
+                        Amount = x.Amount,
+                        BudgetTypeId = x.BudgetTypeId,
+                        Date = x.Date,
+                        Id = x.Id
+                    });
+        }
+
         public bool AddBudgetEntries(IEnumerable<BudgetEntry> budgetEntries)
         {
             bool success = false;
@@ -139,7 +202,5 @@ namespace Budget.DB.Budget
             }
             return success;
         }
-
     }
 }
-

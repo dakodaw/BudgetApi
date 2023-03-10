@@ -12,21 +12,21 @@ namespace BudgetApi.Budgeting.Services
 {
     public class BudgetService: IBudgetService
     {
-        //BudgetEntities _db;
         IBudgetProvider _budgetProvider;
         IPurchaseProvider _purchaseProvider;
         IIncomeProvider _incomeProvider;
+        IIncomeSourceProvider _incomeSourceProvider;
 
         public BudgetService(
-            //BudgetEntities db,
             IBudgetProvider budgetProvider,
             IPurchaseProvider purchaseProvider,
-            IIncomeProvider incomeProvider)
+            IIncomeProvider incomeProvider,
+            IIncomeSourceProvider incomeSourceProvider)
         {
-            //_db = db;
             _budgetProvider = budgetProvider;
             _purchaseProvider = purchaseProvider;
             _incomeProvider = incomeProvider;
+            _incomeSourceProvider = incomeSourceProvider;
         }
 
         public List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear)
@@ -178,10 +178,8 @@ namespace BudgetApi.Budgeting.Services
 
         public decimal ScenarioCheck(ScenarioInput scenarioInput)
         {
-            var applicableBudget = _db.Budgets
-                .Where(i => 
-                    i.Date >= scenarioInput.startMonth &&
-                    i.Date <= scenarioInput.endMonth)
+            var applicableBudget = _budgetProvider
+                .GetBudgetEntriesInTimeSpan(scenarioInput.startMonth, scenarioInput.endMonth)
                 .ToList();
 
             decimal amountPlannedToSpend = default;
@@ -190,7 +188,10 @@ namespace BudgetApi.Budgeting.Services
                 amountPlannedToSpend += budgetItem.Amount;
             }
             
-            var income = _db.IncomeSources.Where(i => i.ActiveJob == true && i.EstimatedIncome != null).ToList();
+            var income = _incomeSourceProvider.GetIncomeSources()
+                .Where(i => i.EstimatedIncome != null)
+                .ToList();
+
             decimal amountPlannedToEarn = default;
             foreach (var inc in income)
             {

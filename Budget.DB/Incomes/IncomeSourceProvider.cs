@@ -12,9 +12,9 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         _db = db;
 	}
 
-    public IEnumerable<IncomeSource> GetIncomeSources()
+    public IEnumerable<IncomeSource> GetIncomeSources(bool includeInactiveJobs = false)
     {
-        return (from it in _db.IncomeSources
+        var jobs = (from it in _db.IncomeSources
                 select new IncomeSource
                 {
                     Id = it.Id,
@@ -25,6 +25,10 @@ public class IncomeSourceProvider: IIncomeSourceProvider
                     EstimatedIncome = it.EstimatedIncome,
                     PayFrequency = it.PayFrequency
                 }).ToList();
+
+        return includeInactiveJobs
+            ? jobs
+            : jobs.Where(x => x.ActiveJob = !includeInactiveJobs);
     }
 
     public IncomeSource GetIncomeSource(int incomeSourceId)

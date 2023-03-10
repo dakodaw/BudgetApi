@@ -1,4 +1,5 @@
-﻿using BudgetApi.Budgeting.Models;
+﻿using Budget.DB.Budget;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
@@ -8,55 +9,25 @@ namespace BudgetApi.BudgetTypes
 {
     public class BudgetTypeService: IBudgetTypeService
     {
-        BudgetEntities _db;
+        //BudgetEntities _db;
+        IBudgetProvider _budgetProvider;
 
-        public BudgetTypeService(BudgetEntities db)
+        public BudgetTypeService(IBudgetProvider budgetProvider)
         {
-            _db = db;
+            //_db = db;
+            _budgetProvider = budgetProvider;
         }
 
         public List<BudgetType> GetBudgetTypes()
         {
-            var budgetTypes = (from bt in _db.BudgetTypes
-                               select new BudgetType
-                               {
-                                   BudgetTypeId = bt.Id,
-                                   BudgetTypeName = bt.BudgetType1
-                               }).ToList();
-            return budgetTypes.OrderBy(i => i.BudgetTypeName).ToList();
+            return _budgetProvider.GetBudgetTypes()
+                .OrderBy(i => i.BudgetTypeName)
+                .ToList();
         }
 
         public bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1)
         {
-            if (budgetTypeId == -1)
-            {
-                try
-                {
-                    _db.BudgetTypes.Add(new BudgetTypeEntity
-                    {
-                        BudgetType1 = budgetType.BudgetType1
-                    });
-                    _db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                try
-                {
-                    _db.BudgetTypes.Find(budgetTypeId).BudgetType1 = budgetType.BudgetType1;
-                    _db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            return _budgetProvider.AddUpdateBudgetType(budgetType, budgetTypeId);
         }
 
         public bool DeleteBudgetTypeEntry(int budgetTypeId)
