@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BudgetApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace BudgetApi.BudgetTypes

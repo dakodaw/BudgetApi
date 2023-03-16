@@ -1,5 +1,4 @@
-﻿using BudgetApi.Budgeting.Models;
-using BudgetApi.BudgetTypes;
+﻿using BudgetApi.Models;
 using System;
 
 namespace BudgetApi.Purchases.Models

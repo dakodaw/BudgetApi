@@ -2,7 +2,7 @@
 
 namespace Budget.DB.GiftCards;
 
-public class GiftCardProvider
+public class GiftCardProvider: IGiftCardProvider
 {
 	BudgetEntities _db;
 

@@ -1,4 +1,5 @@
-﻿using BudgetApi.Incomes.Models;
+﻿using Budget.Models;
+using BudgetApi.Incomes.Models;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;

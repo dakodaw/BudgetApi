@@ -13,7 +13,6 @@ namespace BudgetApi.GiftCards.Services;
 
 public class GiftCardService: IGiftCardService
 {
-    //BudgetEntities _db;
     IPurchaseProvider _purchaseProvider;
     IGiftCardProvider _giftCardProvider;
     IBudgetProvider _budgetProvider;
@@ -23,7 +22,6 @@ public class GiftCardService: IGiftCardService
         IGiftCardProvider giftCardProvider,
         IBudgetProvider budgetProvider)
     {
-        //_db = db;
         _purchaseProvider = purchaseProvider;
         _giftCardProvider = giftCardProvider;
         _budgetProvider = budgetProvider;

@@ -1,4 +1,7 @@
-﻿using Budget.DB.Incomes;
+﻿using Budget.DB.Budget;
+using Budget.DB.CustomSettings;
+using Budget.DB.GiftCards;
+using Budget.DB.Incomes;
 using BudgetApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,5 +19,8 @@ public class Startup
         services.AddScoped<IIncomeProvider, IncomeProvider>();
         services.AddScoped<IIncomeSourceProvider, IncomeSourceProvider>();
         services.AddScoped<IPurchaseProvider, PurchaseProvider>();
+        services.AddScoped<IBudgetProvider, BudgetProvider>();
+        services.AddScoped<ICustomSettingsProvider, CustomSettingsProvider>();
+        services.AddScoped<IGiftCardProvider, GiftCardProvider>();
     }
 }

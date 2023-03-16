@@ -8,5 +8,7 @@ public interface IPurchaseProvider
     IEnumerable<Purchase> GetGiftCardPurchases(int giftCardId);
     IEnumerable<Purchase> GetAllGiftCardPurchases();
     IEnumerable<Purchase> GetMonthGiftCardPurchases(DateTime monthYear);
+    bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
+    bool DeletePurchaseEntry(int purchaseId);
 }
 

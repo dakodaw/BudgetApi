@@ -1,5 +1,5 @@
 ﻿using System;
-using BudgetApi.BudgetTypes;
+using BudgetApi.Models;
 
 namespace BudgetApi.Budgeting.Models
 {
