@@ -29,7 +29,7 @@ namespace BudgetApi.CopyTo.Services
 
             var lastMonthBudgetLines = _budgetService.GetBudgetLines(lastMonth);
 
-            var copiedBudgetLines = new List<Budget>();
+            var copiedBudgetLines = new List<BudgetEntry>();
             lastMonthBudgetLines
                 .Where(x => 
                     x.BudgetType?.BudgetTypeName != "Totals"
@@ -37,7 +37,7 @@ namespace BudgetApi.CopyTo.Services
                 .ToList()
                 .ForEach(line => 
                 {
-                    copiedBudgetLines.Add(new Budget()
+                    copiedBudgetLines.Add(new BudgetEntry()
                     {
                         BudgetTypeId = line.BudgetType.BudgetTypeId,
                         Date = monthYear,

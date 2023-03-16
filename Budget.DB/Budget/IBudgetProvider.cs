@@ -7,6 +7,7 @@ public interface IBudgetProvider
     IEnumerable<BudgetType> GetBudgetTypes();
     BudgetType GetBudgetType(int budgetTypeId);
     bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1);
+    bool DeleteBudgetTypeEntry(int budgetTypeId);
     bool AddBudget(BudgetEntry inputBudget);
     bool UpdateBudget(BudgetEntry inputBudget);
     bool DeleteBudgetEntry(int budgetId);

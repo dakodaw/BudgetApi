@@ -65,6 +65,21 @@ namespace Budget.DB.Budget
             }
         }
 
+        public bool DeleteBudgetTypeEntry(int budgetTypeId)
+        {
+            try
+            {
+                var toDelete = _db.BudgetTypes.Find(budgetTypeId);
+                _db.BudgetTypes.Remove(toDelete);
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         public bool DeleteBudgetEntry(int budgetId)
         {
             bool success = true;

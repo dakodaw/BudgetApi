@@ -32,28 +32,12 @@ namespace BudgetApi.BudgetTypes
 
         public bool DeleteBudgetTypeEntry(int budgetTypeId)
         {
-            try
-            {
-                var toDelete = _db.BudgetTypes.Find(budgetTypeId);
-                _db.BudgetTypes.Remove(toDelete);
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            return _budgetProvider.DeleteBudgetTypeEntry(budgetTypeId);
         }
 
         public BudgetType GetBudgetType(int budgetTypeId)
         {
-            return (from b in _db.BudgetTypes
-                    where b.Id == budgetTypeId
-                    select new BudgetType
-                    {
-                        BudgetTypeId = b.Id,
-                        BudgetTypeName = b.BudgetType1
-                    }).FirstOrDefault();
+            return _budgetProvider.GetBudgetType(budgetTypeId);
         }
     }
 }
