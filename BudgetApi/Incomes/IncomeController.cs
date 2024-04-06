@@ -19,6 +19,13 @@ namespace BudgetApi.Incomes
             _incomeService = incomeService;
         }
 
+        [HttpPut]
+        [Route("{incomeId}")]
+        public bool UpdateIncome([FromBody] Income inputIncome, int incomeId = -1)
+        {
+            return _incomeService.UpdateIncome(inputIncome, incomeId);
+        }
+
         [HttpGet]
         [Route("getIncomeTypes")]
         public List<IncomeSourceLine> GetIncomeTypes()

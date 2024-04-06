@@ -2,8 +2,10 @@
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace BudgetApi.Incomes.Services
@@ -114,24 +116,7 @@ namespace BudgetApi.Incomes.Services
         {
             if (incomeId == -1)
             {
-                bool success = false;
-                _db.Incomes.Add(inputIncome);
-                _db.SaveChanges();
-                try
-                {
-                    var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
-                    if (inputIncome.IsReimbursement == true)
-                    {
-                        _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                        _db.SaveChanges();
-                    }
-                    success = true;
-                }
-                catch
-                {
-                    return success;
-                }
-                return success;
+                return AddIncome(inputIncome);
             }
             else
             {
@@ -153,12 +138,65 @@ namespace BudgetApi.Incomes.Services
                     }
                     success = true;
                 }
-                catch
+                catch(Exception ex)
                 {
 
                 }
                 return success;
             }
+        }
+
+        public bool AddIncome(Income inputIncome)
+        {
+            bool success = false;
+            _db.Incomes.Add(inputIncome);
+            _db.SaveChanges();
+            try
+            {
+                var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
+                if (inputIncome.IsReimbursement == true)
+                {
+                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                    _db.SaveChanges();
+                }
+                success = true;
+            }
+            catch
+            {
+                return success;
+            }
+            return success;
+        }
+
+        public bool UpdateIncome(Income inputIncome, int incomeId)
+        {
+            bool success = false;
+            var incomeToUpdate = _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault();
+            if (incomeToUpdate == default)
+                throw new Exception($"Custom Income Not found Exception for {incomeId}");
+
+            try
+            {
+                incomeToUpdate.IncomeSource = inputIncome.IncomeSource;
+                incomeToUpdate.IsCash = inputIncome.IsCash;
+                incomeToUpdate.IsReimbursement = inputIncome.IsReimbursement;
+                incomeToUpdate.SourceDetails = inputIncome.SourceDetails;
+                incomeToUpdate.SourceId = inputIncome.SourceId;
+                incomeToUpdate.Amount = inputIncome.Amount;
+                _db.SaveChanges();
+
+                if (incomeToUpdate.IsReimbursement == true)
+                {
+                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                    _db.SaveChanges();
+                }
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Income Update failed because of internal exception: ", ex);
+            }
+            return success;
         }
 
         public bool DeleteIncomeEntry(int incomeId)

@@ -20,5 +20,7 @@ namespace BudgetApi.Incomes.Services
         bool DeleteJobEntry(int incomeSourceId);
         IncomeSources GetIncomeSource(int incomeSourceId);
         IncomeLine GetExistingIncome(int incomeId);
+        bool UpdateIncome(Income inputIncome, int incomeId);
+        bool AddIncome(Income inputIncome);
     }
 }
