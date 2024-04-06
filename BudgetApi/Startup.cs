@@ -7,6 +7,7 @@ using BudgetApi.Models;
 using BudgetApi.Purchases.Services;
 using BudgetApi.Settings.Services;
 using BudgetApi.Shared;
+using BudgetApi.Shared.AppSettings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +40,10 @@ namespace BudgetApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BudgetApi", Version = "v1" });
             });
+
+            var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+            services.AddSingleton<AppSettings>(appSettings);
+
             services.AddDbContext<BudgetEntities>(options =>
                 options.UseSqlServer(Configuration.GetValue<string>("BudgetDB")));
             
@@ -52,7 +57,7 @@ namespace BudgetApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettings appSettings)
         {
             if (env.IsDevelopment())
             {
@@ -67,6 +72,14 @@ namespace BudgetApi
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "BudgetApi v1"));
+
+            app.UseCors(builder =>
+            {
+                builder
+                .WithOrigins(appSettings.AllowedHosts)
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
 
             app.UseHttpsRedirection();
 

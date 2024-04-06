@@ -18,6 +18,7 @@ namespace BudgetApi.Budgeting.Services
 
         public List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear)
         {
+            // Should refactor all of this. It's a lot.
             decimal totalBudgeted = (decimal)0;
             decimal totalSpent = (decimal)0;
             var budgetPurchases = _db.Purchases.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year).ToList();
@@ -65,7 +66,25 @@ namespace BudgetApi.Budgeting.Services
                     totalSpent += budget.PurchaseAmount;
                 }
             }
-            List<BudgetWithPurchaseInfo> unBudgetedPurchases = new List<BudgetWithPurchaseInfo>();
+
+            AddUnbudgetedPurchases(ref totalSpent, budgetPurchases, ref budgetLines);
+
+            // Adds a line with a total - more a UI concern I think.
+            budgetLines.Add(new BudgetWithPurchaseInfo
+            {
+                BudgetType = new BudgetType
+                {
+                    BudgetTypeName = BudgetTypeStatics.Totals
+                },
+                Amount = totalBudgeted,
+                PurchaseAmount = totalSpent
+            });
+            return budgetLines;
+        }
+
+        private void AddUnbudgetedPurchases(ref decimal totalSpent, List<Purchase> budgetPurchases, ref List<BudgetWithPurchaseInfo> budgetLines)
+        {
+            var unBudgetedPurchases = new List<BudgetWithPurchaseInfo>();
             foreach (var p in budgetPurchases)
             {
                 var budge = budgetLines.Where(i => i.BudgetType.BudgetTypeId == p.PurchaseTypeId).ToList();
@@ -82,13 +101,14 @@ namespace BudgetApi.Budgeting.Services
                     });
                 }
             }
-            var test = unBudgetedPurchases.GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
-            foreach (var t in test)
+            var groupedPurchases = unBudgetedPurchases.GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
+            foreach (var t in groupedPurchases)
             {
                 budgetLines.Add(new BudgetWithPurchaseInfo
                 {
                     BudgetType = new BudgetType
                     {
+                        BudgetTypeId = -1,
                         BudgetTypeName = t.FirstOrDefault().BudgetType.BudgetTypeName
                     },
                     Amount = 0,
@@ -97,16 +117,6 @@ namespace BudgetApi.Budgeting.Services
                 totalSpent += t.Sum(i => i.PurchaseAmount);
             }
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
-            budgetLines.Add(new BudgetWithPurchaseInfo
-            {
-                BudgetType = new BudgetType
-                {
-                    BudgetTypeName = BudgetTypeStatics.Totals
-                },
-                Amount = totalBudgeted,
-                PurchaseAmount = totalSpent
-            });
-            return budgetLines;
         }
 
         public bool AddBudget(Budget inputBudget)
