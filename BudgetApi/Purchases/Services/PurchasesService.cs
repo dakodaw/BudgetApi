@@ -48,43 +48,50 @@ namespace BudgetApi.Purchases.Services
 
         public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
         {
-            bool success = false;
             if (purchaseId == -1)
             {
-                _db.Purchases.Add(inputPurchase);
-                _db.SaveChanges();
-                try
-                {
-                    var checkPurchase = _db.Purchases.Where(i => i.Amount == inputPurchase.Amount).FirstOrDefault();
-                    success = true;
-                }
-                catch
-                {
-                    throw new Exception("Unable to Add Purchase");
-                }
+                return AddPurchase(inputPurchase);
             }
             else
             {
-                try
-                {
-                    var checkPurchase = _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault();
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Amount = inputPurchase.Amount;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Date = inputPurchase.Date;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Description = inputPurchase.Description;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().FutureReimbursement = inputPurchase.FutureReimbursement;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().GiftCardId = inputPurchase.GiftCardId;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PaymentType = inputPurchase.PaymentType;
-                    _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PurchaseTypeId = inputPurchase.PurchaseTypeId;
-                    _db.SaveChanges();
-                    success = true;
-                }
-                catch (Exception ee)
-                {
-                    success = false;
-                    throw new Exception("Unable to update Purchase", ee.InnerException);
-                }
+                return UpdatePurchase(inputPurchase, purchaseId);
             }
-            return success;
+        }
+
+        public bool AddPurchase(Purchase inputPurchase)
+        {
+            _db.Purchases.Add(inputPurchase);
+            _db.SaveChanges();
+            try
+            {
+                var checkPurchase = _db.Purchases.Where(i => i.Amount == inputPurchase.Amount).FirstOrDefault();
+                return true;
+            }
+            catch
+            {
+                throw new Exception("Unable to Add Purchase");
+            }
+        }
+
+        public bool UpdatePurchase(Purchase inputPurchase, int purchaseId)
+        {
+            try
+            {
+                var checkPurchase = _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault();
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Amount = inputPurchase.Amount;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Date = inputPurchase.Date;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Description = inputPurchase.Description;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().FutureReimbursement = inputPurchase.FutureReimbursement;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().GiftCardId = inputPurchase.GiftCardId;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PaymentType = inputPurchase.PaymentType;
+                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PurchaseTypeId = inputPurchase.PurchaseTypeId;
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ee)
+            {
+                throw new Exception("Unable to update Purchase", ee.InnerException);
+            }
         }
 
         public bool DeletePurchaseEntry(int purchaseId)

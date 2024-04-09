@@ -19,12 +19,41 @@ namespace BudgetApi.Purchases
         }
 
         [HttpGet]
+        [Route("{purchaseId}")]
+        public PurchaseLine GetPurchase(int purchaseId)
+        {
+            return _purchasesService.GetExistingPurchase(purchaseId);
+        }
+
+        [HttpPost]
+        [Route("")]
+        public bool AddPurchase([FromBody] Purchase incomePurchase)
+        {
+            return _purchasesService.AddPurchase(incomePurchase);
+        }
+
+        [HttpPut]
+        [Route("{purchaseId}")]
+        public bool UpdatePurchase([FromBody] Purchase incomePurchase, int purchaseId)
+        {
+            return _purchasesService.UpdatePurchase(incomePurchase, purchaseId);
+        }
+
+        [HttpDelete]
+        [Route("{purchaseId}")]
+        public bool DeletePurchase(int purchaseId)
+        {
+            return _purchasesService.DeletePurchaseEntry(purchaseId);
+        }
+
+        [HttpGet]
         [Route("getPurchaseLines")]
         public List<PurchaseLine> GetPurchaseLines([FromQuery] DateTime monthYear)
         {
             return _purchasesService.GetPurchaseLines(monthYear);
         }
 
+        [Obsolete("Please use the http post and http put on the base route instead")]
         [HttpPost]
         [Route("addUpdatePurchase")]
         public bool AddUpdatePurchase([FromBody] Purchase inputPurchase, [FromQuery] int purchaseId = -1)
@@ -32,6 +61,8 @@ namespace BudgetApi.Purchases
             return _purchasesService.AddUpdatePurchase(inputPurchase, purchaseId);
         }
 
+
+        [Obsolete("Please use the http delete on the base route instead")]
         [HttpGet]
         [Route("deletePurchaseEntry")]
         public bool DeletePurchaseEntry([FromQuery] int purchaseId)
@@ -39,6 +70,7 @@ namespace BudgetApi.Purchases
             return _purchasesService.DeletePurchaseEntry(purchaseId);
         }
 
+        [Obsolete("Please use the http get on the base route instead")]
         [HttpGet]
         [Route("getExistingPurchase")]
         public PurchaseLine GetExistingPurchase([FromQuery] int purchaseId)
