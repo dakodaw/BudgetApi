@@ -21,6 +21,34 @@ namespace BudgetApi.GiftCards
         }
 
         [HttpGet]
+        [Route("{giftCardId}")]
+        public GiftCard GetGiftCard(int giftCardId)
+        {
+            return _giftCardService.GetGiftCard(giftCardId);
+        }
+
+        [HttpPost]
+        [Route("")]
+        public bool AddGiftCard([FromBody] GiftCard inputGiftCard)
+        {
+            return _giftCardService.AddUpdateGiftCard(inputGiftCard, -1);
+        }
+
+        [HttpPost]
+        [Route("{giftCardId}")]
+        public bool UpdateGiftCard([FromBody] GiftCard inputGiftCard, int giftCardId)
+        {
+            return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
+        }
+
+        [HttpDelete]
+        [Route("{giftCardId}")]
+        public bool DeleteGiftCard(int giftCardId)
+        {
+            return _giftCardService.DeleteGiftCardEntry(giftCardId);
+        }
+
+        [HttpGet]
         [Route("getGiftCardLines")]
         public List<GiftCardSelectLine> GetGiftCardLines()
         {
@@ -55,6 +83,7 @@ namespace BudgetApi.GiftCards
             return _giftCardService.GetBalanceAndHistory(giftCardId);
         }
 
+        [Obsolete("Please use Post and Put to add and update gift card instead")]
         [HttpPost]
         [Route("addUpdateGiftCard")]
         public bool AddUpdateGiftCard([FromBody] GiftCard inputGiftCard, [FromQuery] int giftCardId = -1)
@@ -62,6 +91,7 @@ namespace BudgetApi.GiftCards
             return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
         }
 
+        [Obsolete("Please use delete at the base gift card instead")]
         [HttpGet]
         [Route("deleteGiftCardEntry")]
         public bool DeleteGiftCardEntry([FromQuery] int giftCardId)
@@ -76,9 +106,10 @@ namespace BudgetApi.GiftCards
             return _giftCardService.GetAllBalanceAndHistory();
         }
 
+        [Obsolete("Please use get at the base route to get gift card instead")]
         [HttpGet]
         [Route("getGiftCard")]
-        public GiftCard GetGiftCard([FromQuery] int giftCardId)
+        public GiftCard GetGiftCardEntry([FromQuery] int giftCardId)
         {
             return _giftCardService.GetGiftCard(giftCardId);
         }
