@@ -116,7 +116,8 @@ namespace BudgetApi.Incomes.Services
         {
             if (incomeId == -1)
             {
-                return AddIncome(inputIncome);
+                var resultingIncomeId = AddIncome(inputIncome);
+                return resultingIncomeId > 0;
             }
             else
             {
@@ -146,26 +147,26 @@ namespace BudgetApi.Incomes.Services
             }
         }
 
-        public bool AddIncome(Income inputIncome)
+        public int AddIncome(Income inputIncome)
         {
-            bool success = false;
-            _db.Incomes.Add(inputIncome);
-            _db.SaveChanges();
             try
             {
+                _db.Incomes.Add(inputIncome);
+                _db.SaveChanges();
+
                 var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
                 if (inputIncome.IsReimbursement == true)
                 {
                     _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
                     _db.SaveChanges();
                 }
-                success = true;
+
+                return inputIncome.Id;
             }
-            catch
+            catch(Exception ex)
             {
-                return success;
+                throw new Exception("New income failed to save: ", ex);
             }
-            return success;
         }
 
         public bool UpdateIncome(Income inputIncome, int incomeId)
@@ -183,6 +184,8 @@ namespace BudgetApi.Incomes.Services
                 incomeToUpdate.SourceDetails = inputIncome.SourceDetails;
                 incomeToUpdate.SourceId = inputIncome.SourceId;
                 incomeToUpdate.Amount = inputIncome.Amount;
+                incomeToUpdate.Date = inputIncome.Date;
+
                 _db.SaveChanges();
 
                 if (incomeToUpdate.IsReimbursement == true)

@@ -21,7 +21,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("")]
-        public bool AddIncome([FromBody] Income inputIncome)
+        public int AddIncome([FromBody] Income inputIncome)
         {
             return _incomeService.AddIncome(inputIncome);
         }

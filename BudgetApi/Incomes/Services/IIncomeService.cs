@@ -21,6 +21,6 @@ namespace BudgetApi.Incomes.Services
         IncomeSources GetIncomeSource(int incomeSourceId);
         IncomeLine GetExistingIncome(int incomeId);
         bool UpdateIncome(Income inputIncome, int incomeId);
-        bool AddIncome(Income inputIncome);
+        int AddIncome(Income inputIncome);
     }
 }
