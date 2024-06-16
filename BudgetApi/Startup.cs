@@ -52,6 +52,7 @@ namespace BudgetApi
             services.AddScoped<IBudgetCopyToService, BudgetCopyToService>();
             services.AddScoped<IGiftCardService, GiftCardService>();
             services.AddScoped<IIncomeService, IncomeService>();
+            services.AddScoped<IIncomeSourceService, IncomeSourceService>();
             services.AddScoped<IPurchasesService, PurchasesService>();
             services.AddScoped<ISettingsService, SettingsService>();
         }

@@ -24,7 +24,11 @@ namespace BudgetApi.Models
             modelBuilder.Entity<BudgetTypeEntity>().ToTable("BudgetType");
             modelBuilder.Entity<GiftCard>().ToTable("GiftCard");
             modelBuilder.Entity<Income>().ToTable("Income");
-            modelBuilder.Entity<IncomeSource>().ToTable("IncomeSource");
+            modelBuilder
+                .Entity<IncomeSourceEntity>()
+                .ToTable("IncomeSource");
+                //.HasKey(source => source.Id);
+
             modelBuilder.Entity<Purchase>().ToTable("Purchases");
             modelBuilder.Entity<CustomSettings>().ToTable("Settings");
         }
@@ -33,7 +37,7 @@ namespace BudgetApi.Models
         public virtual DbSet<BudgetTypeEntity> BudgetTypes { get; set; }
         public virtual DbSet<GiftCard> GiftCards { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
-        public virtual DbSet<IncomeSource> IncomeSources { get; set; }
+        public virtual DbSet<IncomeSourceEntity> IncomeSources { get; set; }
         public virtual DbSet<Purchase> Purchases { get; set; }
         public virtual DbSet<CustomSettings> Settings { get; set; }
     }

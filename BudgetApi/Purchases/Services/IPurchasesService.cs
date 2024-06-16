@@ -10,7 +10,7 @@ namespace BudgetApi.Purchases.Services
     {
         public List<PurchaseLine> GetPurchaseLines(DateTime monthYear);
         public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
-        public bool AddPurchase(Purchase inputPurchase);
+        public int AddPurchase(Purchase inputPurchase);
         public bool UpdatePurchase(Purchase inputPurchase, int purchaseId);
         public bool DeletePurchaseEntry(int purchaseId);
         public PurchaseLine GetExistingPurchase(int purchaseId);

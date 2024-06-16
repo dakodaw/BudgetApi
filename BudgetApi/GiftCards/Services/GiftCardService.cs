@@ -125,38 +125,54 @@ namespace BudgetApi.GiftCards.Services
         {
             if (giftCardId == -1)
             {
-                bool success = false;
-                _db.GiftCards.Add(inputGiftCard);
-                _db.SaveChanges();
-                try
+                try 
                 {
-                    var checkCard = _db.GiftCards.Where(i => i.CardNumber == inputGiftCard.CardNumber).FirstOrDefault();
-                    success = true;
+                    AddGiftCard(inputGiftCard);
+                    return true;
                 }
                 catch
                 {
-
+                    return false;
                 }
-                return success;
             }
             else
             {
-                bool success = false;
-
                 try
                 {
-                    _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().AccessCode = inputGiftCard.AccessCode;
-                    _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().CardNumber = inputGiftCard.CardNumber;
-                    _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().InitialAmount = inputGiftCard.InitialAmount;
-                    _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().Place = inputGiftCard.Place;
-                    _db.SaveChanges();
-                    success = true;
+                    UpdateGiftCard(inputGiftCard);
+                    return true;
                 }
                 catch
                 {
-
+                    return false;
                 }
-                return success;
+            }
+        }
+
+
+        public int AddGiftCard(GiftCard inputGiftCard)
+        {
+            _db.GiftCards.Add(inputGiftCard);
+            _db.SaveChanges();
+
+            //var checkCard = _db.GiftCards.Where(i => i.CardNumber == inputGiftCard.CardNumber).FirstOrDefault();
+            return inputGiftCard.Id;
+        }
+
+        public void UpdateGiftCard(GiftCard inputGiftCard)
+        {
+            try
+            {
+                var giftCardToUpdate = _db.GiftCards.Where(i => i.Id == inputGiftCard.Id).FirstOrDefault();
+                giftCardToUpdate.AccessCode = inputGiftCard.AccessCode;
+                giftCardToUpdate.CardNumber = inputGiftCard.CardNumber;
+                giftCardToUpdate.InitialAmount = inputGiftCard.InitialAmount;
+                giftCardToUpdate.Place = inputGiftCard.Place;
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to update gift card", ex);
             }
         }
 

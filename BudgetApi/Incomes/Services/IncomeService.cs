@@ -77,10 +77,10 @@ namespace BudgetApi.Incomes.Services
             return incomeSourceLines;
         }
 
-        public List<IncomeSources> GetFullIncomeSources()
+        public List<IncomeSource> GetFullIncomeSources()
         {
             var incomeSourceLines = (from it in _db.IncomeSources.Where(i => i.ActiveJob == true)
-                                     select new IncomeSources
+                                     select new IncomeSource
                                      {
                                          IncomeSourceId = it.Id,
                                          IncomeSource = it.SourceName,
@@ -218,11 +218,11 @@ namespace BudgetApi.Incomes.Services
             return false;
         }
 
-        public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
+        public bool AddUpdateJob(IncomeSourceEntity inputJob, int incomeSourceId = -1)
         {
             if (incomeSourceId == -1)
             {
-                var jobToAddUpdate = new IncomeSource
+                var jobToAddUpdate = new IncomeSourceEntity
                 {
                     ActiveJob = true,
                     EstimatedIncome = inputJob.EstimatedIncome,
@@ -244,7 +244,7 @@ namespace BudgetApi.Incomes.Services
             }
             else
             {
-                var jobToAddUpdate = new IncomeSource
+                var jobToAddUpdate = new IncomeSourceEntity
                 {
                     ActiveJob = true,
                     EstimatedIncome = inputJob.EstimatedIncome,
@@ -286,11 +286,11 @@ namespace BudgetApi.Incomes.Services
             }
         }
 
-        public IncomeSources GetIncomeSource(int incomeSourceId)
+        public IncomeSource GetIncomeSource(int incomeSourceId)
         {
             var incomeToReturn = (from ins in _db.IncomeSources
                                   where ins.Id == incomeSourceId
-                                  select new IncomeSources
+                                  select new IncomeSource
                                   {
                                       IncomeSource = ins.SourceName,
                                       IsCurrentJob = ins.ActiveJob,

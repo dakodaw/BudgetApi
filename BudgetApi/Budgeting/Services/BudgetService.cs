@@ -3,6 +3,7 @@ using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace BudgetApi.Budgeting.Services
@@ -119,21 +120,20 @@ namespace BudgetApi.Budgeting.Services
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
         }
 
-        public bool AddBudget(Budget inputBudget)
+        public int AddBudget(Budget inputBudget)
         {
-            bool success = false;
-            _db.Budgets.Add(inputBudget);
-            _db.SaveChanges();
             try
             {
+                _db.Budgets.Add(inputBudget);
+                _db.SaveChanges();
                 var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                success = true;
+                
+                return checkBudget != default ? checkBudget.Id : 0;
             }
-            catch
+            catch(Exception ex)
             {
-
+                throw new Exception("Failed to Add Budget", ex);
             }
-            return success;
         }
 
         public bool AddBudgetLines(IEnumerable<Budget> inputBudgetLines)

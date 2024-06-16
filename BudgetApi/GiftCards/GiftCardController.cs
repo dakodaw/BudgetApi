@@ -29,16 +29,16 @@ namespace BudgetApi.GiftCards
 
         [HttpPost]
         [Route("")]
-        public bool AddGiftCard([FromBody] GiftCard inputGiftCard)
+        public int AddGiftCard([FromBody] GiftCard inputGiftCard)
         {
-            return _giftCardService.AddUpdateGiftCard(inputGiftCard, -1);
+            return _giftCardService.AddGiftCard(inputGiftCard);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("{giftCardId}")]
-        public bool UpdateGiftCard([FromBody] GiftCard inputGiftCard, int giftCardId)
+        public void UpdateGiftCard([FromBody] GiftCard inputGiftCard, int giftCardId)
         {
-            return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
+            _giftCardService.UpdateGiftCard(inputGiftCard);
         }
 
         [HttpDelete]

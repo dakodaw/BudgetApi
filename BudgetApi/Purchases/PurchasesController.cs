@@ -27,7 +27,7 @@ namespace BudgetApi.Purchases
 
         [HttpPost]
         [Route("")]
-        public bool AddPurchase([FromBody] Purchase incomePurchase)
+        public int AddPurchase([FromBody] Purchase incomePurchase)
         {
             return _purchasesService.AddPurchase(incomePurchase);
         }

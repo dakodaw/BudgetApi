@@ -27,7 +27,7 @@ namespace BudgetApi.Budgeting
 
         [Route("")]
         [HttpPost]
-        public bool AddBudget([FromBody] Budget inputBudget)
+        public int AddBudget([FromBody] Budget inputBudget)
         {
             return _budgetService.AddBudget(inputBudget);
         }

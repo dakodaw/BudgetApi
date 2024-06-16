@@ -28,6 +28,6 @@ namespace BudgetApi.Models
         public bool IsCash { get; set; }
     
         [ForeignKey("SourceId")]
-        public virtual IncomeSource IncomeSource { get; set; }
+        public virtual IncomeSourceEntity IncomeSource { get; set; }
     }
 }

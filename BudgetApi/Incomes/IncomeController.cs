@@ -65,7 +65,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getFullIncomeSources")]
-        public List<IncomeSources> GetFullIncomeSources()
+        public List<IncomeSource> GetFullIncomeSources()
         {
             return _incomeService.GetFullIncomeSources();
         }
@@ -95,7 +95,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("addUpdateJob")]
-        public bool AddUpdateJob([FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
+        public bool AddUpdateJob([FromBody] IncomeSourceEntity inputJob, [FromQuery] int incomeSourceId = -1)
         {
             return _incomeService.AddUpdateJob(inputJob, incomeSourceId);
         }
@@ -109,7 +109,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSource")]
-        public IncomeSources GetIncomeSource([FromQuery] int incomeSourceId)
+        public IncomeSource GetIncomeSource([FromQuery] int incomeSourceId)
         {
             return _incomeService.GetIncomeSource(incomeSourceId);
         }

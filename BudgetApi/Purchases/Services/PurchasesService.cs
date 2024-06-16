@@ -50,7 +50,8 @@ namespace BudgetApi.Purchases.Services
         {
             if (purchaseId == -1)
             {
-                return AddPurchase(inputPurchase);
+                var resultingPurchaseId = AddPurchase(inputPurchase);
+                return resultingPurchaseId > 0;
             }
             else
             {
@@ -58,14 +59,15 @@ namespace BudgetApi.Purchases.Services
             }
         }
 
-        public bool AddPurchase(Purchase inputPurchase)
+        public int AddPurchase(Purchase inputPurchase)
         {
-            _db.Purchases.Add(inputPurchase);
-            _db.SaveChanges();
             try
             {
+                _db.Purchases.Add(inputPurchase);
+                _db.SaveChanges();
+
                 var checkPurchase = _db.Purchases.Where(i => i.Amount == inputPurchase.Amount).FirstOrDefault();
-                return true;
+                return checkPurchase.Id;
             }
             catch
             {

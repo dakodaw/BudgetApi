@@ -17,6 +17,8 @@ namespace BudgetApi.GiftCards.Services
         List<PurchaseLine> GetPurchaseLines(DateTime monthYear);
         GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId);
         bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1);
+        int AddGiftCard(GiftCard inputGiftCard);
+        void UpdateGiftCard(GiftCard inputGiftCard);
         bool DeleteGiftCardEntry(int giftCardId);
         List<GiftCardHistoryBalance> GetAllBalanceAndHistory();
         GiftCard GetGiftCard(int giftCardId);
