@@ -14,21 +14,6 @@ namespace BudgetApi.Incomes.Services
             _db = db;
         }
 
-        //public List<IncomeSourceLine> GetIncomeSources()
-        //{
-        //    var incomeSourceLines = (from it in _db.IncomeSources.Where(i => i.ActiveJob == true)
-        //                             select new IncomeSourceLine
-        //                             {
-        //                                 IncomeSourceId = it.Id,
-        //                                 IncomeSource = it.SourceName,
-        //                                 JobOf = it.JobOf,
-        //                                 IsCurrentJob = it.ActiveJob,
-        //                                 Position = it.PositionName
-        //                             }).ToList();
-
-        //    return incomeSourceLines;
-        //}
-
         public List<IncomeSource> GetIncomeSources()
         {
             var incomeSourceLines = (from it in _db.IncomeSources.Where(i => i.ActiveJob == true)
@@ -42,13 +27,6 @@ namespace BudgetApi.Incomes.Services
                                          PayFrequency = it.PayFrequency,
                                          EstimatedIncome = it.EstimatedIncome ?? 0
                                      }).ToList();
-            //foreach (var isl in incomeSourceLines)
-            //{
-            //    if (_db.IncomeSources.Where(i => i.Id == isl.IncomeSourceId).FirstOrDefault().EstimatedIncome != null)
-            //    {
-            //        isl.EstimatedIncome = (decimal)_db.IncomeSources.Where(i => i.Id == isl.IncomeSourceId).FirstOrDefault().EstimatedIncome;
-            //    }
-            //}
 
             return incomeSourceLines;
         }
@@ -102,7 +80,6 @@ namespace BudgetApi.Incomes.Services
             {
                 ActiveJob = true,
                 EstimatedIncome = inputIncomeSource.EstimatedIncome,
-                Id = inputIncomeSource.IncomeSourceId,
                 JobOf = inputIncomeSource.JobOf,
                 PayFrequency = inputIncomeSource.PayFrequency,
                 PositionName = inputIncomeSource.Position,
@@ -114,7 +91,7 @@ namespace BudgetApi.Incomes.Services
                 _db.IncomeSources.Add(newIncomeSource);
 
                 _db.SaveChanges();
-                return inputIncomeSource.IncomeSourceId;
+                return newIncomeSource.Id;
             }
             catch (Exception ex)
             {
