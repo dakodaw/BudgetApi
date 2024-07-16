@@ -2,12 +2,14 @@
 using BudgetApi.Purchases.Models;
 using BudgetApi.Purchases.Services;
 using BudgetApi.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BudgetApi.Purchases
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PurchasesController : Controller

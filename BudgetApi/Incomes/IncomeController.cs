@@ -3,12 +3,14 @@ using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BudgetApi.Incomes
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class IncomeController : ControllerBase

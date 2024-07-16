@@ -1,12 +1,14 @@
 ﻿using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BudgetApi.Budgeting
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BudgetController : ControllerBase
