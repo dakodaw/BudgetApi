@@ -120,18 +120,17 @@ public class GiftCardProvider: IGiftCardProvider
         }
     }
 
-    public bool DeleteGiftCardEntry(int giftCardId)
+    public void DeleteGiftCardEntry(int giftCardId)
     {
         try
         {
             var toDelete = _db.GiftCards.Find(giftCardId);
             _db.GiftCards.Remove(toDelete);
             _db.SaveChanges();
-            return true;
         }
-        catch
+        catch(Exception e) 
         {
-            return false;
+            throw new Exception("Failed to Delete Gift Card Entry", e);
         }
     }
 }

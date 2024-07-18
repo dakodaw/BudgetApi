@@ -12,7 +12,8 @@ namespace BudgetApi.Purchases.Services
         public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
         public int AddPurchase(Purchase inputPurchase);
         public void UpdatePurchase(Purchase inputPurchase);
-        public bool DeletePurchaseEntry(int purchaseId);
+        public void DeletePurchaseEntry(int purchaseId);
+        public bool DeletePurchaseEntryObsolete(int purchaseId);
         public PurchaseLine GetExistingPurchase(int purchaseId);
     }
 }

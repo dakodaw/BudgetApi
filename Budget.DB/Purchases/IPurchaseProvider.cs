@@ -11,6 +11,7 @@ public interface IPurchaseProvider
     bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
     int AddPurchase(Purchase inputPurchase);
     void UpdatePurchase(Purchase inputPurchase);
-    bool DeletePurchaseEntry(int purchaseId);
+    void DeletePurchaseEntry(int purchaseId);
+    bool DeletePurchaseEntryObsolete(int purchaseId);
 }
 

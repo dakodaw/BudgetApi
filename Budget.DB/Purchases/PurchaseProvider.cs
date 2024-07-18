@@ -204,14 +204,26 @@ public class PurchaseProvider: IPurchaseProvider
         }
     }
 
-    public bool DeletePurchaseEntry(int purchaseId)
+    public void DeletePurchaseEntry(int purchaseId)
     {
-        bool success = false;
         try
         {
             var toDelete = _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault();
             _db.Purchases.Remove(toDelete);
             _db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to Delete Purchase entry {purchaseId}", ex);
+        }
+    }
+
+    public bool DeletePurchaseEntryObsolete(int purchaseId)
+    {
+        bool success = false;
+        try
+        {
+            DeletePurchaseEntry(purchaseId);
             return success;
         }
         catch
@@ -219,6 +231,5 @@ public class PurchaseProvider: IPurchaseProvider
             return success;
         }
     }
-
 }
 

@@ -142,7 +142,15 @@ namespace BudgetApi.Incomes.Services
 
         public bool DeleteJobEntry(int incomeSourceId)
         {
-            return _incomeSourceProvider.DeleteIncomeSource(incomeSourceId);
+            try
+            {
+                _incomeSourceProvider.DeleteIncomeSource(incomeSourceId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public IncomeSource GetIncomeSource(int incomeSourceId)

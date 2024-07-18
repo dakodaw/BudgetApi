@@ -45,9 +45,9 @@ namespace BudgetApi.GiftCards
 
         [HttpDelete]
         [Route("{giftCardId}")]
-        public bool DeleteGiftCard(int giftCardId)
+        public void DeleteGiftCard(int giftCardId)
         {
-            return _giftCardService.DeleteGiftCardEntry(giftCardId);
+            _giftCardService.DeleteGiftCardEntry(giftCardId);
         }
 
         [HttpGet]
@@ -98,7 +98,7 @@ namespace BudgetApi.GiftCards
         [Route("deleteGiftCardEntry")]
         public bool DeleteGiftCardEntry([FromQuery] int giftCardId)
         {
-            return _giftCardService.DeleteGiftCardEntry(giftCardId);
+            return _giftCardService.DeleteGiftCardObsolete(giftCardId);
         }
 
         [HttpGet]

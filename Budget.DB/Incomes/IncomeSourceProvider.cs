@@ -53,20 +53,9 @@ public class IncomeSourceProvider: IIncomeSourceProvider
     {
         if (incomeSourceId == -1)
         {
-            var jobToAddUpdate = new IncomeSourceEntity
-            {
-                ActiveJob = true,
-                EstimatedIncome = inputJob.EstimatedIncome,
-                JobOf = inputJob.JobOf,
-                PayFrequency = inputJob.PayFrequency,
-                PositionName = inputJob.PositionName,
-                SourceName = inputJob.SourceName
-            };
-
             try
             {
-                _db.IncomeSources.Add(jobToAddUpdate);
-                _db.SaveChanges();
+                AddIncomeSource(inputJob);
                 return true;
             }
             catch (Exception e)
@@ -76,7 +65,23 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         }
         else
         {
-            var jobToAddUpdate = new IncomeSource
+            try
+            {
+                UpdateIncomeSource(inputJob);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    public int AddIncomeSource(IncomeSource inputJob)
+    {
+        try
+        {
+            var jobToAdd = new IncomeSourceEntity
             {
                 ActiveJob = true,
                 EstimatedIncome = inputJob.EstimatedIncome,
@@ -85,36 +90,48 @@ public class IncomeSourceProvider: IIncomeSourceProvider
                 PositionName = inputJob.PositionName,
                 SourceName = inputJob.SourceName
             };
-            try
-            {
-                _db.IncomeSources.Find(incomeSourceId).ActiveJob = jobToAddUpdate.ActiveJob;
-                _db.IncomeSources.Find(incomeSourceId).EstimatedIncome = jobToAddUpdate.EstimatedIncome;
-                _db.IncomeSources.Find(incomeSourceId).JobOf = jobToAddUpdate.JobOf;
-                _db.IncomeSources.Find(incomeSourceId).PayFrequency = jobToAddUpdate.PayFrequency;
-                _db.IncomeSources.Find(incomeSourceId).PositionName = jobToAddUpdate.PositionName;
-                _db.IncomeSources.Find(incomeSourceId).SourceName = jobToAddUpdate.SourceName;
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+
+            _db.IncomeSources.Add(jobToAdd);
+            _db.SaveChanges();
+
+            return jobToAdd.Id;
+        }
+        catch(Exception ex) 
+        {
+            throw new Exception("Failed to Add Income Source", ex);
+        }
+    }
+    public void UpdateIncomeSource(IncomeSource inputJob)
+    {
+        try
+        {
+            var jobToAddUpdate = _db.IncomeSources.Find(inputJob.Id);
+            jobToAddUpdate.ActiveJob = inputJob.ActiveJob;
+            jobToAddUpdate.EstimatedIncome = inputJob.EstimatedIncome;
+            jobToAddUpdate.JobOf = inputJob.JobOf;
+            jobToAddUpdate.PayFrequency = inputJob.PayFrequency;
+            jobToAddUpdate.PositionName = inputJob.PositionName;
+            jobToAddUpdate.SourceName = inputJob.SourceName;
+            
+            _db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            throw new Exception("Failed to update Income Source", ex);
         }
     }
 
-    public bool DeleteIncomeSource(int incomeSourceId)
+    public void DeleteIncomeSource(int incomeSourceId)
     {
         try
         {
             var toDelete = _db.IncomeSources.FirstOrDefault(x => x.Id == incomeSourceId);
             _db.IncomeSources.Remove(toDelete);
             _db.SaveChanges();
-            return true;
         }
         catch (Exception ex)
         {
-            return false;
+            throw new Exception($"Failed to Delete Income Source {incomeSourceId}", ex);
         }
     }
 }

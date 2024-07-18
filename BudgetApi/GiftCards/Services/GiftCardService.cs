@@ -154,9 +154,19 @@ public class GiftCardService: IGiftCardService
         _giftCardProvider.UpdateGiftCard(inputGiftCard);
     }
 
-    public bool DeleteGiftCardEntry(int giftCardId)
+    public void DeleteGiftCardEntry(int giftCardId)
     {
-        return _giftCardProvider.DeleteGiftCardEntry(giftCardId);
+        _giftCardProvider.DeleteGiftCardEntry(giftCardId);
+    }
+
+    public bool DeleteGiftCardObsolete(int giftCardId)
+    {
+        try
+        {
+            DeleteGiftCardEntry(giftCardId);
+            return true;
+        }
+        catch { return false; }
     }
 
     public List<GiftCardHistoryBalance> GetAllBalanceAndHistory()

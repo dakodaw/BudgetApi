@@ -9,6 +9,6 @@ public interface IGiftCardProvider
 	bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1);
 	int AddGiftCard(GiftCard inputGiftCard);
 	void UpdateGiftCard(GiftCard inputGiftCard);
-    bool DeleteGiftCardEntry(int giftCardId);
+    void DeleteGiftCardEntry(int giftCardId);
 }
 
