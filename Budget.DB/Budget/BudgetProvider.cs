@@ -1,35 +1,27 @@
-﻿using BudgetApi.Models;
+﻿using Budget.DB.BudgetTypes;
+using BudgetApi.Models;
 
 namespace Budget.DB.Budget
 {
 	public class BudgetProvider: IBudgetProvider
 	{
         BudgetEntities _db;
+        IBudgetTypeProvider _budgetTypeProvider;
 
-        public BudgetProvider(BudgetEntities db)
+        public BudgetProvider(BudgetEntities db, IBudgetTypeProvider budgetTypeProvider)
 		{
 			_db = db;
+            _budgetTypeProvider = budgetTypeProvider;
 		}
 
 		public IEnumerable<BudgetType> GetBudgetTypes()
 		{
-			return _db.BudgetTypes.Select(x => new BudgetType
-			{
-				BudgetTypeId = x.Id,
-				BudgetTypeName = x.BudgetType1
-			});
+			return _budgetTypeProvider.GetBudgetTypes();
         }
 
         public BudgetType GetBudgetType(int budgetTypeId)
         {
-            var matchingType = _db.BudgetTypes
-                .Where(i => i.Id == budgetTypeId).FirstOrDefault();
-
-            return new BudgetType
-            {
-                BudgetTypeId = matchingType.Id,
-                BudgetTypeName = matchingType.BudgetType1
-            };
+            return _budgetTypeProvider.GetBudgetType(budgetTypeId);
         }
 
         public bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1)
@@ -38,11 +30,12 @@ namespace Budget.DB.Budget
             {
                 try
                 {
-                    _db.BudgetTypes.Add(new BudgetTypeEntity
+                    _budgetTypeProvider.AddBudgetType(new BudgetType
                     {
-                        BudgetType1 = budgetType.BudgetType1
+                        BudgetTypeId = budgetType.Id,
+                        BudgetTypeName = budgetType.BudgetType1
                     });
-                    _db.SaveChanges();
+
                     return true;
                 }
                 catch
@@ -54,8 +47,11 @@ namespace Budget.DB.Budget
             {
                 try
                 {
-                    _db.BudgetTypes.Find(budgetTypeId).BudgetType1 = budgetType.BudgetType1;
-                    _db.SaveChanges();
+                    _budgetTypeProvider.UpdateBudgetType(new BudgetType
+                    {
+                        BudgetTypeId = budgetType.Id,
+                        BudgetTypeName = budgetType.BudgetType1
+                    });
                     return true;
                 }
                 catch
@@ -69,31 +65,27 @@ namespace Budget.DB.Budget
         {
             try
             {
-                var toDelete = _db.BudgetTypes.Find(budgetTypeId);
-                _db.BudgetTypes.Remove(toDelete);
-                _db.SaveChanges();
+                _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
         }
 
-        public bool DeleteBudgetEntry(int budgetId)
+        public void DeleteBudgetEntry(int budgetId)
         {
-            bool success = true;
             try
             {
                 var toDelete = _db.Budgets.Find(budgetId);
                 _db.Budgets.Remove(toDelete);
                 _db.SaveChanges();
             }
-            catch
+            catch(Exception ex) 
             {
-
+                throw new Exception("Failed to Delete Budget entry", ex);
             }
-            return success;
         }
 
         public BudgetEntry GetBudgetEntry(int budgetId)
@@ -108,64 +100,55 @@ namespace Budget.DB.Budget
                     }).FirstOrDefault();
         }
 
-		public bool AddBudget(BudgetEntry inputBudget)
+		public int AddBudget(BudgetEntry inputBudget)
 		{
-            bool success = false;
-            _db.Budgets.Add(new BudgetEntity
-            {
-                Amount = inputBudget.Amount,
-                BudgetTypeId = inputBudget.BudgetTypeId,
-                Date = inputBudget.Date,
-                Id = inputBudget.Id
-            });
-            _db.SaveChanges();
             try
             {
-                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                success = true;
+                var newBudgetEntry = new BudgetEntity
+                {
+                    Amount = inputBudget.Amount,
+                    BudgetTypeId = inputBudget.BudgetTypeId,
+                    Date = inputBudget.Date,
+                    Id = inputBudget.Id
+                };
+                _db.Budgets.Add(newBudgetEntry);
+                _db.SaveChanges();
+                return newBudgetEntry.Id;
             }
-            catch
+            catch(Exception ex)
             {
-
+                throw new Exception("Failed To Add Budget Entry", ex);
             }
-            return success;
         }
 
-        public bool UpdateBudget(BudgetEntry inputBudget)
+        public void UpdateBudget(BudgetEntry inputBudget)
         {
-            var budgetId = inputBudget.Id;
-            bool success = false;
-            //Get the Budget from the Database with a given id
-            //Update the Budget that matches the one from the database
-            var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Amount = inputBudget.Amount;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
-
-            //// Alternate approach
-            //_db.Entry(selectedBudgetEntry).CurrentValues.SetValues(new
-            //{
-            //    Amount = inputBudget.Amount,
-            //    BudgetTypeId = selectedBudgetEntry.BudgetTypeId,
-            //    BudgetType = selectedBudgetEntry?.BudgetType,
-            //    Date = inputBudget.Date
-            //});
-
-            //Save Changes
-            _db.SaveChanges();
             try
             {
-                var checkBudget = _db.Budgets
-                    .Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date)
-                    .FirstOrDefault();
+                var budgetId = inputBudget.Id;
+                //Get the Budget from the Database with a given id
+                //Update the Budget that matches the one from the database
+                var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
+                selectedBudgetEntry.Amount = inputBudget.Amount;
+                selectedBudgetEntry.BudgetTypeId = inputBudget.BudgetTypeId;
+                selectedBudgetEntry.Date = inputBudget.Date;
 
-                success = true;
+                //// Alternate approach
+                //_db.Entry(selectedBudgetEntry).CurrentValues.SetValues(new
+                //{
+                //    Amount = inputBudget.Amount,
+                //    BudgetTypeId = selectedBudgetEntry.BudgetTypeId,
+                //    BudgetType = selectedBudgetEntry?.BudgetType,
+                //    Date = inputBudget.Date
+                //});
+
+                //Save Changes
+                _db.SaveChanges();
             }
-            catch
+            catch (Exception ex) 
             {
-
+                throw new Exception("Failed to Update Budget Entry", ex);
             }
-            return success;
         }
 
         public IEnumerable<BudgetEntry> GetBudgetEntries(DateTime monthYear)
@@ -195,7 +178,7 @@ namespace Budget.DB.Budget
                     });
         }
 
-        public bool AddBudgetEntries(IEnumerable<BudgetEntry> budgetEntries)
+        public bool AddBudgetEntries(IEnumerable<BudgetEntry> budgetEntries) // TODO: Revisit this with the resulting ids
         {
             bool success = false;
             try

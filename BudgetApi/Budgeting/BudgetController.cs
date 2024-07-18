@@ -29,24 +29,23 @@ namespace BudgetApi.Budgeting
 
         [Route("")]
         [HttpPost]
-        public bool AddBudget([FromBody] BudgetEntry inputBudget)
+        public int AddBudget([FromBody] BudgetEntry inputBudget)
         {
             return _budgetService.AddBudget(inputBudget);
         }
 
         [Route("{budgetId}")]
         [HttpPut]
-        public bool UpdateBudget([FromBody] BudgetEntry inputBudget, int budgetId)
+        public void UpdateBudget([FromBody] BudgetEntry inputBudget, int budgetId)
         {
-            // TODO: Does this need budgetId?
-            return _budgetService.UpdateBudget(inputBudget);
+            _budgetService.UpdateBudget(inputBudget);
         }
 
         [Route("{budgetId}")]
         [HttpDelete]
-        public bool DeleteBudgetEntry(int budgetId)
+        public void DeleteBudgetEntry(int budgetId)
         {
-            return _budgetService.DeleteBudgetEntry(budgetId);
+            _budgetService.DeleteBudgetEntry(budgetId);
         }
 
         [Route("{budgetId}")]

@@ -141,7 +141,7 @@ namespace BudgetApi.Budgeting.Services
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
         }
 
-        public bool AddBudget(BudgetEntry inputBudget)
+        public int AddBudget(BudgetEntry inputBudget)
         {
             return _budgetProvider.AddBudget(inputBudget);
         }
@@ -151,14 +151,14 @@ namespace BudgetApi.Budgeting.Services
             return _budgetProvider.AddBudgetEntries(inputBudgetLines);
         }
 
-        public bool UpdateBudget(BudgetEntry inputBudget)
+        public void UpdateBudget(BudgetEntry inputBudget)
         {
-            return _budgetProvider.UpdateBudget(inputBudget);
+            _budgetProvider.UpdateBudget(inputBudget);
         }
 
-        public bool DeleteBudgetEntry(int budgetId)
+        public void DeleteBudgetEntry(int budgetId)
         {
-            return _budgetProvider.DeleteBudgetEntry(budgetId);
+            _budgetProvider.DeleteBudgetEntry(budgetId);
         }
 
         public BudgetInfo GetExistingBudget(int budgetId)
