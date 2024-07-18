@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="Purchases\" />
     <Folder Include="Purchases\Entities\" />
-    <Folder Include="Budget\" />
     <Folder Include="Budget\Entities\" />
     <Folder Include="GiftCards\" />
     <Folder Include="GiftCards\Entities\" />

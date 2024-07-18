@@ -1,4 +1,5 @@
 ﻿using Budget.DB.Budget;
+using Budget.DB.BudgetTypes;
 using Budget.DB.CustomSettings;
 using Budget.DB.GiftCards;
 using Budget.DB.Incomes;
@@ -22,5 +23,6 @@ public class Startup
         services.AddScoped<IBudgetProvider, BudgetProvider>();
         services.AddScoped<ICustomSettingsProvider, CustomSettingsProvider>();
         services.AddScoped<IGiftCardProvider, GiftCardProvider>();
+        services.AddScoped<IBudgetTypeProvider, BudgetTypeProvider>();
     }
 }

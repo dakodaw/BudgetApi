@@ -1,4 +1,5 @@
 using Budget.DB.Budget;
+using Budget.DB.BudgetTypes;
 using BudgetApi.Budgeting.Models;
 using BudgetApi.Models;
 using System;
@@ -10,70 +11,44 @@ namespace BudgetApi.BudgetTypes
     public class BudgetTypeService: IBudgetTypeService
     {
         //BudgetEntities _db;
-        IBudgetProvider _budgetProvider;
+        IBudgetTypeProvider _budgetTypeProvider;
 
-        public BudgetTypeService(IBudgetProvider budgetProvider)
+        public BudgetTypeService(IBudgetProvider budgetProvider, IBudgetTypeProvider budgetTypeProvider)
         {
             //_db = db;
-            _budgetProvider = budgetProvider;
+            _budgetTypeProvider = budgetTypeProvider;
         }
 
         public List<BudgetType> GetBudgetTypes()
         {
-            return _budgetProvider.GetBudgetTypes()
+            return _budgetTypeProvider.GetBudgetTypes()
                 .OrderBy(i => i.BudgetTypeName)
                 .ToList();
         }
 
-        public bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1)
+        public bool AddUpdateBudgetType(BudgetType budgetType, int budgetTypeId = -1)
         {
-            return _budgetProvider.AddUpdateBudgetType(budgetType, budgetTypeId);
+            return _budgetTypeProvider.AddUpdateBudgetType(budgetType, budgetTypeId);
         }
 
         public int AddBudgetType(BudgetType budgetType)
         {
-            try
-            {
-                var newBudgetType = new BudgetTypeEntity
-                {
-                    BudgetType1 = budgetType.BudgetTypeName
-                };
-
-                _db.BudgetTypes.Add(newBudgetType);
-                _db.SaveChanges();
-
-                return newBudgetType.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to add Budget Type", ex);
-            }
+            return _budgetTypeProvider.AddBudgetType(budgetType);
         }
 
-        public bool UpdateBudgetType(BudgetType budgetType)
+        public void UpdateBudgetType(BudgetType budgetType)
         {
-            try
-            {
-                var foundBudgetType = _db.BudgetTypes.Find(budgetType.BudgetTypeId);
-                foundBudgetType.BudgetType1 = budgetType.BudgetTypeName;
-
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to update BudgetType", ex);
-            }
+            _budgetTypeProvider.UpdateBudgetType(budgetType);
         }
 
-        public bool DeleteBudgetTypeEntry(int budgetTypeId)
+        public void DeleteBudgetTypeEntry(int budgetTypeId)
         {
-            return _budgetProvider.DeleteBudgetTypeEntry(budgetTypeId);
+            _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
         }
 
         public BudgetType GetBudgetType(int budgetTypeId)
         {
-            return _budgetProvider.GetBudgetType(budgetTypeId);
+            return _budgetTypeProvider.GetBudgetType(budgetTypeId);
         }
     }
 }

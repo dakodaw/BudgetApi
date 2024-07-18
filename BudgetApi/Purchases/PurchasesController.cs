@@ -36,9 +36,9 @@ namespace BudgetApi.Purchases
 
         [HttpPut]
         [Route("{purchaseId}")]
-        public bool UpdatePurchase([FromBody] Purchase incomePurchase, int purchaseId)
+        public void UpdatePurchase([FromBody] Purchase incomePurchase, int purchaseId)
         {
-            return _purchasesService.UpdatePurchase(incomePurchase, purchaseId);
+            _purchasesService.UpdatePurchase(incomePurchase);
         }
 
         [HttpDelete]

@@ -34,7 +34,7 @@ namespace BudgetApi.Incomes
         public bool UpdateIncome([FromBody] Income inputIncome, int incomeId = -1)
         {
             // TODO: Handle Not found and incomeId of less than 1 passed through
-            return _incomeService.UpdateIncome(inputIncome, incomeId);
+            return _incomeService.UpdateIncome(inputIncome);
         }
 
         [HttpDelete]
@@ -98,7 +98,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("addUpdateJob")]
-        public bool AddUpdateJob([FromBody] IncomeSourceEntity inputJob, [FromQuery] int incomeSourceId = -1)
+        public bool AddUpdateJob([FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
         {
             return _incomeService.AddUpdateJob(inputJob, incomeSourceId);
         }

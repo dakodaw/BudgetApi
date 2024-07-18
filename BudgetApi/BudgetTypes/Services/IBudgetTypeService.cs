@@ -6,10 +6,10 @@ namespace BudgetApi.BudgetTypes
     public interface IBudgetTypeService
     {
         List<BudgetType> GetBudgetTypes();
-        bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1);
+        bool AddUpdateBudgetType(BudgetType budgetType, int budgetTypeId = -1);
         int AddBudgetType(BudgetType budgetType);
-        bool UpdateBudgetType(BudgetType budgetType);
-        bool DeleteBudgetTypeEntry(int budgetTypeId);
+        void UpdateBudgetType(BudgetType budgetType);
+        void DeleteBudgetTypeEntry(int budgetTypeId);
         BudgetType GetBudgetType(int budgetTypeId);
     }
 }
