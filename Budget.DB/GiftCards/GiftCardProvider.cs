@@ -49,6 +49,38 @@ public class GiftCardProvider: IGiftCardProvider
         if (inputGiftCardStuff == default)
             return false;
 
+        if (giftCardId == -1)
+        {
+            try
+            {
+                var resultingGiftCardId = AddGiftCard(inputGiftCardStuff);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        else
+        {
+            try
+            {
+                UpdateGiftCard(inputGiftCardStuff);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    public int AddGiftCard(GiftCard inputGiftCardStuff)
+    {
+        if (inputGiftCardStuff == default)
+            throw new Exception("Unable to add a null Gift Card");
+
         var inputGiftCard = new GiftCardEntity
         {
             AccessCode = inputGiftCardStuff.AccessCode,
@@ -58,42 +90,34 @@ public class GiftCardProvider: IGiftCardProvider
             Place = inputGiftCardStuff.Place
         };
 
-        if (giftCardId == -1)
+        try
         {
-            bool success = false;
             _db.GiftCards.Add(inputGiftCard);
             _db.SaveChanges();
-            try
-            {
-                var checkCard = _db.GiftCards.Where(i => i.CardNumber == inputGiftCard.CardNumber).FirstOrDefault();
-                success = true;
-            }
-            catch
-            {
 
-            }
-            return success;
+            return inputGiftCard.Id;
         }
-        else
+        catch(Exception ex)
         {
-            bool success = false;
-
-            try
-            {
-                _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().AccessCode = inputGiftCard.AccessCode;
-                _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().CardNumber = inputGiftCard.CardNumber;
-                _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().InitialAmount = inputGiftCard.InitialAmount;
-                _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().Place = inputGiftCard.Place;
-                _db.SaveChanges();
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            throw new Exception("Failed to Add Gift Card", ex);
         }
+    }
 
+    public void UpdateGiftCard(GiftCard inputGiftCard)
+    {
+        try
+        {
+            var existingGiftCard = _db.GiftCards.FirstOrDefault(x => x.Id == inputGiftCard.Id);
+            existingGiftCard.AccessCode = inputGiftCard.AccessCode;
+            existingGiftCard.CardNumber = inputGiftCard.CardNumber;
+            existingGiftCard.InitialAmount = inputGiftCard.InitialAmount;
+            existingGiftCard.Place = inputGiftCard.Place;
+            _db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            throw new Exception($"Failed to update gift card {inputGiftCard?.Id}", ex);
+        }
     }
 
     public bool DeleteGiftCardEntry(int giftCardId)

@@ -88,13 +88,13 @@ namespace BudgetApi.Incomes.Services
         {
             var incomeSourceLines = (from it in _incomeSourceProvider.GetIncomeSources()
                                         .Where(i => i.ActiveJob == true)
-                                     select new IncomeSources
+                                     select new IncomeSource
                                      {
-                                         IncomeSourceId = it.Id,
-                                         IncomeSource = it.SourceName,
+                                         Id = it.Id,
+                                         SourceName = it.SourceName,
                                          JobOf = it.JobOf,
-                                         IsCurrentJob = it.ActiveJob,
-                                         Position = it.PositionName,
+                                         ActiveJob = it.ActiveJob,
+                                         PositionName = it.PositionName,
                                          PayFrequency = it.PayFrequency,
                                          EstimatedIncome = it.EstimatedIncome.Value
                                      }).ToList();
@@ -122,57 +122,12 @@ namespace BudgetApi.Incomes.Services
 
         public int AddIncome(Income inputIncome)
         {
-            try
-            {
-                _db.Incomes.Add(inputIncome);
-                _db.SaveChanges();
-
-                var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
-                if (inputIncome.IsReimbursement == true)
-                {
-                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                    _db.SaveChanges();
-                }
-
-                return inputIncome.Id;
-            }
-            catch(Exception ex)
-            {
-                throw new Exception("New income failed to save: ", ex);
-            }
+            return _incomeProvider.AddIncome(inputIncome);
         }
 
-        public bool UpdateIncome(Income inputIncome, int incomeId)
+        public bool UpdateIncome(Income inputIncome)
         {
-            bool success = false;
-            var incomeToUpdate = _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault();
-            if (incomeToUpdate == default)
-                throw new Exception($"Custom Income Not found Exception for {incomeId}");
-
-            try
-            {
-                incomeToUpdate.IncomeSource = inputIncome.IncomeSource;
-                incomeToUpdate.IsCash = inputIncome.IsCash;
-                incomeToUpdate.IsReimbursement = inputIncome.IsReimbursement;
-                incomeToUpdate.SourceDetails = inputIncome.SourceDetails;
-                incomeToUpdate.SourceId = inputIncome.SourceId;
-                incomeToUpdate.Amount = inputIncome.Amount;
-                incomeToUpdate.Date = inputIncome.Date;
-
-                _db.SaveChanges();
-
-                if (incomeToUpdate.IsReimbursement == true)
-                {
-                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                    _db.SaveChanges();
-                }
-                success = true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Income Update failed because of internal exception: ", ex);
-            }
-            return success;
+            return _incomeProvider.UpdateIncome(inputIncome);
         }
 
         public bool DeleteIncomeEntry(int incomeId)
@@ -180,7 +135,7 @@ namespace BudgetApi.Incomes.Services
             return _incomeProvider.DeleteIncomeEntry(incomeId);
         }
 
-        public bool AddUpdateJob(IncomeSourceEntity inputJob, int incomeSourceId = -1)
+        public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
         {
             return _incomeSourceProvider.AddUpdateJob(inputJob, incomeSourceId);
         }
@@ -197,11 +152,11 @@ namespace BudgetApi.Incomes.Services
                                   where ins.Id == incomeSourceId
                                   select new IncomeSource
                                   {
-                                      IncomeSource = ins.SourceName,
-                                      IsCurrentJob = ins.ActiveJob,
+                                      SourceName = ins.SourceName,
+                                      ActiveJob = ins.ActiveJob,
                                       JobOf = ins.JobOf,
                                       PayFrequency = ins.PayFrequency,
-                                      Position = ins.PositionName
+                                      PositionName = ins.PositionName
                                   }).FirstOrDefault();
             if (incomeSources.Find(x => x.Id == incomeSourceId).EstimatedIncome != null)
                 incomeToReturn.EstimatedIncome = (decimal)incomeSources

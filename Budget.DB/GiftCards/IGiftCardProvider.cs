@@ -7,6 +7,8 @@ public interface IGiftCardProvider
 	GiftCard GetGiftCard(int giftCardId);
 	IEnumerable<GiftCard> GetAllGiftCards();
 	bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1);
-	bool DeleteGiftCardEntry(int giftCardId);
+	int AddGiftCard(GiftCard inputGiftCard);
+	void UpdateGiftCard(GiftCard inputGiftCard);
+    bool DeleteGiftCardEntry(int giftCardId);
 }
 

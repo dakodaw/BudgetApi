@@ -57,6 +57,16 @@ public class PurchasesService: IPurchasesService
         return _purchaseProvider.AddUpdatePurchase(inputPurchase, purchaseId);
     }
 
+    public int AddPurchase(Purchase inputPurchase)
+    {
+        return _purchaseProvider.AddPurchase(inputPurchase);
+    }
+
+    public void UpdatePurchase(Purchase inputPurchase)
+    {
+        _purchaseProvider.UpdatePurchase(inputPurchase);
+    }
+
     public bool DeletePurchaseEntry(int purchaseId)
     {
         return _purchaseProvider.DeletePurchaseEntry(purchaseId);

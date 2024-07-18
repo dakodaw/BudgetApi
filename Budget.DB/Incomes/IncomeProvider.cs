@@ -190,6 +190,70 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
+    public int AddIncome(Income inputIncome)
+    {
+        try
+        {
+            _db.Incomes.Add(new IncomeEntity
+            {
+                Amount = inputIncome.Amount,
+                Date = inputIncome.Date,
+                IsCash = inputIncome.IsCash,
+                IsReimbursement = inputIncome.IsReimbursement,
+                PurchaseId = inputIncome.PurchaseId,
+                SourceDetails = inputIncome.SourceDetails,
+                SourceId = inputIncome.SourceId
+            });
+            _db.SaveChanges();
+
+            var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
+            if (inputIncome.IsReimbursement == true)
+            {
+                _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                _db.SaveChanges();
+            }
+
+            return inputIncome.Id;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("New income failed to save: ", ex);
+        }
+    }
+
+    public bool UpdateIncome(Income inputIncome)
+    {
+        bool success = false;
+        var incomeToUpdate = _db.Incomes.Where(i => i.Id == inputIncome.Id).FirstOrDefault();
+        if (incomeToUpdate == default)
+            throw new Exception($"Custom Income Not found Exception for {inputIncome.Id}");
+
+        try
+        {
+            incomeToUpdate.IsCash = inputIncome.IsCash;
+            incomeToUpdate.IsReimbursement = inputIncome.IsReimbursement;
+            incomeToUpdate.SourceDetails = inputIncome.SourceDetails;
+            incomeToUpdate.SourceId = inputIncome.SourceId;
+            incomeToUpdate.Amount = inputIncome.Amount;
+            incomeToUpdate.Date = inputIncome.Date;
+
+            _db.SaveChanges();
+
+            if (incomeToUpdate.IsReimbursement == true)
+            {
+                _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                _db.SaveChanges();
+            }
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Income Update failed because of internal exception: ", ex);
+        }
+
+        return success;
+    }
+
     public bool DeleteJobEntry(int incomeSourceId)
     {
         try

@@ -15,11 +15,11 @@ namespace BudgetApi.Incomes.Services
         List<ApplicablePurchase> GetApplicablePurchases(DateTime monthYear);
         bool AddUpdateIncome(Income inputIncome, int incomeId = -1);
         bool DeleteIncomeEntry(int incomeId);
-        bool AddUpdateJob(IncomeSourceEntity inputJob, int incomeSourceId = -1);
+        bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1);
         bool DeleteJobEntry(int incomeSourceId);
         IncomeSource GetIncomeSource(int incomeSourceId);
         IncomeLine GetExistingIncome(int incomeId);
-        bool UpdateIncome(Income inputIncome, int incomeId);
         int AddIncome(Income inputIncome);
+        bool UpdateIncome(Income inputIncome);
     }
 }

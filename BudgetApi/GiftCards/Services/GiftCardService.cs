@@ -144,6 +144,16 @@ public class GiftCardService: IGiftCardService
         return _giftCardProvider.AddUpdateGiftCard(inputGiftCard, giftCardId);
     }
 
+    public int AddGiftCard(GiftCard inputGiftCard)
+    {
+        return _giftCardProvider.AddGiftCard(inputGiftCard);
+    }
+
+    public void UpdateGiftCard(GiftCard inputGiftCard)
+    {
+        _giftCardProvider.UpdateGiftCard(inputGiftCard);
+    }
+
     public bool DeleteGiftCardEntry(int giftCardId)
     {
         return _giftCardProvider.DeleteGiftCardEntry(giftCardId);

@@ -74,6 +74,7 @@ public class Startup
                     }
                 });
             });
+        });
 
         Budget.DB.Startup.ConfigureServices(services, Configuration);
         
@@ -82,6 +83,7 @@ public class Startup
         services.AddScoped<IBudgetCopyToService, BudgetCopyToService>();
         services.AddScoped<IGiftCardService, GiftCardService>();
         services.AddScoped<IIncomeService, IncomeService>();
+        services.AddScoped<IIncomeSourceService, IncomeSourceService>();
         services.AddScoped<IPurchasesService, PurchasesService>();
         services.AddScoped<ISettingsService, SettingsService>();
     }
@@ -92,7 +94,6 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            services.AddScoped<IIncomeSourceService, IncomeSourceService>();
         }
 
         app.UseSwagger();
@@ -108,27 +109,26 @@ public class Startup
 
         app.UseHttpsRedirection();
 
-            app.UseCors(builder =>
-            {
-                builder
-                    .WithOrigins(appSettings.AllowedHosts)
-                    //.AllowAnyOrigin
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
+        app.UseCors(builder =>
+        {
+            builder
+                .WithOrigins(appSettings.AllowedHosts)
+                //.AllowAnyOrigin
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
 
         app.UseAuthorization();
 
-            app.UseRouting();
+        app.UseRouting();
 
-            app.UseAuthentication();
+        app.UseAuthentication();
 
-            app.UseAuthorization();
+        app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 }

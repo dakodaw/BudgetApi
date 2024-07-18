@@ -157,6 +157,53 @@ public class PurchaseProvider: IPurchaseProvider
         return success;
     }
 
+    public int AddPurchase(Purchase inputPurchase)
+    {
+        try
+        {
+            var newPurchaseEntity = new PurchaseEntity
+            {
+                Amount = inputPurchase.Amount,
+                Date = inputPurchase.Date,
+                Description = inputPurchase.Description,
+                FutureReimbursement = inputPurchase.FutureReimbursement,
+                GiftCardId = inputPurchase.GiftCardId,
+                Id = inputPurchase.Id,
+                PaymentType = inputPurchase.PaymentType,
+                PurchaseTypeId = inputPurchase.PurchaseTypeId
+            };
+            _db.Purchases.Add(newPurchaseEntity);
+
+            _db.SaveChanges();
+            return newPurchaseEntity.Id;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception("Unable to Add Purchase", ex);
+        }
+    }
+
+    public void UpdatePurchase(Purchase inputPurchase)
+    {
+        try
+        {
+            var purchaseToUpdate = _db.Purchases.Where(i => i.Id == inputPurchase.Id).FirstOrDefault();
+            purchaseToUpdate.Amount = inputPurchase.Amount;
+            purchaseToUpdate.Date = inputPurchase.Date;
+            purchaseToUpdate.Description = inputPurchase.Description;
+            purchaseToUpdate.FutureReimbursement = inputPurchase.FutureReimbursement;
+            purchaseToUpdate.GiftCardId = inputPurchase.GiftCardId;
+            purchaseToUpdate.PaymentType = inputPurchase.PaymentType;
+            purchaseToUpdate.PurchaseTypeId = inputPurchase.PurchaseTypeId;
+                
+            _db.SaveChanges();
+        }
+        catch (Exception ee)
+        {
+            throw new Exception("Unable to update Purchase", ee.InnerException);
+        }
+    }
+
     public bool DeletePurchaseEntry(int purchaseId)
     {
         bool success = false;
