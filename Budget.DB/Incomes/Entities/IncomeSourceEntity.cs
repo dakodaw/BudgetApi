@@ -13,11 +13,7 @@ namespace BudgetApi.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-<<<<<<<< HEAD:Budget.DB/Incomes/Entities/IncomeSourceEntity.cs
     public partial class IncomeSourceEntity
-========
-    public class IncomeSourceEntity
->>>>>>>> main:Budget.Models/IncomeSourceEntity.cs
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public IncomeSourceEntity()
