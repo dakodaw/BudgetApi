@@ -1,10 +1,12 @@
 ﻿using BudgetApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BudgetApi.BudgetTypes
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BudgetTypeController : ControllerBase
@@ -18,16 +20,16 @@ namespace BudgetApi.BudgetTypes
 
         [Route("")]
         [HttpPost]
-        public bool AddBudgetType([FromBody] BudgetTypeEntity budgetType)
+        public int AddBudgetType([FromBody] BudgetType budgetType)
         {
-            return _budgetService.AddUpdateBudgetType(budgetType);
+            return _budgetService.AddBudgetType(budgetType);
         }
 
         [Route("{budgetTypeId}")]
         [HttpPut]
-        public bool UpdateBudgetType([FromBody] BudgetTypeEntity budgetType, int budgetTypeId = -1)
+        public bool UpdateBudgetType([FromBody] BudgetType budgetType, int budgetTypeId = -1)
         {
-            return _budgetService.AddUpdateBudgetType(budgetType, budgetTypeId);
+            return _budgetService.UpdateBudgetType(budgetType);
         }
 
         [Route("{budgetTypeId}")]

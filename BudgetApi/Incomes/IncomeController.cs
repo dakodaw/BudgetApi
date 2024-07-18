@@ -4,12 +4,14 @@ using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BudgetApi.Incomes
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class IncomeController : ControllerBase
@@ -18,6 +20,29 @@ namespace BudgetApi.Incomes
         public IncomeController(IIncomeService incomeService)
         {
             _incomeService = incomeService;
+        }
+
+        [HttpPost]
+        [Route("")]
+        public int AddIncome([FromBody] Income inputIncome)
+        {
+            return _incomeService.AddIncome(inputIncome);
+        }
+
+        [HttpPut]
+        [Route("{incomeId}")]
+        public bool UpdateIncome([FromBody] Income inputIncome, int incomeId = -1)
+        {
+            // TODO: Handle Not found and incomeId of less than 1 passed through
+            return _incomeService.UpdateIncome(inputIncome, incomeId);
+        }
+
+        [HttpDelete]
+        [Route("{incomeId}")]
+        public bool DeleteIncome(int incomeId = -1)
+        {
+            // TODO: Handle Not found and incomeId of less than 1 passed through
+            return _incomeService.DeleteIncomeEntry(incomeId);
         }
 
         [HttpGet]
@@ -43,7 +68,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getFullIncomeSources")]
-        public List<IncomeSources> GetFullIncomeSources()
+        public List<IncomeSource> GetFullIncomeSources()
         {
             return _incomeService.GetFullIncomeSources();
         }
@@ -55,6 +80,7 @@ namespace BudgetApi.Incomes
             return _incomeService.GetApplicablePurchases(monthYear);
         }
 
+        [Obsolete("The base route using post, and put will be used moving forward")]
         [HttpPost]
         [Route("addUpdateIncome")]
         public bool AddUpdateIncome([FromBody] Income inputIncome, [FromQuery] int incomeId = -1)
@@ -62,6 +88,7 @@ namespace BudgetApi.Incomes
             return _incomeService.AddUpdateIncome(inputIncome, incomeId);
         }
 
+        [Obsolete("The base route using delete will be used moving forward")]
         [HttpGet]
         [Route("deleteIncomeEntry")]
         public bool DeleteIncomeEntry([FromQuery] int incomeId)
@@ -71,7 +98,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("addUpdateJob")]
-        public bool AddUpdateJob([FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
+        public bool AddUpdateJob([FromBody] IncomeSourceEntity inputJob, [FromQuery] int incomeSourceId = -1)
         {
             return _incomeService.AddUpdateJob(inputJob, incomeSourceId);
         }
@@ -85,7 +112,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSource")]
-        public IncomeSources GetIncomeSource([FromQuery] int incomeSourceId)
+        public IncomeSource GetIncomeSource([FromQuery] int incomeSourceId)
         {
             return _incomeService.GetIncomeSource(incomeSourceId);
         }

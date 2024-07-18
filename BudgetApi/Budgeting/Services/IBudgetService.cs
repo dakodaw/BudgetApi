@@ -1,4 +1,4 @@
-﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;

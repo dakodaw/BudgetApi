@@ -1,4 +1,4 @@
-﻿using Budget.DB;
+using Budget.DB;
 using Budget.DB.Budget;
 using Budget.DB.Incomes;
 using Budget.Models;
@@ -7,6 +7,7 @@ using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace BudgetApi.Incomes.Services
@@ -83,7 +84,7 @@ namespace BudgetApi.Incomes.Services
                     }).ToList();
         }
 
-        public List<IncomeSources> GetFullIncomeSources()
+        public List<IncomeSource> GetFullIncomeSources()
         {
             var incomeSourceLines = (from it in _incomeSourceProvider.GetIncomeSources()
                                         .Where(i => i.ActiveJob == true)
@@ -119,12 +120,67 @@ namespace BudgetApi.Incomes.Services
             return _incomeProvider.AddUpdateIncome(inputIncome, incomeId);
         }
 
+        public int AddIncome(Income inputIncome)
+        {
+            try
+            {
+                _db.Incomes.Add(inputIncome);
+                _db.SaveChanges();
+
+                var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
+                if (inputIncome.IsReimbursement == true)
+                {
+                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                    _db.SaveChanges();
+                }
+
+                return inputIncome.Id;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("New income failed to save: ", ex);
+            }
+        }
+
+        public bool UpdateIncome(Income inputIncome, int incomeId)
+        {
+            bool success = false;
+            var incomeToUpdate = _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault();
+            if (incomeToUpdate == default)
+                throw new Exception($"Custom Income Not found Exception for {incomeId}");
+
+            try
+            {
+                incomeToUpdate.IncomeSource = inputIncome.IncomeSource;
+                incomeToUpdate.IsCash = inputIncome.IsCash;
+                incomeToUpdate.IsReimbursement = inputIncome.IsReimbursement;
+                incomeToUpdate.SourceDetails = inputIncome.SourceDetails;
+                incomeToUpdate.SourceId = inputIncome.SourceId;
+                incomeToUpdate.Amount = inputIncome.Amount;
+                incomeToUpdate.Date = inputIncome.Date;
+
+                _db.SaveChanges();
+
+                if (incomeToUpdate.IsReimbursement == true)
+                {
+                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                    _db.SaveChanges();
+                }
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Income Update failed because of internal exception: ", ex);
+            }
+            return success;
+        }
+
         public bool DeleteIncomeEntry(int incomeId)
         {
             return _incomeProvider.DeleteIncomeEntry(incomeId);
         }
 
-        public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
+        public bool AddUpdateJob(IncomeSourceEntity inputJob, int incomeSourceId = -1)
         {
             return _incomeSourceProvider.AddUpdateJob(inputJob, incomeSourceId);
         }
@@ -134,12 +190,12 @@ namespace BudgetApi.Incomes.Services
             return _incomeSourceProvider.DeleteIncomeSource(incomeSourceId);
         }
 
-        public IncomeSources GetIncomeSource(int incomeSourceId)
+        public IncomeSource GetIncomeSource(int incomeSourceId)
         {
             var incomeSources = _incomeSourceProvider.GetIncomeSources().ToList();
             var incomeToReturn = (from ins in incomeSources
                                   where ins.Id == incomeSourceId
-                                  select new IncomeSources
+                                  select new IncomeSource
                                   {
                                       IncomeSource = ins.SourceName,
                                       IsCurrentJob = ins.ActiveJob,

@@ -9,6 +9,8 @@ using BudgetApi.Shared.AppSettings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,11 +36,44 @@ public class Startup
         services.AddControllers();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "BudgetApi", Version = "v1" });
-        });
+            services.AddCors();
 
-        var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
-        services.AddSingleton<AppSettings>(appSettings);
+            var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+            services.AddSingleton<AppSettings>(appSettings);
+
+            services.IncludeFirebaseAuth(appSettings);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddControllers();
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "BudgetApi", Version = "v1" });
+
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
 
         Budget.DB.Startup.ConfigureServices(services, Configuration);
         
@@ -57,6 +92,7 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
+            services.AddScoped<IIncomeSourceService, IncomeSourceService>();
         }
 
         app.UseSwagger();
@@ -72,13 +108,27 @@ public class Startup
 
         app.UseHttpsRedirection();
 
-        app.UseRouting();
+            app.UseCors(builder =>
+            {
+                builder
+                    .WithOrigins(appSettings.AllowedHosts)
+                    //.AllowAnyOrigin
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
 
         app.UseAuthorization();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
     }
 }

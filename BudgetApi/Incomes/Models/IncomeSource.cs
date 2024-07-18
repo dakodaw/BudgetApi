@@ -1,4 +1,4 @@
-﻿namespace BudgetApi.Incomes.Models;
+namespace BudgetApi.Incomes.Models;
 
 public class IncomeSources : IncomeSourceLine
 {

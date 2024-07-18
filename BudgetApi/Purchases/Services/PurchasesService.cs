@@ -1,4 +1,4 @@
-﻿using Budget.DB;
+using Budget.DB;
 using Budget.DB.Budget;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;

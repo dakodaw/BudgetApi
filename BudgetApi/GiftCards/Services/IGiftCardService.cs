@@ -1,4 +1,4 @@
-﻿using BudgetApi.GiftCards.Models;
+using BudgetApi.GiftCards.Models;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using System;
@@ -17,4 +17,6 @@ public interface IGiftCardService
     bool DeleteGiftCardEntry(int giftCardId);
     List<GiftCardHistoryBalance> GetAllBalanceAndHistory();
     GiftCard GetGiftCard(int giftCardId);
+        void UpdateGiftCard(GiftCard inputGiftCard);
+        int AddGiftCard(GiftCard inputGiftCard);
 }
