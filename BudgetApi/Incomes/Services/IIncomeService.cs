@@ -8,9 +8,9 @@ namespace BudgetApi.Incomes.Services
 {
     public interface IIncomeService
     {
-        List<IncomeSourceLine> GetIncomeTypes();
+        List<IncomeSource> GetIncomeTypes();
         List<IncomeLine> GetIncomeLines(DateTime monthYear);
-        List<IncomeSourceLine> GetIncomeSources();
+        List<IncomeSource> GetIncomeSources();
         List<IncomeSource> GetFullIncomeSources();
         List<ApplicablePurchase> GetApplicablePurchases(DateTime monthYear);
         bool AddUpdateIncome(Income inputIncome, int incomeId = -1);

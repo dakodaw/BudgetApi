@@ -9,8 +9,6 @@ using BudgetApi.Shared.AppSettings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,18 +32,16 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddControllers();
-        services.AddSwaggerGen(c =>
-        {
-            services.AddCors();
+        services.AddCors();
 
-            var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
-            services.AddSingleton<AppSettings>(appSettings);
+        var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+        services.AddSingleton<AppSettings>(appSettings);
 
-            services.IncludeFirebaseAuth(appSettings);
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.IncludeFirebaseAuth(appSettings);
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddControllers();
-            services.AddSwaggerGen(opt =>
+        services.AddControllers();
+        services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "BudgetApi", Version = "v1" });
 
@@ -74,7 +70,6 @@ public class Startup
                     }
                 });
             });
-        });
 
         Budget.DB.Startup.ConfigureServices(services, Configuration);
         
@@ -99,26 +94,16 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "BudgetApi v1"));
 
-        app.UseCors(builder =>
-        {
-            builder
-            .WithOrigins(appSettings.AllowedHosts)
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-        });
-
         app.UseHttpsRedirection();
 
         app.UseCors(builder =>
         {
             builder
-                .WithOrigins(appSettings.AllowedHosts)
-                //.AllowAnyOrigin
+                //.WithOrigins(appSettings.AllowedHosts)
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
-
-        app.UseAuthorization();
 
         app.UseRouting();
 

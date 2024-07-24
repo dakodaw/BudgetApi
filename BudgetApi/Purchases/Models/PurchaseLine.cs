@@ -12,6 +12,6 @@ namespace BudgetApi.Purchases.Models
         public bool IsReimbursement { get; set; }
         public string PaymentType { get; set; }
         public string Description { get; set; }
-        public int GiftCardId { get; set; }
+        public int? GiftCardId { get; set; }
     }
 }

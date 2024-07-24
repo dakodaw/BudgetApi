@@ -38,7 +38,7 @@ public class PurchasesService: IPurchasesService
                              Amount = p.Amount,
                              Id = p.Id,
                              PaymentType = p.PaymentType,
-                             GiftCardId = (int)p.GiftCardId,
+                             GiftCardId = p.GiftCardId,
                              IsReimbursement = p.FutureReimbursement
                          }).ToList();
         // Not sure if this still needs to happen.
@@ -83,7 +83,7 @@ public class PurchasesService: IPurchasesService
         {
             Amount = p.Amount,
             Date = p.Date,
-            GiftCardId = (int)p.GiftCardId,
+            GiftCardId = p.GiftCardId,
             PurchaseType = new BudgetType
             {
                 BudgetTypeId = p.PurchaseTypeId,

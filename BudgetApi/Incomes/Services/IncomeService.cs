@@ -31,18 +31,10 @@ namespace BudgetApi.Incomes.Services
             _budgetProvider = budgetProvider;
         }
 
-        public List<IncomeSourceLine> GetIncomeTypes()
+        public List<IncomeSource> GetIncomeTypes()
         {
-            var incomeSources = _incomeSourceProvider.GetIncomeSources()
-                .Select(it => new IncomeSourceLine
-                {
-                    IncomeSourceId = it.Id,
-                    IncomeSource = it.SourceName,
-                    Position = it.PositionName,
-                    JobOf = it.JobOf,
-                    IsCurrentJob = it.ActiveJob
-                }).ToList();
-            return incomeSources.OrderBy(i => i.IncomeSource).ToList();
+            var incomeSources = _incomeSourceProvider.GetIncomeSources().ToList();
+            return incomeSources.OrderBy(i => i.SourceName).ToList();
         }
 
         public List<IncomeLine> GetIncomeLines(DateTime monthYear)
@@ -53,14 +45,7 @@ namespace BudgetApi.Incomes.Services
                     select new IncomeLine
                     {
                         IncomeId = i.Id,
-                        IncomeSource = new IncomeSourceLine
-                        {
-                            IncomeSourceId = it.Id,
-                            IncomeSource = it.SourceName,
-                            JobOf = it.JobOf,
-                            IsCurrentJob = it.ActiveJob,
-                            Position = it.PositionName
-                        },
+                        IncomeSource = it,
                         IncomeDate = i.Date,
                         Details = i.SourceDetails,
                         Amount = i.Amount,
@@ -70,18 +55,10 @@ namespace BudgetApi.Incomes.Services
                     }).ToList();
         }
 
-        public List<IncomeSourceLine> GetIncomeSources()
+        public List<IncomeSource> GetIncomeSources()
         {
             return _incomeSourceProvider.GetIncomeSources()
-                .Where(i => i.ActiveJob == true).Select(it => 
-                    new IncomeSourceLine
-                    {
-                        IncomeSourceId = it.Id,
-                        IncomeSource = it.SourceName,
-                        JobOf = it.JobOf,
-                        IsCurrentJob = it.ActiveJob,
-                        Position = it.PositionName
-                    }).ToList();
+                .Where(i => i.ActiveJob == true).ToList();
         }
 
         public List<IncomeSource> GetFullIncomeSources()

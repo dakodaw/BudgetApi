@@ -47,7 +47,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeTypes")]
-        public List<IncomeSourceLine> GetIncomeTypes()
+        public List<IncomeSource> GetIncomeTypes()
         {
             return _incomeService.GetIncomeTypes();
         }
@@ -61,7 +61,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSources")]
-        public List<IncomeSourceLine> GetIncomeSources()
+        public List<IncomeSource> GetIncomeSources()
         {
             return _incomeService.GetIncomeSources();
         }

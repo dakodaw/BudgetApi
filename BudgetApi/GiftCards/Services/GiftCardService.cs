@@ -123,7 +123,7 @@ public class GiftCardService: IGiftCardService
                 var foundPurchase = _purchaseProvider
                     .GetPurchase(purchase.Id);
                 purchase.GiftCardId = foundPurchase != default
-                    ? (int)foundPurchase.GiftCardId
+                    ? foundPurchase.GiftCardId
                     : 0;
             }
         }
