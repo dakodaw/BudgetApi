@@ -21,6 +21,10 @@ public class Startup
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
+        //var builder = new ConfigurationBuilder()
+        //    .SetBasePath(env.ContentRootPath)
+        //    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
+        //Configuration = configuration;
     }
 
     public IConfiguration Configuration { get; }
@@ -32,7 +36,6 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddControllers();
-        services.AddCors();
 
         var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
         services.AddSingleton<AppSettings>(appSettings);
