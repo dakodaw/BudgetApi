@@ -16,20 +16,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(Configuration)' == 'Release'">
-      <ItemGroup>
-        <None Include="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-        <None Include="appsettings.Production.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <None Include="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-        <None Include="appsettings.Development.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\Budget.DB\Budget.DB.csproj">
       <GlobalPropertiesToRemove>
@@ -39,5 +25,16 @@
       <GlobalPropertiesToRemove>
       </GlobalPropertiesToRemove>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

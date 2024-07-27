@@ -12,19 +12,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace BudgetApi;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IWebHostEnvironment env)
     {
-        Configuration = configuration;
-        //var builder = new ConfigurationBuilder()
-        //    .SetBasePath(env.ContentRootPath)
-        //    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
+        //var logger = app.Services.GetService<ILogger<Program>>();
+        //logger.Log(LogLevel.Information, env.EnvironmentName);
         //Configuration = configuration;
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            //.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
+        Configuration = configuration;
     }
 
     public IConfiguration Configuration { get; }
