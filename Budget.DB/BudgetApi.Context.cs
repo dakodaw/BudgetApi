@@ -20,6 +20,12 @@ namespace BudgetApi.Models
     
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<BudgetEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<GiftCardEntity>().Property(p => p.InitialAmount).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<IncomeEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<IncomeSourceEntity>().Property(p => p.EstimatedIncome).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<PurchaseEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
+
             modelBuilder.Entity<BudgetEntity>().ToTable("Budget");
             modelBuilder.Entity<BudgetTypeEntity>().ToTable("BudgetType");
             modelBuilder.Entity<GiftCardEntity>().ToTable("GiftCard");
