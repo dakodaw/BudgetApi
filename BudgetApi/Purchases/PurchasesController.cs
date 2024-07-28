@@ -36,16 +36,16 @@ namespace BudgetApi.Purchases
 
         [HttpPut]
         [Route("{purchaseId}")]
-        public bool UpdatePurchase([FromBody] Purchase incomePurchase, int purchaseId)
+        public void UpdatePurchase([FromBody] Purchase incomePurchase, int purchaseId)
         {
-            return _purchasesService.UpdatePurchase(incomePurchase, purchaseId);
+            _purchasesService.UpdatePurchase(incomePurchase);
         }
 
         [HttpDelete]
         [Route("{purchaseId}")]
-        public bool DeletePurchase(int purchaseId)
+        public void DeletePurchase(int purchaseId)
         {
-            return _purchasesService.DeletePurchaseEntry(purchaseId);
+            _purchasesService.DeletePurchaseEntry(purchaseId);
         }
 
         [HttpGet]
@@ -69,7 +69,7 @@ namespace BudgetApi.Purchases
         [Route("deletePurchaseEntry")]
         public bool DeletePurchaseEntry([FromQuery] int purchaseId)
         {
-            return _purchasesService.DeletePurchaseEntry(purchaseId);
+            return _purchasesService.DeletePurchaseEntryObsolete(purchaseId);
         }
 
         [Obsolete("Please use the http get on the base route instead")]

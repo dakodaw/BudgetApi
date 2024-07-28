@@ -12,13 +12,12 @@ namespace BudgetApi.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Budget
+    public partial class GiftCardEntity
     {
         public int Id { get; set; }
-        public int BudgetTypeId { get; set; }
-        public System.DateTime Date { get; set; }
-        public decimal Amount { get; set; }
-    
-        public virtual BudgetTypeEntity BudgetType { get; set; }
+        public string Place { get; set; }
+        public decimal InitialAmount { get; set; }
+        public string CardNumber { get; set; }
+        public string AccessCode { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using BudgetApi.Budgeting.Models;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -29,23 +29,23 @@ namespace BudgetApi.Budgeting
 
         [Route("")]
         [HttpPost]
-        public int AddBudget([FromBody] Budget inputBudget)
+        public int AddBudget([FromBody] BudgetEntry inputBudget)
         {
             return _budgetService.AddBudget(inputBudget);
         }
 
         [Route("{budgetId}")]
         [HttpPut]
-        public bool UpdateBudget([FromBody] Budget inputBudget, int budgetId)
+        public void UpdateBudget([FromBody] BudgetEntry inputBudget, int budgetId)
         {
-            return _budgetService.UpdateBudget(inputBudget, budgetId);
+            _budgetService.UpdateBudget(inputBudget);
         }
 
         [Route("{budgetId}")]
         [HttpDelete]
-        public bool DeleteBudgetEntry(int budgetId)
+        public void DeleteBudgetEntry(int budgetId)
         {
-            return _budgetService.DeleteBudgetEntry(budgetId);
+            _budgetService.DeleteBudgetEntry(budgetId);
         }
 
         [Route("{budgetId}")]

@@ -1,4 +1,5 @@
-﻿using BudgetApi.Incomes.Models;
+﻿using Budget.Models;
+using BudgetApi.Incomes.Models;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,11 @@ namespace BudgetApi.Incomes.Services
             var incomeSourceLines = (from it in _db.IncomeSources.Where(i => i.ActiveJob == true)
                                      select new IncomeSource
                                      {
-                                         IncomeSourceId = it.Id,
-                                         IncomeSource = it.SourceName,
+                                         Id = it.Id,
+                                         SourceName = it.SourceName,
                                          JobOf = it.JobOf,
-                                         IsCurrentJob = it.ActiveJob,
-                                         Position = it.PositionName,
+                                         ActiveJob = it.ActiveJob,
+                                         PositionName = it.PositionName,
                                          PayFrequency = it.PayFrequency,
                                          EstimatedIncome = it.EstimatedIncome ?? 0
                                      }).ToList();
@@ -82,8 +83,8 @@ namespace BudgetApi.Incomes.Services
                 EstimatedIncome = inputIncomeSource.EstimatedIncome,
                 JobOf = inputIncomeSource.JobOf,
                 PayFrequency = inputIncomeSource.PayFrequency,
-                PositionName = inputIncomeSource.Position,
-                SourceName = inputIncomeSource.IncomeSource
+                PositionName = inputIncomeSource.PositionName,
+                SourceName = inputIncomeSource.SourceName
             };
 
             try
@@ -123,14 +124,14 @@ namespace BudgetApi.Incomes.Services
         {
             try
             {
-                var incomeSource = _db.IncomeSources.Find(inputIncomeSource.IncomeSourceId);
+                var incomeSource = _db.IncomeSources.Find(inputIncomeSource.Id);
 
-                incomeSource.ActiveJob = inputIncomeSource.IsCurrentJob;
+                incomeSource.ActiveJob = inputIncomeSource.ActiveJob;
                 incomeSource.EstimatedIncome = inputIncomeSource.EstimatedIncome;
                 incomeSource.JobOf = inputIncomeSource.JobOf;
                 incomeSource.PayFrequency = inputIncomeSource.PayFrequency;
-                incomeSource.PositionName = inputIncomeSource.Position;
-                incomeSource.SourceName = inputIncomeSource.IncomeSource;
+                incomeSource.PositionName = inputIncomeSource.PositionName;
+                incomeSource.SourceName = inputIncomeSource.SourceName;
 
                 _db.SaveChanges();
             }
@@ -161,11 +162,11 @@ namespace BudgetApi.Incomes.Services
                                   where ins.Id == incomeSourceId
                                   select new IncomeSource
                                   {
-                                      IncomeSource = ins.SourceName,
-                                      IsCurrentJob = ins.ActiveJob,
+                                      SourceName = ins.SourceName,
+                                      ActiveJob = ins.ActiveJob,
                                       JobOf = ins.JobOf,
                                       PayFrequency = ins.PayFrequency,
-                                      Position = ins.PositionName
+                                      PositionName = ins.PositionName
                                   }).FirstOrDefault();
             if (_db.IncomeSources.Find(incomeSourceId).EstimatedIncome != null)
                 incomeToReturn.EstimatedIncome = (decimal)_db.IncomeSources.Find(incomeSourceId).EstimatedIncome;

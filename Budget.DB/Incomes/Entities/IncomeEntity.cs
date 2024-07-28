@@ -14,7 +14,7 @@ namespace BudgetApi.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class Income
+    public partial class IncomeEntity
     {
         [Key]
         public int Id { get; set; }

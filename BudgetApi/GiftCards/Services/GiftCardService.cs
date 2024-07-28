@@ -1,216 +1,193 @@
-﻿using BudgetApi.Budgeting.Models;
-using BudgetApi.BudgetTypes;
-using BudgetApi.GiftCards.Models;
-using BudgetApi.Models;
-using BudgetApi.Purchases.Models;
-using BudgetApi.Shared;
-using BudgetApi.Shared.Custom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Budget.DB;
+using Budget.DB.Budget;
+using Budget.DB.GiftCards;
+using BudgetApi.GiftCards.Models;
+using BudgetApi.Models;
+using BudgetApi.Purchases.Models;
+using BudgetApi.Shared.Custom;
 
-namespace BudgetApi.GiftCards.Services
+namespace BudgetApi.GiftCards.Services;
+
+public class GiftCardService: IGiftCardService
 {
-    public class GiftCardService: IGiftCardService
+    IPurchaseProvider _purchaseProvider;
+    IGiftCardProvider _giftCardProvider;
+    IBudgetProvider _budgetProvider;
+
+    public GiftCardService(
+        IPurchaseProvider purchaseProvider,
+        IGiftCardProvider giftCardProvider,
+        IBudgetProvider budgetProvider)
     {
-        BudgetEntities _db;
-        public GiftCardService(BudgetEntities db)
+        _purchaseProvider = purchaseProvider;
+        _giftCardProvider = giftCardProvider;
+        _budgetProvider = budgetProvider;
+    }
+
+    // GET api/<controller>
+    public List<GiftCardSelectLine> GetGiftCardLines()
+    {
+        var giftCardLines = new List<GiftCardSelectLine>();
+        var giftCards = _giftCardProvider.GetAllGiftCards();
+        foreach (var giftCard in giftCards)
         {
-            _db = db;
-        }
-        // GET api/<controller>
-        public List<GiftCardSelectLine> GetGiftCardLines()
-        {
-            var giftCardLines = new List<GiftCardSelectLine>();
-            foreach (var giftCard in _db.GiftCards)
+            var remaining = GetGiftCardBalance(giftCard.Id);
+            if (remaining > 0)
             {
-                var remaining = GetGiftCardBalance(giftCard.Id);
-                if (remaining > 0)
+                var card = new GiftCardSelectLine
                 {
-                    var card = new GiftCardSelectLine
-                    {
-                        Id = giftCard.Id,
-                        Place = giftCard.Place,
-                        Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
-                        RemainingAmount = remaining
-                    };
-                    giftCardLines.Add(card);
-                }
+                    Id = giftCard.Id,
+                    Place = giftCard.Place,
+                    Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
+                    RemainingAmount = remaining
+                };
+                giftCardLines.Add(card);
             }
-            return giftCardLines.OrderBy(i => i.Place).ToList();
         }
+        return giftCardLines.OrderBy(i => i.Place).ToList();
+    }
 
-        public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros()
-        {
-            var giftCardLines = new List<GiftCardSelectLine>();
-            foreach (var giftCard in _db.GiftCards)
-            {
-                var remaining = GetGiftCardBalance(giftCard.Id);
-                if (remaining > 0)
-                {
-                    var card = new GiftCardSelectLine
-                    {
-                        Id = giftCard.Id,
-                        Place = giftCard.Place,
-                        Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
-                        RemainingAmount = remaining
-                    };
-                    giftCardLines.Add(card);
-                }
-                else
-                {
-                    var card = new GiftCardSelectLine
-                    {
-                        Id = giftCard.Id,
-                        Place = giftCard.Place,
-                        Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
-                    };
-                    giftCardLines.Add(card);
-                }
-            }
-            return giftCardLines.OrderBy(i => i.Place).ToList();
-        }
+    public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros()
+    {
+        var giftCardLines = new List<GiftCardSelectLine>();
+        var giftCards = _giftCardProvider.GetAllGiftCards();
 
-        public decimal GetGiftCardBalance(int giftCardId)
+        foreach (var giftCard in giftCards)
         {
-            var history = _db.Purchases.Where(i => i.GiftCardId == giftCardId).ToList();
-            var initialBalance = _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault().InitialAmount;
-            decimal currentBalance = initialBalance;
-            foreach (var purchase in history)
+            var remaining = GetGiftCardBalance(giftCard.Id);
+            if (remaining > 0)
             {
-                currentBalance = currentBalance - purchase.Amount;
-            }
-            return currentBalance;
-        }
-
-        public List<PurchaseLine> GetPurchaseLines(DateTime monthYear)
-        {
-            var purchases = (from p in _db.Purchases.Where(i => i.PaymentType == PurchaseTypeNames.GiftCard && i.Date.Month == monthYear.Date.Month && i.Date.Year == monthYear.Year)
-                             join t in _db.BudgetTypes on p.PurchaseTypeId equals t.Id
-                             select new PurchaseLine
-                             {
-                                 PurchaseType = new BudgetType
-                                 {
-                                     BudgetTypeId = p.PurchaseTypeId,
-                                     BudgetTypeName = t.BudgetType1
-                                 },
-                                 Description = p.Description,
-                                 Date = p.Date,
-                                 Amount = p.Amount,
-                                 Id = p.Id,
-                                 PaymentType = p.PaymentType,
-                                 //GiftCardId = p.GiftCardId,
-                                 IsReimbursement = p.FutureReimbursement
-                             }).ToList();
-            foreach (var purchase in purchases)
-            {
-                if (purchase.PaymentType == PurchaseTypeNames.GiftCard)
+                var card = new GiftCardSelectLine
                 {
-                    purchase.GiftCardId = (int)_db.Purchases.Where(i => i.Id == purchase.Id).FirstOrDefault().GiftCardId;
-                }
-            }
-            return purchases;
-        }
-
-        public GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId)
-        {
-            return new GiftCardHistoryBalance
-            {
-                Balance = GetGiftCardBalance(giftCardId),
-                History = _db.Purchases.Where(i => i.GiftCardId == giftCardId).ToList()
-            };
-        }
-
-        public bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1)
-        {
-            if (giftCardId == -1)
-            {
-                try 
-                {
-                    AddGiftCard(inputGiftCard);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                    Id = giftCard.Id,
+                    Place = giftCard.Place,
+                    Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
+                    RemainingAmount = remaining
+                };
+                giftCardLines.Add(card);
             }
             else
             {
-                try
+                var card = new GiftCardSelectLine
                 {
-                    UpdateGiftCard(inputGiftCard);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-
-        public int AddGiftCard(GiftCard inputGiftCard)
-        {
-            _db.GiftCards.Add(inputGiftCard);
-            _db.SaveChanges();
-
-            //var checkCard = _db.GiftCards.Where(i => i.CardNumber == inputGiftCard.CardNumber).FirstOrDefault();
-            return inputGiftCard.Id;
-        }
-
-        public void UpdateGiftCard(GiftCard inputGiftCard)
-        {
-            try
-            {
-                var giftCardToUpdate = _db.GiftCards.Where(i => i.Id == inputGiftCard.Id).FirstOrDefault();
-                giftCardToUpdate.AccessCode = inputGiftCard.AccessCode;
-                giftCardToUpdate.CardNumber = inputGiftCard.CardNumber;
-                giftCardToUpdate.InitialAmount = inputGiftCard.InitialAmount;
-                giftCardToUpdate.Place = inputGiftCard.Place;
-                _db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to update gift card", ex);
-            }
-        }
-
-        public bool DeleteGiftCardEntry(int giftCardId)
-        {
-            try
-            {
-                var toDelete = _db.GiftCards.Find(giftCardId);
-                _db.GiftCards.Remove(toDelete);
-                _db.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public List<GiftCardHistoryBalance> GetAllBalanceAndHistory()
-        {
-            var balance = new List<GiftCardHistoryBalance>();
-            foreach (var giftCard in _db.GiftCards)
-            {
-                balance.Add(new GiftCardHistoryBalance
-                {
-                    Balance = GetGiftCardBalance(giftCard.Id),
-                    History = _db.Purchases.Where(i => i.GiftCardId == giftCard.Id).ToList(),
+                    Id = giftCard.Id,
                     Place = giftCard.Place,
-                    CardNo = giftCard.CardNumber,
-                    AccessCode = giftCard.AccessCode
-                });
+                    Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
+                };
+                giftCardLines.Add(card);
             }
-            return balance;
         }
+        return giftCardLines.OrderBy(i => i.Place).ToList();
+    }
 
-        public GiftCard GetGiftCard(int giftCardId)
+    public decimal GetGiftCardBalance(int giftCardId)
+    {
+        var history = _purchaseProvider.GetGiftCardPurchases(giftCardId).ToList();
+        var giftCard = _giftCardProvider.GetGiftCard(giftCardId);
+        var initialBalance = giftCard?.InitialAmount ?? 0;
+        decimal currentBalance = initialBalance;
+        foreach (var purchase in history)
         {
-            return _db.GiftCards.Where(i => i.Id == giftCardId).FirstOrDefault();
+            currentBalance = currentBalance - purchase.Amount;
         }
+        return currentBalance;
+    }
+
+    public List<PurchaseLine> GetPurchaseLines(DateTime monthYear)
+    {
+        var giftCardPurchases = _purchaseProvider.GetAllGiftCardPurchases();
+        var purchases = (from p in _purchaseProvider.GetMonthGiftCardPurchases(monthYear)
+                         join t in _budgetProvider.GetBudgetTypes() on p.PurchaseTypeId equals t.BudgetTypeId
+                         select new PurchaseLine
+                         {
+                             PurchaseType = new BudgetType
+                             {
+                                 BudgetTypeId = p.PurchaseTypeId,
+                                 BudgetTypeName = t.BudgetTypeName
+                             },
+                             Description = p.Description,
+                             Date = p.Date,
+                             Amount = p.Amount,
+                             Id = p.Id,
+                             PaymentType = p.PaymentType,
+                             //GiftCardId = p.GiftCardId,
+                             IsReimbursement = p.FutureReimbursement
+                         }).ToList();
+        foreach (var purchase in purchases)
+        {
+            if (purchase.PaymentType == PurchaseTypeNames.GiftCard)
+            {
+                var foundPurchase = _purchaseProvider
+                    .GetPurchase(purchase.Id);
+                purchase.GiftCardId = foundPurchase != default
+                    ? foundPurchase.GiftCardId
+                    : 0;
+            }
+        }
+        return purchases;
+    }
+
+    public GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId)
+    {
+        return new GiftCardHistoryBalance
+        {
+            Balance = GetGiftCardBalance(giftCardId),
+            History = _purchaseProvider.GetGiftCardPurchases(giftCardId).ToList()
+        };
+    }
+
+    public bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1)
+    {
+        return _giftCardProvider.AddUpdateGiftCard(inputGiftCard, giftCardId);
+    }
+
+    public int AddGiftCard(GiftCard inputGiftCard)
+    {
+        return _giftCardProvider.AddGiftCard(inputGiftCard);
+    }
+
+    public void UpdateGiftCard(GiftCard inputGiftCard)
+    {
+        _giftCardProvider.UpdateGiftCard(inputGiftCard);
+    }
+
+    public void DeleteGiftCardEntry(int giftCardId)
+    {
+        _giftCardProvider.DeleteGiftCardEntry(giftCardId);
+    }
+
+    public bool DeleteGiftCardObsolete(int giftCardId)
+    {
+        try
+        {
+            DeleteGiftCardEntry(giftCardId);
+            return true;
+        }
+        catch { return false; }
+    }
+
+    public List<GiftCardHistoryBalance> GetAllBalanceAndHistory()
+    {
+        var balance = new List<GiftCardHistoryBalance>();
+        foreach (var giftCard in _giftCardProvider.GetAllGiftCards())
+        {
+            balance.Add(new GiftCardHistoryBalance
+            {
+                Balance = GetGiftCardBalance(giftCard.Id),
+                History = _purchaseProvider.GetGiftCardPurchases(giftCard.Id).ToList(),
+                Place = giftCard.Place,
+                CardNo = giftCard.CardNumber,
+                AccessCode = giftCard.AccessCode
+            });
+        }
+        return balance;
+    }
+
+    public GiftCard GetGiftCard(int giftCardId)
+    {
+        return _giftCardProvider.GetGiftCard(giftCardId);
     }
 }

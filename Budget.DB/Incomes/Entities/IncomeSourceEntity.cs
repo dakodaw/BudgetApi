@@ -13,12 +13,12 @@ namespace BudgetApi.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    public class IncomeSourceEntity
+    public partial class IncomeSourceEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public IncomeSourceEntity()
         {
-            this.Incomes = new HashSet<Income>();
+            this.Incomes = new HashSet<IncomeEntity>();
         }
 
         [Key]
@@ -31,6 +31,6 @@ namespace BudgetApi.Models
         public string PayFrequency { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Income> Incomes { get; set; }
+        public virtual ICollection<IncomeEntity> Incomes { get; set; }
     }
 }

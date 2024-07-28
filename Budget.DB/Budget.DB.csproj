@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Purchase\" />
+    <None Remove="Purchases\Entities\" />
+    <None Remove="Budget\" />
+    <None Remove="Budget\Entities\" />
+    <None Remove="GiftCards\Entities\" />
+    <None Remove="CustomSettings\" />
+    <None Remove="CustomSettings\Entities\" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Microsoft.EntityFrameworkCore.Design" />
+    <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
+    <None Remove="Microsoft.EntityFrameworkCore.Tools" />
+    <None Remove="Microsoft.EntityFrameworkCore.Abstractions" />
+    <None Remove="Microsoft.Extensions.Configuration.Binder" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Purchases\" />
+    <Folder Include="Purchases\Entities\" />
+    <Folder Include="Budget\Entities\" />
+    <Folder Include="GiftCards\" />
+    <Folder Include="GiftCards\Entities\" />
+    <Folder Include="CustomSettings\" />
+    <Folder Include="CustomSettings\Entities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Budget.Models\Budget.Models.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+  </ItemGroup>
+</Project>

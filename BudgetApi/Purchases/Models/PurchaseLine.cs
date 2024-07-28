@@ -1,5 +1,4 @@
-﻿using BudgetApi.Budgeting.Models;
-using BudgetApi.BudgetTypes;
+﻿using BudgetApi.Models;
 using System;
 
 namespace BudgetApi.Purchases.Models
@@ -13,6 +12,6 @@ namespace BudgetApi.Purchases.Models
         public bool IsReimbursement { get; set; }
         public string PaymentType { get; set; }
         public string Description { get; set; }
-        public int GiftCardId { get; set; }
+        public int? GiftCardId { get; set; }
     }
 }

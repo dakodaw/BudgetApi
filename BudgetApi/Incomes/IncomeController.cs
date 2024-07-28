@@ -1,4 +1,5 @@
-﻿using BudgetApi.Incomes.Models;
+﻿using Budget.Models;
+using BudgetApi.Incomes.Models;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
@@ -33,7 +34,7 @@ namespace BudgetApi.Incomes
         public bool UpdateIncome([FromBody] Income inputIncome, int incomeId = -1)
         {
             // TODO: Handle Not found and incomeId of less than 1 passed through
-            return _incomeService.UpdateIncome(inputIncome, incomeId);
+            return _incomeService.UpdateIncome(inputIncome);
         }
 
         [HttpDelete]
@@ -46,7 +47,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeTypes")]
-        public List<IncomeSourceLine> GetIncomeTypes()
+        public List<IncomeSource> GetIncomeTypes()
         {
             return _incomeService.GetIncomeTypes();
         }
@@ -60,7 +61,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSources")]
-        public List<IncomeSourceLine> GetIncomeSources()
+        public List<IncomeSource> GetIncomeSources()
         {
             return _incomeService.GetIncomeSources();
         }
@@ -97,7 +98,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("addUpdateJob")]
-        public bool AddUpdateJob([FromBody] IncomeSourceEntity inputJob, [FromQuery] int incomeSourceId = -1)
+        public bool AddUpdateJob([FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
         {
             return _incomeService.AddUpdateJob(inputJob, incomeSourceId);
         }

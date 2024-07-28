@@ -1,5 +1,4 @@
-﻿using System;
-namespace BudgetApi.Shared.AppSettings
+﻿namespace BudgetApi.Shared.AppSettings
 {
     public class AppSettings
     {

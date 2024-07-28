@@ -1,4 +1,7 @@
-﻿using BudgetApi.Budgeting.Models;
+using Budget.DB;
+using Budget.DB.Budget;
+using Budget.DB.Incomes;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
 using System;
@@ -10,11 +13,21 @@ namespace BudgetApi.Budgeting.Services
 {
     public class BudgetService: IBudgetService
     {
-        BudgetEntities _db;
+        IBudgetProvider _budgetProvider;
+        IPurchaseProvider _purchaseProvider;
+        IIncomeProvider _incomeProvider;
+        IIncomeSourceProvider _incomeSourceProvider;
 
-        public BudgetService(BudgetEntities db)
+        public BudgetService(
+            IBudgetProvider budgetProvider,
+            IPurchaseProvider purchaseProvider,
+            IIncomeProvider incomeProvider,
+            IIncomeSourceProvider incomeSourceProvider)
         {
-            _db = db;
+            _budgetProvider = budgetProvider;
+            _purchaseProvider = purchaseProvider;
+            _incomeProvider = incomeProvider;
+            _incomeSourceProvider = incomeSourceProvider;
         }
 
         public List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear)
@@ -22,53 +35,62 @@ namespace BudgetApi.Budgeting.Services
             // Should refactor all of this. It's a lot.
             decimal totalBudgeted = (decimal)0;
             decimal totalSpent = (decimal)0;
-            var budgetPurchases = _db.Purchases.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year).ToList();
-            var budgetLines = (from b in _db.Budgets.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Date.Year)
-                               join bt in _db.BudgetTypes on b.BudgetTypeId equals bt.Id
+            var budgetEntries = _purchaseProvider.GetPurchasesByMonthYear(monthYear);
+            var budgetLines = (from b in budgetEntries
+                               join bt in _budgetProvider.GetBudgetTypes() on b.PurchaseTypeId equals bt.BudgetTypeId
                                select new BudgetWithPurchaseInfo
                                {
                                    BudgetLineId = b.Id,
                                    BudgetType = new BudgetType
                                    {
-                                       BudgetTypeId = bt.Id,
-                                       BudgetTypeName = bt.BudgetType1
+                                       BudgetTypeId = bt.BudgetTypeId,
+                                       BudgetTypeName = bt.BudgetTypeName
                                    },
                                    BudgetDate = b.Date,
                                    Amount = b.Amount
                                }).ToList();
+
             totalBudgeted = budgetLines.Sum(i => i.Amount);
 
             //Get the income that is marked as a reimbursement for the month/year
-            var applicableincome = _db.Incomes.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year).ToList();
+            var applicableincome = _incomeProvider.GetIncomes(monthYear);
             //go through all budgetlines and find the matching purchase amount
             foreach (var budget in budgetLines)
             {
-                var applicablePurchases = budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId);
+                var applicablePurchases = budgetEntries
+                    .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId);
+
                 decimal reimbursement = (decimal)0;
 
                 if (applicableincome != null)
                 {
                     //Find any income that is a reimbursement and has a matching purchase id from this month/year
-                    //var incomeToReimburse = applicableincome.Where(i => budgetPurchases.Any(j => j.Id == i.PurchaseId)).ToList();
+                    //var incomeToReimburse = applicableincome.Where(i => budgetEntries.Any(j => j.Id == i.PurchaseId)).ToList();
                     foreach (var myI in applicableincome)
                     {
-                        var purchasesToReimburse = applicablePurchases.Where(i => i.Id == myI.PurchaseId);
+                        var purchasesToReimburse = applicablePurchases
+                            .Where(i => i.Id == myI.PurchaseId);
+
                         if (purchasesToReimburse.Count() > 0)
                         {
                             reimbursement += myI.Amount;
                         }
                     }
-                    budget.PurchaseAmount = (budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal").Sum(i => i.Amount) - reimbursement);
+                    budget.PurchaseAmount = budgetEntries
+                        .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal")
+                        .Sum(i => i.Amount) - reimbursement;
                     totalSpent += budget.PurchaseAmount;
                 }
                 else
                 {
-                    budget.PurchaseAmount = budgetPurchases.Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal").Sum(i => i.Amount);
+                    budget.PurchaseAmount = budgetEntries
+                        .Where(i => i.PurchaseTypeId == budget.BudgetType.BudgetTypeId && i.PaymentType == "Normal")
+                        .Sum(i => i.Amount);
                     totalSpent += budget.PurchaseAmount;
                 }
             }
 
-            AddUnbudgetedPurchases(ref totalSpent, budgetPurchases, ref budgetLines);
+            AddUnbudgetedPurchases(ref totalSpent, budgetEntries, ref budgetLines);
 
             // Adds a line with a total - more a UI concern I think.
             budgetLines.Add(new BudgetWithPurchaseInfo
@@ -83,7 +105,7 @@ namespace BudgetApi.Budgeting.Services
             return budgetLines;
         }
 
-        private void AddUnbudgetedPurchases(ref decimal totalSpent, List<Purchase> budgetPurchases, ref List<BudgetWithPurchaseInfo> budgetLines)
+        private void AddUnbudgetedPurchases(ref decimal totalSpent, IEnumerable<Purchase> budgetPurchases, ref List<BudgetWithPurchaseInfo> budgetLines)
         {
             var unBudgetedPurchases = new List<BudgetWithPurchaseInfo>();
             foreach (var p in budgetPurchases)
@@ -93,16 +115,15 @@ namespace BudgetApi.Budgeting.Services
                 {
                     unBudgetedPurchases.Add(new BudgetWithPurchaseInfo
                     {
-                        BudgetType = new BudgetType
-                        {
-                            BudgetTypeName = _db.BudgetTypes.Where(i => i.Id == p.PurchaseTypeId).FirstOrDefault().BudgetType1
-                        },
+                        BudgetType = _budgetProvider.GetBudgetType(p.PurchaseTypeId),
                         Amount = 0,
                         PurchaseAmount = p.Amount
                     });
                 }
             }
-            var groupedPurchases = unBudgetedPurchases.GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
+            var groupedPurchases = unBudgetedPurchases
+                .GroupBy(i => i.BudgetType.BudgetTypeName).ToList();
+
             foreach (var t in groupedPurchases)
             {
                 budgetLines.Add(new BudgetWithPurchaseInfo
@@ -120,112 +141,46 @@ namespace BudgetApi.Budgeting.Services
             budgetLines = budgetLines.OrderBy(i => i.BudgetType.BudgetTypeName).ToList();
         }
 
-        public int AddBudget(Budget inputBudget)
+        public int AddBudget(BudgetEntry inputBudget)
         {
-            try
-            {
-                _db.Budgets.Add(inputBudget);
-                _db.SaveChanges();
-                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                
-                return checkBudget != default ? checkBudget.Id : 0;
-            }
-            catch(Exception ex)
-            {
-                throw new Exception("Failed to Add Budget", ex);
-            }
+            return _budgetProvider.AddBudget(inputBudget);
         }
 
-        public bool AddBudgetLines(IEnumerable<Budget> inputBudgetLines)
+        public bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines)
         {
-            bool success = false;
-            try
-            {
-                _db.Budgets.AddRange(inputBudgetLines);
-                _db.SaveChanges();
-
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            return _budgetProvider.AddBudgetEntries(inputBudgetLines);
         }
 
-        public bool UpdateBudget(Budget inputBudget, int budgetId)
+        public void UpdateBudget(BudgetEntry inputBudget)
         {
-            bool success = false;
-            //Get the Budget from the Database with a given id
-            //Update the Budget that matches the one from the database
-            var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Amount = inputBudget.Amount;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetTypeId = inputBudget.BudgetTypeId;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().BudgetType = inputBudget.BudgetType;
-            _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault().Date = inputBudget.Date;
-
-            //// Alternate approach
-            //_db.Entry(selectedBudgetEntry).CurrentValues.SetValues(new
-            //{
-            //    Amount = inputBudget.Amount,
-            //    BudgetTypeId = selectedBudgetEntry.BudgetTypeId,
-            //    BudgetType = selectedBudgetEntry?.BudgetType,
-            //    Date = inputBudget.Date
-            //});
-
-            //Save Changes
-            _db.SaveChanges();
-            try
-            {
-                var checkBudget = _db.Budgets.Where(i => i.Amount == inputBudget.Amount && i.Date == inputBudget.Date).FirstOrDefault();
-                success = true;
-            }
-            catch
-            {
-
-            }
-            return success;
+            _budgetProvider.UpdateBudget(inputBudget);
         }
 
-        public bool DeleteBudgetEntry(int budgetId)
+        public void DeleteBudgetEntry(int budgetId)
         {
-            bool success = true;
-            try
-            {
-                var toDelete = _db.Budgets.Find(budgetId);
-                _db.Budgets.Remove(toDelete);
-                _db.SaveChanges();
-            }
-            catch
-            {
-
-            }
-            return success;
+            _budgetProvider.DeleteBudgetEntry(budgetId);
         }
 
         public BudgetInfo GetExistingBudget(int budgetId)
         {
-            var existingPurchase = (from b in _db.Budgets.Where(i => i.Id == budgetId)
-                                    select new BudgetInfo
-                                    {
-                                        Amount = b.Amount,
-                                        BudgetDate = b.Date,
-                                        BudgetType = new BudgetType
-                                        {
-                                            BudgetTypeId = b.BudgetType.Id,
-                                            BudgetTypeName = b.BudgetType.BudgetType1
-                                        }
-                                    }).FirstOrDefault();
-            existingPurchase.BudgetMonthYear = existingPurchase.BudgetDate.ToString("yyyy-MM");
-            return existingPurchase;
+            var existingBudget = _budgetProvider.GetBudgetEntry(budgetId);
+            return new BudgetInfo
+            {
+                Amount = existingBudget.Amount,
+                BudgetDate = existingBudget.Date,
+                BudgetType = new BudgetType
+                {
+                    BudgetTypeId = existingBudget.BudgetTypeId,
+                    BudgetTypeName = existingBudget.BudgetType.BudgetTypeName
+                },
+                BudgetMonthYear = existingBudget.Date.ToString("yyyy-MM")
+            };
         }
 
         public decimal ScenarioCheck(ScenarioInput scenarioInput)
         {
-            var applicableBudget = _db.Budgets
-                .Where(i => 
-                    i.Date >= scenarioInput.startMonth &&
-                    i.Date <= scenarioInput.endMonth)
+            var applicableBudget = _budgetProvider
+                .GetBudgetEntriesInTimeSpan(scenarioInput.startMonth, scenarioInput.endMonth)
                 .ToList();
 
             decimal amountPlannedToSpend = default;
@@ -234,7 +189,10 @@ namespace BudgetApi.Budgeting.Services
                 amountPlannedToSpend += budgetItem.Amount;
             }
             
-            var income = _db.IncomeSources.Where(i => i.ActiveJob == true && i.EstimatedIncome != null).ToList();
+            var income = _incomeSourceProvider.GetIncomeSources()
+                .Where(i => i.EstimatedIncome != null)
+                .ToList();
+
             decimal amountPlannedToEarn = default;
             foreach (var inc in income)
             {
