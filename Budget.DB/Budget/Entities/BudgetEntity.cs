@@ -7,19 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BudgetApi.Models
+namespace Budget.DB;
+
+using System;
+using System.Collections.Generic;
+
+public partial class BudgetEntity
 {
-    using System;
-    using System.Collections.Generic;
-    
-    public partial class BudgetEntity
-    {
-        public int Id { get; set; }
-        public int BudgetTypeId { get; set; }
-        public System.DateTime Date { get; set; }
-        public decimal Amount { get; set; }
-        //public int UserId { get; set; } = 0;
-    
-        public virtual BudgetTypeEntity BudgetType { get; set; }
-    }
+    public int Id { get; set; }
+    public int BudgetTypeId { get; set; }
+    public System.DateTime Date { get; set; }
+    public decimal Amount { get; set; }
+
+    public virtual BudgetTypeEntity BudgetType { get; set; }
 }

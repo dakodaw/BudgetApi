@@ -7,17 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BudgetApi.Models
+namespace Budget.DB;
+
+using System;
+using System.Collections.Generic;
+
+public partial class GiftCardEntity
 {
-    using System;
-    using System.Collections.Generic;
-    
-    public partial class GiftCardEntity
-    {
-        public int Id { get; set; }
-        public string Place { get; set; }
-        public decimal InitialAmount { get; set; }
-        public string CardNumber { get; set; }
-        public string AccessCode { get; set; }
-    }
+    public int Id { get; set; }
+    public string Place { get; set; }
+    public decimal InitialAmount { get; set; }
+    public string CardNumber { get; set; }
+    public string AccessCode { get; set; }
 }

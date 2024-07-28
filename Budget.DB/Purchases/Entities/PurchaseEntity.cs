@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BudgetApi.Models
+namespace Budget.DB
 {
     using System;
     using System.Collections.Generic;
