@@ -9,6 +9,7 @@
 
 namespace BudgetApi.Models
 {
+    using Budget.DB.User;
     using BudgetApi.Shared;
     using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,7 @@ namespace BudgetApi.Models
             modelBuilder.Entity<IncomeSourceEntity>().ToTable("IncomeSource");
             modelBuilder.Entity<PurchaseEntity>().ToTable("Purchases");
             modelBuilder.Entity<CustomSettingsEntity>().ToTable("Settings");
+            modelBuilder.Entity<UserEntity>().ToTable("User");
         }
     
         public virtual DbSet<BudgetEntity> Budgets { get; set; }
@@ -42,5 +44,6 @@ namespace BudgetApi.Models
         public virtual DbSet<IncomeSourceEntity> IncomeSources { get; set; }
         public virtual DbSet<PurchaseEntity> Purchases { get; set; }
         public virtual DbSet<CustomSettingsEntity> Settings { get; set; }
+        public virtual DbSet<UserEntity> User { get; set; }
     }
 }
