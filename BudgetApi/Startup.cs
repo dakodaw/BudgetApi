@@ -1,3 +1,4 @@
+using BudgetApi.BudgetGroups.Services;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.BudgetTypes;
 using BudgetApi.CopyTo.Services;
@@ -5,7 +6,10 @@ using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Purchases.Services;
 using BudgetApi.Settings.Services;
+using BudgetApi.Shared;
 using BudgetApi.Shared.AppSettings;
+using BudgetApi.Shared.Authorization;
+using BudgetApi.Users.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +30,6 @@ public class Startup
         //Configuration = configuration;
         var builder = new ConfigurationBuilder()
             .SetBasePath(env.ContentRootPath)
-            //.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"appsettings.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
         Configuration = configuration;
@@ -89,6 +92,9 @@ public class Startup
         services.AddScoped<IIncomeSourceService, IncomeSourceService>();
         services.AddScoped<IPurchasesService, PurchasesService>();
         services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IGroupsService, GroupsService>();
+        services.AddScoped<IBudgetAuthorizationService, BudgetAuthorizationService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

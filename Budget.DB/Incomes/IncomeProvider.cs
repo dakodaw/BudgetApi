@@ -156,7 +156,7 @@ public class IncomeProvider: IIncomeProvider
                 _db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -183,7 +183,7 @@ public class IncomeProvider: IIncomeProvider
                 _db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -263,7 +263,7 @@ public class IncomeProvider: IIncomeProvider
             _db.SaveChanges();
             return true;
         }
-        catch (Exception ex)
+        catch
         {
             return false;
         }

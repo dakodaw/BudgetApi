@@ -36,6 +36,7 @@ namespace BudgetApi.Models
             modelBuilder.Entity<CustomSettingsEntity>().ToTable("Settings");
             modelBuilder.Entity<UserEntity>().ToTable("User");
             modelBuilder.Entity<BudgetingGroupEntity>().ToTable("BudgetingGroup");
+            modelBuilder.Entity<UsersBudgetingGroupEntity>().ToTable("UsersBudgetingGroup");
         }
     
         public virtual DbSet<BudgetEntity> Budgets { get; set; }
@@ -47,5 +48,6 @@ namespace BudgetApi.Models
         public virtual DbSet<CustomSettingsEntity> Settings { get; set; }
         public virtual DbSet<UserEntity> User { get; set; }
         public virtual DbSet<BudgetingGroupEntity> BudgetingGroup { get; set; }
+        public virtual DbSet<UsersBudgetingGroupEntity> UsersBudgetingGroup { get; set; }
     }
 }

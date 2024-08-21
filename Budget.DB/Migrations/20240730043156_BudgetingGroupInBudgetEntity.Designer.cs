@@ -4,6 +4,7 @@ using BudgetApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budget.DB.Migrations
 {
     [DbContext(typeof(BudgetEntities))]
-    partial class BudgetEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20240730043156_BudgetingGroupInBudgetEntity")]
+    partial class BudgetingGroupInBudgetEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,6 +241,12 @@ namespace Budget.DB.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BudgetingGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsGroupAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSystemAdmin")
                         .HasColumnType("bit");
 
@@ -246,34 +255,9 @@ namespace Budget.DB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
-                });
-
-            modelBuilder.Entity("Budget.DB.UsersBudgetingGroupEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("BudgetingGroupId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsGroupAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("BudgetingGroupId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersBudgetingGroup", (string)null);
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("Budget.DB.BudgetEntity", b =>
@@ -304,21 +288,15 @@ namespace Budget.DB.Migrations
                     b.Navigation("IncomeSource");
                 });
 
-            modelBuilder.Entity("Budget.DB.UsersBudgetingGroupEntity", b =>
+            modelBuilder.Entity("Budget.DB.UserEntity", b =>
                 {
                     b.HasOne("Budget.DB.BudgetingGroupEntity", "BudgetingGroup")
                         .WithMany()
-                        .HasForeignKey("BudgetingGroupId");
-
-                    b.HasOne("Budget.DB.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("BudgetingGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BudgetingGroup");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Budget.DB.BudgetTypeEntity", b =>

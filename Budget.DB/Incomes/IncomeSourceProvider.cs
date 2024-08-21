@@ -58,7 +58,7 @@ public class IncomeSourceProvider: IIncomeSourceProvider
                 AddIncomeSource(inputJob);
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
