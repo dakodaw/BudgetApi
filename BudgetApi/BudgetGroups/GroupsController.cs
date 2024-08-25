@@ -1,13 +1,11 @@
 ﻿using Budget.Models;
+using Budget.Models.ExceptionTypes;
 using BudgetApi.BudgetGroups.Services;
 using BudgetApi.Shared;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 
 namespace BudgetApi.BudgetGroups
 {
@@ -25,66 +23,134 @@ namespace BudgetApi.BudgetGroups
         }
 
         [HttpGet]
-        [Route("userInfo")]
-        public IEnumerable<object> GetUserInfo()
-        {
-            var claimsUser = HttpContext.User.Claims;
-            var externalLoginUserId = claimsUser.FirstOrDefault(x => x.Type == "user_id")?.Value;
-            //return claimsUser.Claims;
-            return [externalLoginUserId];
-        }
-
-        [HttpGet]
         [Route("{id}")]
-        public BudgetingGroup Get(int id)
+        public ActionResult<BudgetingGroup> Get(int id)
         {
-            return _groupsService.Get(id);
+            try
+            {
+                if (!(_authorizationService.IsUserSystemAdmin(ExternalLoginId) 
+                    || _authorizationService.IsUserInGroup(ExternalLoginId, id)))
+                {
+                    return Unauthorized();
+                }
+
+                return _groupsService.Get(id);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("list")]
         public ActionResult<IEnumerable<BudgetingGroup>> GetByExternalLoginId()
         {
-            if (!_authorizationService.IsUserSystemAdmin(ExternalLoginId))
+            try
+            {
+                return Ok(_groupsService.GetByExternalLoginId(ExternalLoginId));
+            }
+            catch (UserNotFoundException)
+            {
                 return Unauthorized();
-
-            return Ok(_groupsService.GetByExternalLoginId(ExternalLoginId));
+            }
         }
 
         [HttpPost]
         [Route("")]
-        public int Add(BudgetingGroup budgetGroup)
+        public ActionResult<int> Add(BudgetingGroup budgetGroup)
         {
-            return _groupsService.Add(budgetGroup);
+            try
+            {
+                // TODO: Figure out if I want to allow people to add groups from user, or only admin to add groups
+                if (_authorizationService.IsUserSystemAdmin(ExternalLoginId))
+                    return Unauthorized();
+
+                return _groupsService.Add(budgetGroup);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPut]
         [Route("")]
-        public void Update(BudgetingGroup budgetGroup)
+        public ActionResult Update(BudgetingGroup budgetGroup)
         {
-            _groupsService.Update(budgetGroup);
+            try
+            {
+                if (_authorizationService.IsUserSystemAdmin(ExternalLoginId))
+                    return Unauthorized();
+
+                _groupsService.Update(budgetGroup);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
-            _groupsService.Delete(id);
+            try
+            {
+                if (_authorizationService.IsUserSystemAdmin(ExternalLoginId))
+                    return Unauthorized();
+
+                _groupsService.Delete(id);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         // User Groups
         [HttpPost]
         [Route("userGroup")]
-        public void AddUserToGroup(AddUserToGroupRequest request)
+        public ActionResult AddUserToGroup(AddUserToGroupRequest request)
         {
-            _groupsService.AddUserToGroup(request);
+            try
+            {
+                if (_authorizationService.IsUserGroupAdmin(ExternalLoginId, request.GroupId) 
+                    || _authorizationService.IsUserSystemAdmin(ExternalLoginId))
+                {
+                    return Unauthorized();
+                }
+
+                _groupsService.AddUserToGroup(request);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpDelete]
         [Route("userGroup/{groupId}/{externalLoginId}")]
-        public void RemoveUserFromGroup(int groupId, string externalLoginId)
+        public ActionResult RemoveUserFromGroup(int groupId, string externalLoginId)
         {
-            _groupsService.RemoveUserFromGroup(groupId, externalLoginId);
+            try
+            {
+                if (_authorizationService.IsUserGroupAdmin(ExternalLoginId, groupId)
+                    || _authorizationService.IsUserSystemAdmin(ExternalLoginId))
+                {
+                    return Unauthorized();
+                }
+
+                _groupsService.RemoveUserFromGroup(groupId, externalLoginId);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         private string ExternalLoginId => HttpContext

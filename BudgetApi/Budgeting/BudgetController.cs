@@ -1,10 +1,13 @@
+using Budget.Models.ExceptionTypes;
 using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.Models;
+using BudgetApi.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BudgetApi.Budgeting
 {
@@ -13,53 +16,132 @@ namespace BudgetApi.Budgeting
     [Route("[controller]")]
     public class BudgetController : ControllerBase
     {
-        IBudgetService _budgetService;
+        private readonly IBudgetService _budgetService;
+        private readonly IBudgetAuthorizationService _authorizationService;
 
-        public BudgetController(IBudgetService budgetService)
+        public BudgetController(IBudgetService budgetService, IBudgetAuthorizationService authorizationService)
         {
             _budgetService = budgetService;
+            _authorizationService = authorizationService;
         }
 
-        [Route("getBudgetLines")]
+        [Route("getBudgetLines/group/{groupId}")]
         [HttpGet]
-        public List<BudgetWithPurchaseInfo> GetBudgetLines([FromQuery] DateTime monthYear)
+        public ActionResult<List<BudgetWithPurchaseInfo>> GetBudgetLines(int groupId, [FromQuery] DateTime monthYear)
         {
-            return _budgetService.GetBudgetLines(monthYear);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _budgetService.GetBudgetLines(monthYear);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
-        [Route("")]
+        [Route("group/{groupId}")]
         [HttpPost]
-        public int AddBudget([FromBody] BudgetEntry inputBudget)
+        public ActionResult<int> AddBudget(int groupId, [FromBody] BudgetEntry inputBudget)
         {
-            return _budgetService.AddBudget(inputBudget);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _budgetService.AddBudget(inputBudget);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
-        [Route("{budgetId}")]
+        [Route("{budgetId}/group/{groupId}")]
         [HttpPut]
-        public void UpdateBudget([FromBody] BudgetEntry inputBudget, int budgetId)
+        public ActionResult UpdateBudget(int budgetId, int groupId, [FromBody] BudgetEntry inputBudget)
         {
-            _budgetService.UpdateBudget(inputBudget);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _budgetService.UpdateBudget(inputBudget);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
-        [Route("{budgetId}")]
+        [Route("{budgetId}/group/{groupId}")]
         [HttpDelete]
-        public void DeleteBudgetEntry(int budgetId)
+        public ActionResult DeleteBudgetEntry(int budgetId, int groupId)
         {
-            _budgetService.DeleteBudgetEntry(budgetId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _budgetService.DeleteBudgetEntry(budgetId);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
-        [Route("{budgetId}")]
+        [Route("{budgetId}/group/{groupId}")]
         [HttpGet]
-        public BudgetInfo GetExistingBudget(int budgetId)
+        public ActionResult<BudgetInfo> GetExistingBudget(int budgetId, int groupId)
         {
-            return _budgetService.GetExistingBudget(budgetId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(_budgetService.GetExistingBudget(budgetId));
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
-        [Route("scenarioCheck")]
+        [Route("scenarioCheck/group/{groupId}")]
         [HttpPost]
-        public decimal ScenarioCheck([FromBody] ScenarioInput scenarioInput)
+        public ActionResult<decimal> ScenarioCheck([FromBody] ScenarioInput scenarioInput, int groupId)
         {
-            return _budgetService.ScenarioCheck(scenarioInput);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _budgetService.ScenarioCheck(scenarioInput);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
+
+        private string ExternalLoginId => HttpContext
+            .User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
     }
 }

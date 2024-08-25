@@ -1,4 +1,5 @@
 ﻿using Budget.Models;
+using Budget.Models.ExceptionTypes;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
@@ -72,9 +73,9 @@ public class UserProvider: IUserProvider
     {
         var matchingUser = _db.User
             .FirstOrDefault(i => i.UserSSOLoginId == loginId);
-        // TODO: later throw custom Exception
+
         if (matchingUser == null)
-            throw new Exception($"No user found with the loginId {loginId}");
+            throw new UserNotFoundException($"No user found with the loginId {loginId}");
 
         return new User
         {
