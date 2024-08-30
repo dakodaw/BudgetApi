@@ -1,4 +1,6 @@
-﻿using BudgetApi.GiftCards.Models;
+﻿using Azure.Core;
+using Budget.Models.ExceptionTypes;
+using BudgetApi.GiftCards.Models;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
@@ -7,113 +9,278 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BudgetApi.GiftCards
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("group/{groupId}/[controller]")]
     public class GiftCardController : ControllerBase
     {
-        IGiftCardService _giftCardService;
+        private readonly IGiftCardService _giftCardService;
+        private readonly IBudgetAuthorizationService _authorizationService;
 
-        public GiftCardController(IGiftCardService giftCardService)
+        public GiftCardController(IGiftCardService giftCardService, IBudgetAuthorizationService authorizationService)
         {
             _giftCardService = giftCardService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
         [Route("{giftCardId}")]
-        public GiftCard GetGiftCard(int giftCardId)
+        public ActionResult<GiftCard> GetGiftCard(int groupId, int giftCardId)
         {
-            return _giftCardService.GetGiftCard(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetGiftCard(giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPost]
         [Route("")]
-        public int AddGiftCard([FromBody] GiftCard inputGiftCard)
+        public ActionResult<int> AddGiftCard(int groupId, [FromBody] GiftCard inputGiftCard)
         {
-            return _giftCardService.AddGiftCard(inputGiftCard);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.AddGiftCard(inputGiftCard);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPut]
         [Route("{giftCardId}")]
-        public void UpdateGiftCard([FromBody] GiftCard inputGiftCard, int giftCardId)
+        public ActionResult UpdateGiftCard(int groupId, int giftCardId, [FromBody] GiftCard inputGiftCard)
         {
-            _giftCardService.UpdateGiftCard(inputGiftCard);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _giftCardService.UpdateGiftCard(inputGiftCard);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpDelete]
         [Route("{giftCardId}")]
-        public void DeleteGiftCard(int giftCardId)
+        public ActionResult DeleteGiftCard(int groupId, int giftCardId)
         {
-            _giftCardService.DeleteGiftCardEntry(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _giftCardService.DeleteGiftCardEntry(giftCardId);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getGiftCardLines")]
-        public List<GiftCardSelectLine> GetGiftCardLines()
+        public ActionResult<List<GiftCardSelectLine>> GetGiftCardLines(int groupId)
         {
-            return _giftCardService.GetGiftCardLines();
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetGiftCardLines();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getGiftCardLinesIncludingZeros")]
-        public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros()
+        public ActionResult<List<GiftCardSelectLine>> GetGiftCardLinesIncludingZeros(int groupId)
         {
-            return _giftCardService.GetGiftCardLinesIncludingZeros();
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetGiftCardLinesIncludingZeros();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getGiftCardBalance")]
-        public decimal GetGiftCardBalance([FromQuery] int giftCardId)
+        public ActionResult<decimal> GetGiftCardBalance(int groupId, [FromQuery] int giftCardId)
         {
-            return _giftCardService.GetGiftCardBalance(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetGiftCardBalance(giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getPurchaseLines")]
-        public List<PurchaseLine> GetPurchaseLines([FromQuery] DateTime monthYear)
+        public ActionResult<List<PurchaseLine>> GetPurchaseLines(int groupId, [FromQuery] DateTime monthYear)
         {
-            return _giftCardService.GetPurchaseLines(monthYear);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetPurchaseLines(monthYear);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getBalanceAndHistory")]
-        public GiftCardHistoryBalance GetBalanceAndHistory([FromQuery] int giftCardId)
+        public ActionResult<GiftCardHistoryBalance> GetBalanceAndHistory(int groupId, [FromQuery] int giftCardId)
         {
-            return _giftCardService.GetBalanceAndHistory(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetBalanceAndHistory(giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [Obsolete("Please use Post and Put to add and update gift card instead")]
         [HttpPost]
         [Route("addUpdateGiftCard")]
-        public bool AddUpdateGiftCard([FromBody] GiftCard inputGiftCard, [FromQuery] int giftCardId = -1)
+        public ActionResult<bool> AddUpdateGiftCard(int groupId, [FromBody] GiftCard inputGiftCard, [FromQuery] int giftCardId = -1)
         {
-            return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [Obsolete("Please use delete at the base gift card instead")]
         [HttpGet]
         [Route("deleteGiftCardEntry")]
-        public bool DeleteGiftCardEntry([FromQuery] int giftCardId)
+        public ActionResult<bool> DeleteGiftCardEntry(int groupId, [FromQuery] int giftCardId)
         {
-            return _giftCardService.DeleteGiftCardObsolete(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.DeleteGiftCardObsolete(giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("getAllBalanceAndHistory")]
-        public List<GiftCardHistoryBalance> GetAllBalanceAndHistory()
+        public ActionResult<List<GiftCardHistoryBalance>> GetAllBalanceAndHistory(int groupId)
         {
-            return _giftCardService.GetAllBalanceAndHistory();
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetAllBalanceAndHistory();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [Obsolete("Please use get at the base route to get gift card instead")]
         [HttpGet]
         [Route("getGiftCard")]
-        public GiftCard GetGiftCardEntry([FromQuery] int giftCardId)
+        public ActionResult<GiftCard> GetGiftCardEntry(int groupId, [FromQuery] int giftCardId)
         {
-            return _giftCardService.GetGiftCard(giftCardId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _giftCardService.GetGiftCard(giftCardId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
+
+        private string ExternalLoginId => HttpContext
+            .User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
     }
 }

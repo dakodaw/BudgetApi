@@ -1,23 +1,29 @@
-﻿using BudgetApi.Budgeting.Models;
+﻿using Budget.Models.ExceptionTypes;
+using BudgetApi.Budgeting.Models;
 using BudgetApi.Budgeting.Services;
 using BudgetApi.CopyTo.Models;
 using BudgetApi.CopyTo.Services;
 using BudgetApi.Models;
+using BudgetApi.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 namespace BudgetApi.CopyTo
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
     public class CopyToController : ControllerBase
     {
         private readonly IBudgetCopyToService _budgetCopyToService;
-        public CopyToController(IBudgetCopyToService budgetCopyService)
+        private readonly IBudgetAuthorizationService _authorizationService;
+
+        public CopyToController(IBudgetCopyToService budgetCopyService, IBudgetAuthorizationService authorizationService)
         {
             _budgetCopyToService = budgetCopyService;
+            _authorizationService = authorizationService;
         }
 
         // Initial thoughts: just pass in monthYear
@@ -25,11 +31,27 @@ namespace BudgetApi.CopyTo
         //  1. Pass in list of budgetIds to copy
         //  2. Pass in list of budgets that are based on retreived old budgets
         //      This option would pass list into other controller, maybe budget. this controller wouldn't do anything
-        [Route("{monthYear}")]
+        [Route("group/{groupId}/[controller]/{monthYear}")]
         [HttpPost]
-        public void CopyBudgetFromMonth(DateTime monthYear, [FromBody] CopyFromRequest request)
+        public ActionResult CopyBudgetFromMonth(int groupId, DateTime monthYear, [FromBody] CopyFromRequest request)
         {
-            _budgetCopyToService.CopyFrom(monthYear, request);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _budgetCopyToService.CopyFrom(monthYear, request);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
+
+        private string ExternalLoginId => HttpContext
+            .User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
     }
 }
