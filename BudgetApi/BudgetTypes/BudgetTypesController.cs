@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace BudgetApi.BudgetTypes
 {
     [Authorize]
     [ApiController]
+    [Route("group/{groupId}/[controller]")]
     public class BudgetTypesController : ControllerBase
     {
         private readonly IBudgetTypeService _budgetService;
@@ -23,7 +23,7 @@ namespace BudgetApi.BudgetTypes
             _authorizationService = authorizationService;
         }
 
-        [Route("group/{groupId}/[controller]")]
+        [Route("")]
         [HttpPost]
         public ActionResult<int> AddBudgetType(int groupId, [FromBody] BudgetType budgetType)
         {
@@ -42,7 +42,7 @@ namespace BudgetApi.BudgetTypes
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+        [Route("{budgetTypeId}")]
         [HttpPut]
         public ActionResult UpdateBudgetType([FromBody] BudgetType budgetType, int groupId, int budgetTypeId = -1)
         {
@@ -62,7 +62,7 @@ namespace BudgetApi.BudgetTypes
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+        [Route("{budgetTypeId}")]
         [HttpDelete]
         public ActionResult DeleteBudgetTypeEntry(int groupId, int budgetTypeId)
         {
@@ -82,7 +82,7 @@ namespace BudgetApi.BudgetTypes
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+        [Route("{budgetTypeId}")]
         [HttpGet]
         public ActionResult<BudgetType> GetBudgetType(int groupId, int budgetTypeId)
         {
@@ -101,7 +101,7 @@ namespace BudgetApi.BudgetTypes
             }
         }
 
-        [Route("group/{groupId}/[controller]")]
+        [Route("")]
         [HttpGet]
         public ActionResult<List<BudgetType>> GetBudgetTypes(int groupId)
         {

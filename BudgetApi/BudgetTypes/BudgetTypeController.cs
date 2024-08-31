@@ -10,7 +10,7 @@ namespace BudgetApi.BudgetTypes;
 
 [Authorize]
 [ApiController]
-//[Route("[controller]")]
+[Route("group/{groupId}/[controller]")]
 public class BudgetTypeController : ControllerBase
 {
     private readonly IBudgetTypeService _budgetService;
@@ -23,7 +23,7 @@ public class BudgetTypeController : ControllerBase
         _authorizationService = authorizationService;
     }
 
-    [Route("group/{groupId}/[controller]")]
+    [Route("")]
     [HttpPost]
     public ActionResult<int> AddBudgetType(int groupId, [FromBody] BudgetType budgetType)
     {
@@ -42,7 +42,7 @@ public class BudgetTypeController : ControllerBase
         }
     }
 
-    [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+    [Route("{budgetTypeId}")]
     [HttpPut]
     public ActionResult UpdateBudgetType([FromBody] BudgetType budgetType, int groupId, int budgetTypeId = -1)
     {
@@ -62,7 +62,7 @@ public class BudgetTypeController : ControllerBase
         }
     }
 
-    [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+    [Route("{budgetTypeId}")]
     [HttpDelete]
     public ActionResult DeleteBudgetTypeEntry(int groupId, int budgetTypeId)
     {
@@ -82,7 +82,7 @@ public class BudgetTypeController : ControllerBase
         }
     }
 
-    [Route("group/{groupId}/[controller]/{budgetTypeId}")]
+    [Route("{budgetTypeId}")]
     [HttpGet]
     public ActionResult<BudgetType> GetBudgetType(int groupId, int budgetTypeId)
     {
@@ -100,6 +100,7 @@ public class BudgetTypeController : ControllerBase
             return Unauthorized();
         }
     }
+
     private string ExternalLoginId => HttpContext
             .User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
 }

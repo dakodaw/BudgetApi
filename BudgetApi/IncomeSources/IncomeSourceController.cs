@@ -1,29 +1,45 @@
 ﻿using Budget.Models;
-using BudgetApi.Incomes.Models;
+using Budget.Models.ExceptionTypes;
 using BudgetApi.Incomes.Services;
-using BudgetApi.Models;
+using BudgetApi.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BudgetApi.Incomes
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("group/{groupId}/[controller]")]
     public class IncomeSourceController : ControllerBase
     {
-        IIncomeSourceService _incomeService;
-        public IncomeSourceController(IIncomeSourceService incomeService)
+        private readonly IIncomeSourceService _incomeService;
+        private readonly IBudgetAuthorizationService _authorizationService;
+
+        public IncomeSourceController(IIncomeSourceService incomeService, IBudgetAuthorizationService authorizationService)
         {
             _incomeService = incomeService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
         [Route("list")]
-        public List<IncomeSource> GetIncomeSources()
+        public ActionResult<List<IncomeSource>> GetIncomeSources(int groupId)
         {
-            return _incomeService.GetIncomeSources();
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _incomeService.GetIncomeSources();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         //[HttpGet]
@@ -35,30 +51,83 @@ namespace BudgetApi.Incomes
 
         [HttpDelete]
         [Route("{sourceId}")]
-        public void DeleteJobEntry(int sourceId)
+        public ActionResult DeleteJobEntry(int groupId, int sourceId)
         {
-            _incomeService.DeleteIncomeSource(sourceId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _incomeService.DeleteIncomeSource(sourceId);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]
         [Route("{sourceId}")]
-        public IncomeSource GetIncomeSource(int sourceId)
+        public ActionResult<IncomeSource> GetIncomeSource(int groupId, int sourceId)
         {
-            return _incomeService.GetIncomeSource(sourceId);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _incomeService.GetIncomeSource(sourceId);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPut]
         [Route("{sourceId}")] 
-        public void UpdateIncomeSource([FromBody] IncomeSource incomeSourceToUpdate, int sourceId)
+        public ActionResult UpdateIncomeSource(int groupId, [FromBody] IncomeSource incomeSourceToUpdate, int sourceId)
         {
-            _incomeService.UpdateIncomeSource(incomeSourceToUpdate);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                _incomeService.UpdateIncomeSource(incomeSourceToUpdate);
+                return Ok();
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPost]
         [Route("")]
-        public int AddIncomeSource([FromBody] IncomeSource incomeSourceToUpdate)
+        public ActionResult<int> AddIncomeSource(int groupId, [FromBody] IncomeSource incomeSourceToUpdate)
         {
-            return _incomeService.AddIncomeSource(incomeSourceToUpdate);
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return _incomeService.AddIncomeSource(incomeSourceToUpdate);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
+
+        private string ExternalLoginId => HttpContext
+            .User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
     }
 }

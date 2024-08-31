@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Budget.Models.ExceptionTypes;
+﻿using Budget.Models.ExceptionTypes;
 using BudgetApi.GiftCards.Models;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Models;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace BudgetApi.GiftCards
 {

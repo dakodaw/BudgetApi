@@ -13,6 +13,7 @@ namespace BudgetApi.Budgeting
 {
     [Authorize]
     [ApiController]
+    [Route("group/{groupId}/[controller]")]
     public class BudgetController : ControllerBase
     {
         private readonly IBudgetService _budgetService;
@@ -24,7 +25,7 @@ namespace BudgetApi.Budgeting
             _authorizationService = authorizationService;
         }
 
-        [Route("group/{groupId}/[controller]/getBudgetLines")]
+        [Route("getBudgetLines")]
         [HttpGet]
         public ActionResult<List<BudgetWithPurchaseInfo>> GetBudgetLines(int groupId, [FromQuery] DateTime monthYear)
         {
@@ -43,7 +44,7 @@ namespace BudgetApi.Budgeting
             }
         }
 
-        [Route("group/{groupId}/[controller]")]
+        [Route("")]
         [HttpPost]
         public ActionResult<int> AddBudget(int groupId, [FromBody] BudgetEntry inputBudget)
         {
@@ -62,7 +63,7 @@ namespace BudgetApi.Budgeting
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetId}")]
+        [Route("{budgetId}")]
         [HttpPut]
         public ActionResult UpdateBudget(int budgetId, int groupId, [FromBody] BudgetEntry inputBudget)
         {
@@ -82,7 +83,7 @@ namespace BudgetApi.Budgeting
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetId}")]
+        [Route("{budgetId}")]
         [HttpDelete]
         public ActionResult DeleteBudgetEntry(int budgetId, int groupId)
         {
@@ -102,7 +103,7 @@ namespace BudgetApi.Budgeting
             }
         }
 
-        [Route("group/{groupId}/[controller]/{budgetId}")]
+        [Route("{budgetId}")]
         [HttpGet]
         public ActionResult<BudgetInfo> GetExistingBudget(int budgetId, int groupId)
         {
@@ -121,7 +122,7 @@ namespace BudgetApi.Budgeting
             }
         }
 
-        [Route("group/{groupId}/[controller]/scenarioCheck")]
+        [Route("scenarioCheck")]
         [HttpPost]
         public ActionResult<decimal> ScenarioCheck([FromBody] ScenarioInput scenarioInput, int groupId)
         {

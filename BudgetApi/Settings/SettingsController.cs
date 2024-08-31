@@ -15,6 +15,7 @@ namespace BudgetApi.Settings
             _settingsService = settingsService;
         }
 
+        // TODO: Have general settings and user settings maybe?
         [HttpGet]
         [Route("")]
         public string GetSetting(string settingName)
