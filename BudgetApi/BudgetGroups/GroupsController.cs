@@ -43,7 +43,7 @@ namespace BudgetApi.BudgetGroups
         }
 
         [HttpGet]
-        [Route("list")]
+        [Route("")]
         public ActionResult<IEnumerable<BudgetingGroup>> GetByExternalLoginId()
         {
             try
