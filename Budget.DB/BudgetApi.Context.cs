@@ -26,6 +26,8 @@ namespace BudgetApi.Models
             modelBuilder.Entity<IncomeEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
             modelBuilder.Entity<IncomeSourceEntity>().Property(p => p.EstimatedIncome).HasColumnType("decimal(p,2)");
             modelBuilder.Entity<PurchaseEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<ReceiptRecordEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
+            modelBuilder.Entity<ReceiptRecordGroupEntity>().Property(p => p.Amount).HasColumnType("decimal(p,2)");
 
             modelBuilder.Entity<BudgetEntity>().ToTable("Budget");
             modelBuilder.Entity<BudgetTypeEntity>().ToTable("BudgetType");
@@ -37,6 +39,8 @@ namespace BudgetApi.Models
             modelBuilder.Entity<UserEntity>().ToTable("User");
             modelBuilder.Entity<BudgetingGroupEntity>().ToTable("BudgetingGroup");
             modelBuilder.Entity<UsersBudgetingGroupEntity>().ToTable("UsersBudgetingGroup");
+            modelBuilder.Entity<ReceiptRecordEntity>().ToTable("ReceiptRecord");
+            modelBuilder.Entity<ReceiptRecordGroupEntity>().ToTable("ReceiptRecordGroup");
         }
     
         public virtual DbSet<BudgetEntity> Budgets { get; set; }
@@ -49,5 +53,7 @@ namespace BudgetApi.Models
         public virtual DbSet<UserEntity> User { get; set; }
         public virtual DbSet<BudgetingGroupEntity> BudgetingGroup { get; set; }
         public virtual DbSet<UsersBudgetingGroupEntity> UsersBudgetingGroup { get; set; }
+        public virtual DbSet<ReceiptRecordEntity> ReceiptRecord { get; set; }
+        public virtual DbSet<ReceiptRecordGroupEntity> ReceiptRecordGroup { get; set; }
     }
 }
