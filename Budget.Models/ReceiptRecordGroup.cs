@@ -1,6 +1,6 @@
 ﻿namespace Budget.Models;
 
-public class ReceiptRecordGroupEntity
+public class ReceiptRecordGroup
 {
     public Guid? Id { get; set; }
     public Guid ReceiptRecordId { get; set; }
