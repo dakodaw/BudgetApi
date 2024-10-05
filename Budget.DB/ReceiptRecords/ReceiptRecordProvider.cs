@@ -19,6 +19,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
             new ReceiptRecord()
             {
                 Id = x.Id,
+                BudgetingGroupId = x.BudgetingGroupId,
                 Date = x.Date,
                 Amount = x.Amount,
                 Location = x.Location,
@@ -36,6 +37,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         return new ReceiptRecord()
         {
             Id = receiptRecord.Id,
+            BudgetingGroupId = receiptRecord.BudgetingGroupId,
             Date = receiptRecord.Date,
             Amount = receiptRecord.Amount,
             Location = receiptRecord.Location,
@@ -49,6 +51,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
             _db.ReceiptRecord.Add(new ReceiptRecordEntity
             {
                 Id = inputReceiptRecord.Id,
+                BudgetingGroupId = inputReceiptRecord.BudgetingGroupId,
                 Date = inputReceiptRecord.Date,
                 Amount = inputReceiptRecord.Amount,
                 Location = inputReceiptRecord.Location
@@ -59,31 +62,32 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         }
         catch (Exception ex)
         {
-            throw new Exception("New income failed to save: ", ex);
+            throw new Exception("New ReceiptRecord failed to save: ", ex);
         }
     }
 
     public void Update(ReceiptRecord inputReceiptRecord)
     {
-        var incomeToUpdate = _db.ReceiptRecord
+        var receiptRecordToUpdate = _db.ReceiptRecord
             .Where(i => i.Id == inputReceiptRecord.Id)
             .FirstOrDefault();
 
-        if (incomeToUpdate == default)
-            throw new Exception($"Custom Income Not found Exception for {inputReceiptRecord.Id}");
+        if (receiptRecordToUpdate == default)
+            throw new Exception($"Custom ReceiptRecord Not found Exception for {inputReceiptRecord.Id}");
 
         try
         {
-            incomeToUpdate.Id = inputReceiptRecord.Id;
-            incomeToUpdate.Date = inputReceiptRecord.Date;
-            incomeToUpdate.Amount = inputReceiptRecord.Amount;
-            incomeToUpdate.Location = inputReceiptRecord.Location;
+            receiptRecordToUpdate.Id = inputReceiptRecord.Id;
+            receiptRecordToUpdate.BudgetingGroupId = inputReceiptRecord.BudgetingGroupId;
+            receiptRecordToUpdate.Date = inputReceiptRecord.Date;
+            receiptRecordToUpdate.Amount = inputReceiptRecord.Amount;
+            receiptRecordToUpdate.Location = inputReceiptRecord.Location;
 
             _db.SaveChanges();
         }
         catch (Exception ex)
         {
-            throw new Exception("Income Update failed because of internal exception: ", ex);
+            throw new Exception("ReceiptRecord Update failed because of internal exception: ", ex);
         }
     }
 
@@ -97,7 +101,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         }
         catch(Exception ex)
         {
-            throw new Exception("Income Failed to Delete", ex);
+            throw new Exception("ReceiptRecord Failed to Delete", ex);
         }
     }
 }

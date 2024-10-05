@@ -15,12 +15,14 @@ namespace Budget.DB
     public partial class PurchaseEntity
     {
         public int Id { get; set; }
+        public int BudgetingGroupId { get; set; }
         public int PurchaseTypeId { get; set; }
         public string Description { get; set; }
         public decimal Amount { get; set; }
         public string PaymentType { get; set; }
-        public Nullable<int> GiftCardId { get; set; }
+        public int? GiftCardId { get; set; }
         public System.DateTime Date { get; set; }
+        public Guid? ReceiptRecordGroupId { get; set; }
         public bool FutureReimbursement { get; set; }
     }
 }

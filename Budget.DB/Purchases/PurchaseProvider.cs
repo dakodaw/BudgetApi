@@ -20,6 +20,25 @@ public class PurchaseProvider: IPurchaseProvider
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
+                BudgetingGroupId = x.BudgetingGroupId,
+                Date = x.Date,
+                Id = x.Id,
+                Description = x.Description,
+                FutureReimbursement = x.FutureReimbursement,
+                GiftCardId = x.GiftCardId,
+                PaymentType = x.PaymentType,
+                PurchaseTypeId = x.PurchaseTypeId
+            });
+    }
+
+    public IEnumerable<Purchase> GetPurchasesByReceiptRecordGroup(Guid id)
+    {
+        return _db.Purchases
+            .Where(i => i.ReceiptRecordGroupId == id)
+            .Select(x => new Purchase
+            {
+                Amount = x.Amount,
+                BudgetingGroupId = x.BudgetingGroupId,
                 Date = x.Date,
                 Id = x.Id,
                 Description = x.Description,
@@ -41,6 +60,7 @@ public class PurchaseProvider: IPurchaseProvider
             : new Purchase
             {
                 Amount = purchaseEntity.Amount,
+                BudgetingGroupId = purchaseEntity.BudgetingGroupId,
                 Date = purchaseEntity.Date,
                 Description = purchaseEntity.Description,
                 FutureReimbursement = purchaseEntity.FutureReimbursement,
@@ -58,6 +78,7 @@ public class PurchaseProvider: IPurchaseProvider
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
+                BudgetingGroupId = x.BudgetingGroupId,
                 Date = x.Date,
                 Id = x.Id,
                 Description = x.Description,
@@ -75,6 +96,7 @@ public class PurchaseProvider: IPurchaseProvider
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
+                BudgetingGroupId = x.BudgetingGroupId,
                 Date = x.Date,
                 Id = x.Id,
                 Description = x.Description,
@@ -94,6 +116,7 @@ public class PurchaseProvider: IPurchaseProvider
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
+                BudgetingGroupId = x.BudgetingGroupId,
                 Date = x.Date,
                 Id = x.Id,
                 Description = x.Description,
@@ -112,6 +135,7 @@ public class PurchaseProvider: IPurchaseProvider
             _db.Purchases.Add(new PurchaseEntity
             {
                 Amount = inputPurchase.Amount,
+                BudgetingGroupId = inputPurchase.BudgetingGroupId,
                 Date = inputPurchase.Date,
                 Description = inputPurchase.Description,
                 FutureReimbursement = inputPurchase.FutureReimbursement,
@@ -164,13 +188,15 @@ public class PurchaseProvider: IPurchaseProvider
             var newPurchaseEntity = new PurchaseEntity
             {
                 Amount = inputPurchase.Amount,
+                BudgetingGroupId = inputPurchase.BudgetingGroupId,
                 Date = inputPurchase.Date,
                 Description = inputPurchase.Description,
                 FutureReimbursement = inputPurchase.FutureReimbursement,
                 GiftCardId = inputPurchase.GiftCardId,
                 Id = inputPurchase.Id,
                 PaymentType = inputPurchase.PaymentType,
-                PurchaseTypeId = inputPurchase.PurchaseTypeId
+                PurchaseTypeId = inputPurchase.PurchaseTypeId,
+                ReceiptRecordGroupId = inputPurchase.ReceiptRecordGroupId
             };
             _db.Purchases.Add(newPurchaseEntity);
 
@@ -189,12 +215,14 @@ public class PurchaseProvider: IPurchaseProvider
         {
             var purchaseToUpdate = _db.Purchases.Where(i => i.Id == inputPurchase.Id).FirstOrDefault();
             purchaseToUpdate.Amount = inputPurchase.Amount;
+            purchaseToUpdate.BudgetingGroupId = inputPurchase.BudgetingGroupId;
             purchaseToUpdate.Date = inputPurchase.Date;
             purchaseToUpdate.Description = inputPurchase.Description;
             purchaseToUpdate.FutureReimbursement = inputPurchase.FutureReimbursement;
             purchaseToUpdate.GiftCardId = inputPurchase.GiftCardId;
             purchaseToUpdate.PaymentType = inputPurchase.PaymentType;
             purchaseToUpdate.PurchaseTypeId = inputPurchase.PurchaseTypeId;
+            purchaseToUpdate.ReceiptRecordGroupId = inputPurchase.ReceiptRecordGroupId;
                 
             _db.SaveChanges();
         }

@@ -18,8 +18,8 @@ public partial class BudgetEntity
     public int BudgetTypeId { get; set; }
     public System.DateTime Date { get; set; }
     public decimal Amount { get; set; }
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     public virtual BudgetTypeEntity BudgetType { get; set; }
-    public virtual BudgetingGroupEntity? BudgetingGroup { get; set; }
+    public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 }

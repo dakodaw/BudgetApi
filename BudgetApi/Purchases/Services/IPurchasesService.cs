@@ -9,6 +9,7 @@ namespace BudgetApi.Purchases.Services
     public interface IPurchasesService
     {
         public List<PurchaseLine> GetPurchaseLines(DateTime monthYear);
+        public IEnumerable<Purchase> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId);
         public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
         public int AddPurchase(Purchase inputPurchase);
         public void UpdatePurchase(Purchase inputPurchase);

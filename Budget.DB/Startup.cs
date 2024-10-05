@@ -4,6 +4,7 @@ using Budget.DB.BudgetTypes;
 using Budget.DB.CustomSettings;
 using Budget.DB.GiftCards;
 using Budget.DB.Incomes;
+using Budget.DB.ReceiptRecordGroups;
 using Budget.DB.Users;
 using BudgetApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -29,5 +30,7 @@ public class Startup
         services.AddScoped<IUserProvider, UserProvider>();
         services.AddScoped<IBudgetingGroupProvider, BudgetingGroupProvider>();
         services.AddScoped<IUserBudgetingGroupProvider, UserBudgetingGroupProvider>();
+        services.AddScoped<IReceiptRecordProvider, ReceiptRecordProvider>();
+        services.AddScoped<IReceiptRecordGroupProvider, ReceiptRecordGroupProvider>();
     }
 }

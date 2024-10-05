@@ -18,6 +18,7 @@ public partial class ReceiptRecordEntity
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
+    public int BudgetingGroupId { get; set; }
     public DateTime Date { get; set; }
     public decimal Amount { get; set; }
     public string Location { get; set; }

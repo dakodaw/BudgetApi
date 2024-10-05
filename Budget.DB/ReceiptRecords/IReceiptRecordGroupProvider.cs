@@ -4,7 +4,7 @@ namespace Budget.DB.ReceiptRecordGroups;
 
 public interface IReceiptRecordGroupProvider
 {
-    IEnumerable<ReceiptRecordGroup> List();
+    IEnumerable<ReceiptRecordGroup> List(Guid? recordGroupId);
     Guid Add(ReceiptRecordGroup inputReceiptRecordGroup);
     void Update(ReceiptRecordGroup inputReceiptRecordGroup);
     void Delete(Guid receiptRecordGroupSourceId);

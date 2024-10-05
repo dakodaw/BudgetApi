@@ -4,6 +4,7 @@ using BudgetApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budget.DB.Migrations
 {
     [DbContext(typeof(BudgetEntities))]
-    partial class BudgetEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20241005045636_AddReceiptRecordGroupIdToPurchases")]
+    partial class AddReceiptRecordGroupIdToPurchases
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace Budget.DB.Migrations
                     b.Property<int>("BudgetTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BudgetingGroupId")
+                    b.Property<int?>("BudgetingGroupId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -207,7 +210,7 @@ namespace Budget.DB.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(p,2)");
 
-                    b.Property<int>("BudgetingGroupId")
+                    b.Property<int?>("BudgetingGroupId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -245,7 +248,7 @@ namespace Budget.DB.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(p,2)");
 
-                    b.Property<int>("BudgetingGroupId")
+                    b.Property<int?>("BudgetingGroupId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -339,9 +342,7 @@ namespace Budget.DB.Migrations
 
                     b.HasOne("Budget.DB.BudgetingGroupEntity", "BudgetingGroup")
                         .WithMany()
-                        .HasForeignKey("BudgetingGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BudgetingGroupId");
 
                     b.Navigation("BudgetType");
 

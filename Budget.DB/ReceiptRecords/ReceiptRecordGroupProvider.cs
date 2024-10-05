@@ -12,9 +12,11 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
         _db = db;
 	}
 
-    public IEnumerable<ReceiptRecordGroup> List()
+    public IEnumerable<ReceiptRecordGroup> List(Guid? recordGroupId)
     {
-        return _db.ReceiptRecordGroup.Select(rrg => 
+        return _db.ReceiptRecordGroup
+            .Where(x => recordGroupId.HasValue ? x.ReceiptRecordId == recordGroupId.Value : true)
+            .Select(rrg => 
             new ReceiptRecordGroup
             {
                 Id = rrg.Id,

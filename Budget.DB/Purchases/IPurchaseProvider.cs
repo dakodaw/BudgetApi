@@ -4,6 +4,7 @@ namespace Budget.DB;
 public interface IPurchaseProvider
 {
     IEnumerable<Purchase> GetPurchasesByMonthYear(DateTime monthYear);
+    IEnumerable<Purchase> GetPurchasesByReceiptRecordGroup(Guid id);
     Purchase GetPurchase(int purchaseId);
     IEnumerable<Purchase> GetGiftCardPurchases(int giftCardId);
     IEnumerable<Purchase> GetAllGiftCardPurchases();

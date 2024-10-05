@@ -52,6 +52,11 @@ public class PurchasesService: IPurchasesService
         return purchases.OrderBy(i => i.PurchaseType.BudgetTypeName).ToList();
     }
 
+    public IEnumerable<Purchase> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId)
+    {
+        return _purchaseProvider.GetPurchasesByReceiptRecordGroup(receiptRecordGroupId);
+    }
+
     public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
     {
         return _purchaseProvider.AddUpdatePurchase(inputPurchase, purchaseId);

@@ -5,6 +5,7 @@ using BudgetApi.CopyTo.Services;
 using BudgetApi.GiftCards.Services;
 using BudgetApi.Incomes.Services;
 using BudgetApi.Purchases.Services;
+using BudgetApi.ReceiptRecords.Services;
 using BudgetApi.Settings.Services;
 using BudgetApi.Shared;
 using BudgetApi.Shared.AppSettings;
@@ -95,6 +96,7 @@ public class Startup
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IGroupsService, GroupsService>();
         services.AddScoped<IBudgetAuthorizationService, BudgetAuthorizationService>();
+        services.AddScoped<IReceiptRecordService, ReceiptRecordService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -96,6 +96,7 @@ namespace Budget.DB.Budget
                         Amount = b.Amount,
                         Date = b.Date,
                         BudgetTypeId = b.BudgetTypeId,
+                        BudgetingGroupId = b.BudgetingGroupId,
                         Id = b.Id
                     }).FirstOrDefault();
         }
@@ -108,6 +109,7 @@ namespace Budget.DB.Budget
                 {
                     Amount = inputBudget.Amount,
                     BudgetTypeId = inputBudget.BudgetTypeId,
+                    BudgetingGroupId = inputBudget.Id,
                     Date = inputBudget.Date,
                     Id = inputBudget.Id
                 };
@@ -131,6 +133,7 @@ namespace Budget.DB.Budget
                 var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
                 selectedBudgetEntry.Amount = inputBudget.Amount;
                 selectedBudgetEntry.BudgetTypeId = inputBudget.BudgetTypeId;
+                selectedBudgetEntry.BudgetingGroupId = inputBudget.BudgetingGroupId;
                 selectedBudgetEntry.Date = inputBudget.Date;
 
                 //// Alternate approach
@@ -159,6 +162,7 @@ namespace Budget.DB.Budget
              {
                  Id = b.Id,
                  BudgetTypeId = b.BudgetTypeId,
+                 BudgetingGroupId = b.BudgetingGroupId,
                  Date = b.Date,
                  Amount = b.Amount
              }).ToList();
@@ -173,6 +177,7 @@ namespace Budget.DB.Budget
                     {
                         Amount = x.Amount,
                         BudgetTypeId = x.BudgetTypeId,
+                        BudgetingGroupId = x.BudgetingGroupId,
                         Date = x.Date,
                         Id = x.Id
                     });
@@ -187,6 +192,7 @@ namespace Budget.DB.Budget
                 {
                     Amount = x.Amount,
                     BudgetTypeId = x.BudgetTypeId,
+                    BudgetingGroupId = x.BudgetingGroupId,
                     Id = x.Id,
                     Date = x.Date
                 }));

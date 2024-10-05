@@ -15,6 +15,7 @@ namespace BudgetApi.Models
     public partial class Purchase
     {
         public int Id { get; set; }
+        public int BudgetingGroupId { get; set; }
         public int PurchaseTypeId { get; set; }
         public string Description { get; set; }
         public decimal Amount { get; set; }
@@ -22,5 +23,6 @@ namespace BudgetApi.Models
         public Nullable<int> GiftCardId { get; set; }
         public System.DateTime Date { get; set; }
         public bool FutureReimbursement { get; set; }
+        public Guid? ReceiptRecordGroupId { get; set; } = Guid.NewGuid();
     }
 }
