@@ -7,7 +7,7 @@ namespace BudgetApi.Budgeting.Services
 {
     public interface IBudgetService
     {
-        List<BudgetWithPurchaseInfo> GetBudgetLines(DateTime monthYear);
+        List<BudgetWithPurchaseInfo> GetBudgetLines(int groupId, DateTime monthYear);
         int AddBudget(BudgetEntry inputBudget);
         void UpdateBudget(BudgetEntry inputBudget);
         bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines);

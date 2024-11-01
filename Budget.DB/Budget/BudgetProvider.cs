@@ -14,7 +14,7 @@ namespace Budget.DB.Budget
             _budgetTypeProvider = budgetTypeProvider;
 		}
 
-		public IEnumerable<BudgetType> GetBudgetTypes()
+		public IEnumerable<BudgetType> GetBudgetTypes(int groupId)
 		{
 			return _budgetTypeProvider.GetBudgetTypes();
         }
@@ -101,7 +101,7 @@ namespace Budget.DB.Budget
                     }).FirstOrDefault();
         }
 
-		public int AddBudget(BudgetEntry inputBudget)
+		public int AddBudget(int groupId, BudgetEntry inputBudget)
 		{
             try
             {
@@ -109,7 +109,7 @@ namespace Budget.DB.Budget
                 {
                     Amount = inputBudget.Amount,
                     BudgetTypeId = inputBudget.BudgetTypeId,
-                    BudgetingGroupId = inputBudget.Id,
+                    BudgetingGroupId = inputBudget.BudgetingGroupId,
                     Date = inputBudget.Date,
                     Id = inputBudget.Id
                 };
@@ -154,7 +154,7 @@ namespace Budget.DB.Budget
             }
         }
 
-        public IEnumerable<BudgetEntry> GetBudgetEntries(DateTime monthYear)
+        public IEnumerable<BudgetEntry> GetBudgetEntries(int groupId, DateTime monthYear)
         {
             return (from b in _db.Budgets.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Date.Year)
              join bt in _db.BudgetTypes on b.BudgetTypeId equals bt.Id
@@ -168,7 +168,7 @@ namespace Budget.DB.Budget
              }).ToList();
         }
 
-        public IEnumerable<BudgetEntry> GetBudgetEntriesInTimeSpan(DateTime startMonth, DateTime endMonth)
+        public IEnumerable<BudgetEntry> GetBudgetEntriesInTimeSpan(int groupId, DateTime startMonth, DateTime endMonth)
         {
             return _db.Budgets
                 .Where(i =>
@@ -183,7 +183,7 @@ namespace Budget.DB.Budget
                     });
         }
 
-        public bool AddBudgetEntries(IEnumerable<BudgetEntry> budgetEntries) // TODO: Revisit this with the resulting ids
+        public bool AddBudgetEntries(int groupId, IEnumerable<BudgetEntry> budgetEntries) // TODO: Revisit this with the resulting ids
         {
             bool success = false;
             try
@@ -200,9 +200,9 @@ namespace Budget.DB.Budget
 
                 success = true;
             }
-            catch
+            catch (Exception ex)
             {
-
+                throw new Exception("Failed to Add Budget Range", ex);
             }
             return success;
         }

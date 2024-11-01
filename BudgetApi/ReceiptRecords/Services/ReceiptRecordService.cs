@@ -29,8 +29,8 @@ public class ReceiptRecordService: IReceiptRecordService
     public ReceiptRecord Get(Guid id)
     {
         var receiptRecord = _receiptRecordProvider.Get(id);
-        receiptRecord.ReceiptRecords = _receiptRecordGroupProvider.List(id);
-        foreach(var record in receiptRecord.ReceiptRecords)
+        receiptRecord.ReceiptRecordGroups = _receiptRecordGroupProvider.List(id);
+        foreach(var record in receiptRecord.ReceiptRecordGroups)
         {
             record.Purchases = _purchaseService.GetReceiptRecordGroupPurchases(record.ReceiptRecordId);
         }
@@ -40,13 +40,23 @@ public class ReceiptRecordService: IReceiptRecordService
 
     public ReceiptRecord Add(ReceiptRecord record)
     {
-        var recordGroups = record.ReceiptRecords;
+        var recordGroups = record.ReceiptRecordGroups;
         var recordId = _receiptRecordProvider.Add(record);
+
+        recordGroups.ToList().ForEach(x => x.ReceiptRecordId = recordId);
 
         foreach (var group in recordGroups)
         {
-            _receiptRecordGroupProvider.Add(group);
-            AddPurchases(group.Purchases);
+            var groupId = _receiptRecordGroupProvider.Add(group);
+            var purchases = group.Purchases;
+            purchases.ToList().ForEach(x => 
+            {
+                x.BudgetingGroupId = record.BudgetingGroupId;
+                x.ReceiptRecordGroupId = groupId;
+                x.PurchaseTypeId = group.BudgetTypeId;
+            });
+
+            AddPurchases(purchases);
         }
 
         return Get(recordId);

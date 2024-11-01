@@ -7,5 +7,5 @@ public class ReceiptRecord
     public DateTime Date { get; set; }
     public decimal Amount { get; set; }
     public string Location { get; set; }
-    public IEnumerable<ReceiptRecordGroup> ReceiptRecords { get; set; } = new List<ReceiptRecordGroup>();
+    public IEnumerable<ReceiptRecordGroup> ReceiptRecordGroups { get; set; } = new List<ReceiptRecordGroup>();
 }

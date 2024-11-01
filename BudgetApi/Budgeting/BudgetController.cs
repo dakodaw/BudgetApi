@@ -36,7 +36,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.GetBudgetLines(monthYear);
+                return _budgetService.GetBudgetLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {

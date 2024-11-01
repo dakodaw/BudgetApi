@@ -48,17 +48,19 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
     {
         try
         {
-            _db.ReceiptRecord.Add(new ReceiptRecordEntity
+            var receiptRecordEntity = new ReceiptRecordEntity
             {
                 Id = inputReceiptRecord.Id,
                 BudgetingGroupId = inputReceiptRecord.BudgetingGroupId,
                 Date = inputReceiptRecord.Date,
                 Amount = inputReceiptRecord.Amount,
                 Location = inputReceiptRecord.Location
-            });
+            };
+
+            _db.ReceiptRecord.Add(receiptRecordEntity);
             _db.SaveChanges();
 
-            return inputReceiptRecord.Id;
+            return receiptRecordEntity.Id;
         }
         catch (Exception ex)
         {

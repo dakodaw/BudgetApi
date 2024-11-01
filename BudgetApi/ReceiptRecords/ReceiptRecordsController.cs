@@ -47,7 +47,7 @@ namespace BudgetApi.ReceiptRecords
         }
 
         [HttpPost]
-        [Route("{receiptRecordId}")]
+        [Route("")]
         public ActionResult<ReceiptRecord> AddReceiptRecord(int groupId, [FromBody] ReceiptRecord inputRecord)
         {
             try
