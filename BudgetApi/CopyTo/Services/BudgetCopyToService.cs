@@ -15,7 +15,7 @@ namespace BudgetApi.CopyTo.Services
             _budgetService = budgetService;
         }
 
-        public void CopyFrom(DateTime monthYear, CopyFromRequest request)
+        public void CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request)
         {
             var defaultLastMonth = monthYear.AddMonths(-1);
             var lastMonth = request.FromMethod switch
@@ -27,7 +27,7 @@ namespace BudgetApi.CopyTo.Services
             };
 
 
-            var lastMonthBudgetLines = _budgetService.GetBudgetLines(lastMonth);
+            var lastMonthBudgetLines = _budgetService.GetBudgetLines(groupId, lastMonth);
 
             var copiedBudgetLines = new List<BudgetEntry>();
             lastMonthBudgetLines
@@ -39,13 +39,15 @@ namespace BudgetApi.CopyTo.Services
                 {
                     copiedBudgetLines.Add(new BudgetEntry()
                     {
+                        BudgetingGroupId = groupId,
+                        BudgetType = line.BudgetType,
                         BudgetTypeId = line.BudgetType.BudgetTypeId,
                         Date = monthYear,
                         Amount = line.Amount
                     });
                 });
 
-            _budgetService.AddBudgetLines(copiedBudgetLines);
+            _budgetService.AddBudgetLines(groupId, copiedBudgetLines);
         }
     }
 }

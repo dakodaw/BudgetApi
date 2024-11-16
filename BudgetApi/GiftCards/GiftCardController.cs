@@ -172,7 +172,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetPurchaseLines(monthYear);
+                return _giftCardService.GetPurchaseLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {

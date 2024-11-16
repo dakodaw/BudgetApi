@@ -114,7 +114,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.GetPurchaseLines(monthYear);
+                return _purchasesService.GetPurchaseLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {

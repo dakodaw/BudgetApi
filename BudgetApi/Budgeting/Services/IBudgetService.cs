@@ -8,11 +8,11 @@ namespace BudgetApi.Budgeting.Services
     public interface IBudgetService
     {
         List<BudgetWithPurchaseInfo> GetBudgetLines(int groupId, DateTime monthYear);
-        int AddBudget(BudgetEntry inputBudget);
+        int AddBudget(int groupId, BudgetEntry inputBudget);
         void UpdateBudget(BudgetEntry inputBudget);
-        bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines);
+        bool AddBudgetLines(int groupId, IEnumerable<BudgetEntry> inputBudgetLines);
         void DeleteBudgetEntry(int budgetId);
         BudgetInfo GetExistingBudget(int budgetId);
-        decimal ScenarioCheck(ScenarioInput scenarioInput);
+        decimal ScenarioCheck(int groupId, ScenarioInput scenarioInput);
     }
 }

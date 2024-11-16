@@ -39,7 +39,7 @@ namespace BudgetApi.CopyTo
                     return Unauthorized();
                 }
 
-                _budgetCopyToService.CopyFrom(monthYear, request);
+                _budgetCopyToService.CopyFrom(groupId, monthYear, request);
                 return Ok();
             }
             catch (UserNotFoundException)

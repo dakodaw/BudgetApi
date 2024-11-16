@@ -79,10 +79,10 @@ namespace BudgetApi.Incomes.Services
             return incomeSourceLines;
         }
 
-        public List<ApplicablePurchase> GetApplicablePurchases(DateTime monthYear)
+        public List<ApplicablePurchase> GetApplicablePurchases(int groupId, DateTime monthYear)
         {
             var applicablePurchases = (from it in _purchaseProvider.GetPurchasesByMonthYear(monthYear)
-                                       join pt in _budgetProvider.GetBudgetTypes() on it.PurchaseTypeId equals pt.BudgetTypeId
+                                       join pt in _budgetProvider.GetBudgetTypes(groupId) on it.PurchaseTypeId equals pt.BudgetTypeId
                                        select new ApplicablePurchase
                                        {
                                            Id = it.Id,

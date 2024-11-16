@@ -55,7 +55,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.AddBudget(inputBudget);
+                return _budgetService.AddBudget(groupId, inputBudget);
             }
             catch (UserNotFoundException)
             {
@@ -133,7 +133,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.ScenarioCheck(scenarioInput);
+                return _budgetService.ScenarioCheck(groupId, scenarioInput);
             }
             catch (UserNotFoundException)
             {

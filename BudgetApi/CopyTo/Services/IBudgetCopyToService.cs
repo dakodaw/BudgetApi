@@ -5,6 +5,6 @@ namespace BudgetApi.CopyTo.Services
 {
     public interface IBudgetCopyToService
     {
-        void CopyFrom(DateTime monthYear, CopyFromRequest request);
+        void CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request);
     }
 }

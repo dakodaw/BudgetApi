@@ -96,11 +96,11 @@ public class GiftCardService: IGiftCardService
         return currentBalance;
     }
 
-    public List<PurchaseLine> GetPurchaseLines(DateTime monthYear)
+    public List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear)
     {
         var giftCardPurchases = _purchaseProvider.GetAllGiftCardPurchases();
         var purchases = (from p in _purchaseProvider.GetMonthGiftCardPurchases(monthYear)
-                         join t in _budgetProvider.GetBudgetTypes() on p.PurchaseTypeId equals t.BudgetTypeId
+                         join t in _budgetProvider.GetBudgetTypes(groupId) on p.PurchaseTypeId equals t.BudgetTypeId
                          select new PurchaseLine
                          {
                              PurchaseType = new BudgetType

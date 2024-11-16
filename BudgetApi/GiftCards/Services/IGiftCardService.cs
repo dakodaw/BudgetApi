@@ -11,7 +11,7 @@ public interface IGiftCardService
     List<GiftCardSelectLine> GetGiftCardLines();
     List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros();
     decimal GetGiftCardBalance(int giftCardId);
-    List<PurchaseLine> GetPurchaseLines(DateTime monthYear);
+    List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear);
     GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId);
     bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1);
     void DeleteGiftCardEntry(int giftCardId);

@@ -12,7 +12,7 @@ namespace BudgetApi.Incomes.Services
         List<IncomeLine> GetIncomeLines(DateTime monthYear);
         List<IncomeSource> GetIncomeSources();
         List<IncomeSource> GetFullIncomeSources();
-        List<ApplicablePurchase> GetApplicablePurchases(DateTime monthYear);
+        List<ApplicablePurchase> GetApplicablePurchases(int groupId, DateTime monthYear);
         bool AddUpdateIncome(Income inputIncome, int incomeId = -1);
         bool DeleteIncomeEntry(int incomeId);
         bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1);

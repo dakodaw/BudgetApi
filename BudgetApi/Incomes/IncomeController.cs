@@ -172,7 +172,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetApplicablePurchases(monthYear);
+                return _incomeService.GetApplicablePurchases(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {

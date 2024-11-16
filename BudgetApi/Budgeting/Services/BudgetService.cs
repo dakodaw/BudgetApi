@@ -36,7 +36,7 @@ namespace BudgetApi.Budgeting.Services
 
             var budgetTypes = _budgetProvider.GetBudgetTypes(groupId);
             var budgetingEntries = _budgetProvider.GetBudgetEntries(groupId, monthYear);
-            var budgetEntries = _purchaseProvider.GetPurchasesByMonthYear(groupId, monthYear);
+            var budgetEntries = _purchaseProvider.GetPurchasesByMonthYear(monthYear);
             var budgetPurchases = budgetEntries.GroupBy(x => x.PurchaseTypeId);
 
             foreach(var budgetEntry in budgetingEntries)
@@ -91,14 +91,14 @@ namespace BudgetApi.Budgeting.Services
             return budgetLinesToReturn;
         }
 
-        public int AddBudget(BudgetEntry inputBudget)
+        public int AddBudget(int groupId, BudgetEntry inputBudget)
         {
-            return _budgetProvider.AddBudget(inputBudget);
+            return _budgetProvider.AddBudget(groupId, inputBudget);
         }
 
-        public bool AddBudgetLines(IEnumerable<BudgetEntry> inputBudgetLines)
+        public bool AddBudgetLines(int groupId, IEnumerable<BudgetEntry> inputBudgetLines)
         {
-            return _budgetProvider.AddBudgetEntries(inputBudgetLines);
+            return _budgetProvider.AddBudgetEntries(groupId, inputBudgetLines);
         }
 
         public void UpdateBudget(BudgetEntry inputBudget)
@@ -127,10 +127,10 @@ namespace BudgetApi.Budgeting.Services
             };
         }
 
-        public decimal ScenarioCheck(ScenarioInput scenarioInput)
+        public decimal ScenarioCheck(int groupId, ScenarioInput scenarioInput)
         {
             var applicableBudget = _budgetProvider
-                .GetBudgetEntriesInTimeSpan(scenarioInput.startMonth, scenarioInput.endMonth)
+                .GetBudgetEntriesInTimeSpan(groupId, scenarioInput.startMonth, scenarioInput.endMonth)
                 .ToList();
 
             decimal amountPlannedToSpend = default;
