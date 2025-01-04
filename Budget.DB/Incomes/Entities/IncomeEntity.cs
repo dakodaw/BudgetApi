@@ -18,7 +18,6 @@ public partial class IncomeEntity
 {
     [Key]
     public int Id { get; set; }
-    [Column("SourceId")]
     public int SourceId { get; set; }
     public string SourceDetails { get; set; }
     public decimal Amount { get; set; }
@@ -26,6 +25,11 @@ public partial class IncomeEntity
     public bool IsReimbursement { get; set; }
     public Nullable<int> PurchaseId { get; set; }
     public bool IsCash { get; set; }
+
+    public int? BudgetingGroupId { get; set; }
+
+    //[ForeignKey(nameof(BudgetingGroupId))]
+    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 
     [ForeignKey("SourceId")]
     public virtual IncomeSourceEntity IncomeSource { get; set; }

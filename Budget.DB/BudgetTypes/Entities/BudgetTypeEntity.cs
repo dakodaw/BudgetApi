@@ -22,9 +22,13 @@ public partial class BudgetTypeEntity
     }
 
     public int Id { get; set; }
+    public string BudgetType { get; set; }
 
-    [Column("BudgetType")]
-    public string BudgetType1 { get; set; }
+    public int? BudgetingGroupId { get; set; }
+
+    //[ForeignKey(nameof(BudgetingGroupId))]
+    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
     public virtual ICollection<BudgetEntity> Budgets { get; set; }

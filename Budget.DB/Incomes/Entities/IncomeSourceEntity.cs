@@ -12,6 +12,7 @@ namespace Budget.DB;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public partial class IncomeSourceEntity
 {
@@ -29,6 +30,12 @@ public partial class IncomeSourceEntity
     public bool ActiveJob { get; set; }
     public decimal? EstimatedIncome { get; set; }
     public string PayFrequency { get; set; }
+
+    public int? BudgetingGroupId { get; set; }
+
+    //[ForeignKey(nameof(BudgetingGroupId))]
+    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
     public virtual ICollection<IncomeEntity> Incomes { get; set; }

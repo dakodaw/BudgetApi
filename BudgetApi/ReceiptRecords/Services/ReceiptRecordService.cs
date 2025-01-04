@@ -26,16 +26,32 @@ public class ReceiptRecordService: IReceiptRecordService
         _purchaseService = purchasesService;
     }
 
+    public IEnumerable<ReceiptRecord> List(int groupId)
+    {
+        var baseRecords = _receiptRecordProvider.List(groupId);
+        foreach(var record in baseRecords)
+        {
+            HydrateReceiptRecord(record);
+        }
+
+        return baseRecords;
+    }
+
     public ReceiptRecord Get(Guid id)
     {
         var receiptRecord = _receiptRecordProvider.Get(id);
-        receiptRecord.ReceiptRecordGroups = _receiptRecordGroupProvider.List(id);
-        foreach(var record in receiptRecord.ReceiptRecordGroups)
+        HydrateReceiptRecord(receiptRecord);
+
+        return receiptRecord;
+    }
+
+    private void HydrateReceiptRecord(ReceiptRecord receiptRecord)
+    {
+        receiptRecord.ReceiptRecordGroups = _receiptRecordGroupProvider.List(receiptRecord.Id);
+        foreach (var record in receiptRecord.ReceiptRecordGroups)
         {
             record.Purchases = _purchaseService.GetReceiptRecordGroupPurchases(record.ReceiptRecordId);
         }
-
-        return receiptRecord;
     }
 
     public ReceiptRecord Add(ReceiptRecord record)

@@ -11,7 +11,8 @@ namespace Budget.DB
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public partial class PurchaseEntity
     {
         public int Id { get; set; }
@@ -24,5 +25,9 @@ namespace Budget.DB
         public System.DateTime Date { get; set; }
         public Guid? ReceiptRecordGroupId { get; set; }
         public bool FutureReimbursement { get; set; }
+
+
+        //[ForeignKey(nameof(BudgetingGroupId))]
+        //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
     }
 }

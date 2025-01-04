@@ -33,7 +33,7 @@ namespace Budget.DB.Budget
                     _budgetTypeProvider.AddBudgetType(new BudgetType
                     {
                         BudgetTypeId = budgetType.Id,
-                        BudgetTypeName = budgetType.BudgetType1
+                        BudgetTypeName = budgetType.BudgetType
                     });
 
                     return true;
@@ -50,7 +50,7 @@ namespace Budget.DB.Budget
                     _budgetTypeProvider.UpdateBudgetType(new BudgetType
                     {
                         BudgetTypeId = budgetType.Id,
-                        BudgetTypeName = budgetType.BudgetType1
+                        BudgetTypeName = budgetType.BudgetType
                     });
                     return true;
                 }

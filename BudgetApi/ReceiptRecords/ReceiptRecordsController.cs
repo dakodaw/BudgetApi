@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BudgetApi.ReceiptRecords
 {
@@ -24,6 +27,26 @@ namespace BudgetApi.ReceiptRecords
         {
             _receiptRecordService = receiptRecordService;
             _authorizationService = authorizationService;
+        }
+
+        [HttpGet]
+        [Route("")]
+        public ActionResult<IEnumerable<ReceiptRecord>> List(int groupId)
+        {
+            try
+            {
+                // TODO: Need to still add groupIds on purchases, etc.
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(_receiptRecordService.List(groupId));
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet]

@@ -23,6 +23,10 @@ public partial class ReceiptRecordEntity
     public decimal Amount { get; set; }
     public string Location { get; set; }
 
+
+    //[ForeignKey(nameof(BudgetingGroupId))]
+    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+
     //[ForeignKey("SourceId")]
     //public virtual IncomeSourceEntity IncomeSource { get; set; }
 }

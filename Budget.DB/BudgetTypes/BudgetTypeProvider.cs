@@ -16,7 +16,7 @@ namespace Budget.DB.BudgetTypes
             return _db.BudgetTypes.Select(x => new BudgetType
             {
                 BudgetTypeId = x.Id,
-                BudgetTypeName = x.BudgetType1
+                BudgetTypeName = x.BudgetType
             });
         }
 
@@ -28,7 +28,7 @@ namespace Budget.DB.BudgetTypes
             return new BudgetType
             {
                 BudgetTypeId = matchingType.Id,
-                BudgetTypeName = matchingType.BudgetType1
+                BudgetTypeName = matchingType.BudgetType
             };
         }
 
@@ -67,7 +67,7 @@ namespace Budget.DB.BudgetTypes
             {
                 var newBudgetType = new BudgetTypeEntity
                 {
-                    BudgetType1 = budgetType.BudgetTypeName
+                    BudgetType = budgetType.BudgetTypeName
                 };
 
                 _db.BudgetTypes.Add(newBudgetType);
@@ -86,7 +86,7 @@ namespace Budget.DB.BudgetTypes
             try
             {
                 var foundBudgetType = _db.BudgetTypes.Find(budgetType.BudgetTypeId);
-                foundBudgetType.BudgetType1 = budgetType.BudgetTypeName;
+                foundBudgetType.BudgetType = budgetType.BudgetTypeName;
 
                 _db.SaveChanges();
             }
