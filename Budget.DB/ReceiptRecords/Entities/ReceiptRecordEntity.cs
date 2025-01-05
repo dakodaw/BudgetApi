@@ -26,7 +26,4 @@ public partial class ReceiptRecordEntity
 
     [ForeignKey(nameof(BudgetingGroupId))]
     public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
-
-    //[ForeignKey("SourceId")]
-    //public virtual IncomeSourceEntity IncomeSource { get; set; }
 }
