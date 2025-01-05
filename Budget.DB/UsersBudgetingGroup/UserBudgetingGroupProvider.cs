@@ -19,7 +19,7 @@ public class UserBudgetingGroupProvider: IUserBudgetingGroupProvider
             var newGroup = new UsersBudgetingGroupEntity
             {
                 UserId = group.UserId,
-                GroupId = group.GroupId,
+                UserBudgetingGroupId = group.GroupId,
                 IsGroupAdmin = group.IsGroupAdmin
             };
 
@@ -41,7 +41,7 @@ public class UserBudgetingGroupProvider: IUserBudgetingGroupProvider
             var foundUsersBudgetingGroup = _db.UsersBudgetingGroup.Find(group);
             foundUsersBudgetingGroup.Id = group.Id;
             foundUsersBudgetingGroup.UserId = group.UserId;
-            foundUsersBudgetingGroup.GroupId = group.GroupId;
+            foundUsersBudgetingGroup.UserBudgetingGroupId = group.GroupId;
             foundUsersBudgetingGroup.IsGroupAdmin = group.IsGroupAdmin;
 
             _db.SaveChanges();
@@ -61,7 +61,7 @@ public class UserBudgetingGroupProvider: IUserBudgetingGroupProvider
         {
             Id = matchingGroup.Id,
             UserId = matchingGroup.UserId,
-            GroupId = matchingGroup.GroupId,
+            GroupId = matchingGroup.UserBudgetingGroupId,
             IsGroupAdmin = matchingGroup.IsGroupAdmin
         };
     }
@@ -75,7 +75,7 @@ public class UserBudgetingGroupProvider: IUserBudgetingGroupProvider
         {
             Id = group.Id,
             UserId = group.UserId,
-            GroupId = group.GroupId,
+            GroupId = group.UserBudgetingGroupId,
             IsGroupAdmin = group.IsGroupAdmin
         });
     }
@@ -86,7 +86,7 @@ public class UserBudgetingGroupProvider: IUserBudgetingGroupProvider
         {
             Id = x.Id,
             UserId = x.UserId,
-            GroupId = x.GroupId,
+            GroupId = x.UserBudgetingGroupId,
             IsGroupAdmin = x.IsGroupAdmin
         });
     }

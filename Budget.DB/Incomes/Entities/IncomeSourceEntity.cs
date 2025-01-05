@@ -31,10 +31,10 @@ public partial class IncomeSourceEntity
     public decimal? EstimatedIncome { get; set; }
     public string PayFrequency { get; set; }
 
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     //[ForeignKey(nameof(BudgetingGroupId))]
-    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+    public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

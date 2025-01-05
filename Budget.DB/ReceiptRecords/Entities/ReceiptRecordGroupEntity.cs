@@ -31,12 +31,7 @@ public partial class ReceiptRecordGroupEntity
     //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
     //public virtual ICollection<IncomeEntity> Incomes { get; set; }
     [ForeignKey(nameof(ReceiptRecordId))]
-    public virtual ReceiptRecordEntity IncomeSource { get; set; }
-
-    public int? BudgetingGroupId { get; set; }
-
-    //[ForeignKey(nameof(BudgetingGroupId))]
-    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+    public virtual ReceiptRecordEntity ReceiptRecord { get; set; }
 
     [ForeignKey(nameof(BudgetTypeId))]
     public virtual BudgetTypeEntity BudgetType { get; set; }

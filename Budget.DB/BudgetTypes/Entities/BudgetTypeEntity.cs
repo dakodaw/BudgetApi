@@ -24,7 +24,7 @@ public partial class BudgetTypeEntity
     public int Id { get; set; }
     public string BudgetType { get; set; }
 
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     //[ForeignKey(nameof(BudgetingGroupId))]
     //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }

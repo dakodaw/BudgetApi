@@ -20,8 +20,8 @@ public partial class GiftCardEntity
     public decimal InitialAmount { get; set; }
     public string CardNumber { get; set; }
     public string AccessCode { get; set; }
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     //[ForeignKey(nameof(BudgetingGroupId))]
-    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+    public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 }

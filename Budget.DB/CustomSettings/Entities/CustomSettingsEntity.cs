@@ -9,8 +9,8 @@ public class CustomSettingsEntity
     public int Id { get; set; }
     public string KeyName { get; set; }
     public string Value { get; set; }
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     //[ForeignKey(nameof(BudgetingGroupId))]
-    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+    public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 }

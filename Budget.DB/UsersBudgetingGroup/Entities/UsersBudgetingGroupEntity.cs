@@ -4,7 +4,7 @@ public class UsersBudgetingGroupEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public int UserId { get; set; }
-    public int GroupId { get; set; }
+    public int UserBudgetingGroupId { get; set; }
     public bool IsGroupAdmin { get; set; }
 
 

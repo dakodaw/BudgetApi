@@ -26,10 +26,10 @@ public partial class IncomeEntity
     public Nullable<int> PurchaseId { get; set; }
     public bool IsCash { get; set; }
 
-    public int? BudgetingGroupId { get; set; }
+    public int BudgetingGroupId { get; set; }
 
     //[ForeignKey(nameof(BudgetingGroupId))]
-    //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+    public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 
     [ForeignKey("SourceId")]
     public virtual IncomeSourceEntity IncomeSource { get; set; }
