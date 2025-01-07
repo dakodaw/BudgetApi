@@ -11,6 +11,6 @@ public class CustomSettingsEntity
     public string Value { get; set; }
     public int BudgetingGroupId { get; set; }
 
-    //[ForeignKey(nameof(BudgetingGroupId))]
+    [ForeignKey(nameof(BudgetingGroupId))]
     public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 }

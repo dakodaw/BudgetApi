@@ -25,10 +25,9 @@ public partial class IncomeEntity
     public bool IsReimbursement { get; set; }
     public Nullable<int> PurchaseId { get; set; }
     public bool IsCash { get; set; }
-
     public int BudgetingGroupId { get; set; }
 
-    //[ForeignKey(nameof(BudgetingGroupId))]
+    [ForeignKey(nameof(BudgetingGroupId))]
     public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
 
     [ForeignKey("SourceId")]

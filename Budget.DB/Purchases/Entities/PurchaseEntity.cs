@@ -27,7 +27,7 @@ namespace Budget.DB
         public bool FutureReimbursement { get; set; }
 
 
-        //[ForeignKey(nameof(BudgetingGroupId))]
-        //public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
+        [ForeignKey(nameof(BudgetingGroupId))]
+        public virtual BudgetingGroupEntity BudgetingGroup { get; set; }
     }
 }

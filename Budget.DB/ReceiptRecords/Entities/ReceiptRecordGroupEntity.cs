@@ -29,7 +29,6 @@ public partial class ReceiptRecordGroupEntity
     public decimal Amount { get; set; }
 
     //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-    //public virtual ICollection<IncomeEntity> Incomes { get; set; }
     [ForeignKey(nameof(ReceiptRecordId))]
     public virtual ReceiptRecordEntity ReceiptRecord { get; set; }
 
