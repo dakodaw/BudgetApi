@@ -8,16 +8,16 @@ namespace BudgetApi.GiftCards.Services;
 
 public interface IGiftCardService
 {
-    List<GiftCardSelectLine> GetGiftCardLines();
-    List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros();
+    List<GiftCardSelectLine> GetGiftCardLines(int groupId);
+    List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros(int groupId);
     decimal GetGiftCardBalance(int giftCardId);
     List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear);
     GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId);
-    bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1);
+    bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1);
     void DeleteGiftCardEntry(int giftCardId);
     bool DeleteGiftCardObsolete(int giftCardId);
-    List<GiftCardHistoryBalance> GetAllBalanceAndHistory();
+    List<GiftCardHistoryBalance> GetAllBalanceAndHistory(int groupId);
     GiftCard GetGiftCard(int giftCardId);
     void UpdateGiftCard(GiftCard inputGiftCard);
-    int AddGiftCard(GiftCard inputGiftCard);
+    int AddGiftCard(int groupId, GiftCard inputGiftCard);
 }

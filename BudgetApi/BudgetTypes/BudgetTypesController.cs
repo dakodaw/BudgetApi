@@ -34,7 +34,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                return _budgetService.AddBudgetType(budgetType);
+                return _budgetService.AddBudgetType(groupId, budgetType);
             }
             catch (UserNotFoundException)
             {

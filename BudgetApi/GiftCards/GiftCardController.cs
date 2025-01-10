@@ -56,7 +56,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.AddGiftCard(inputGiftCard);
+                return _giftCardService.AddGiftCard(groupId, inputGiftCard);
             }
             catch (UserNotFoundException)
             {
@@ -115,7 +115,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCardLines();
+                return _giftCardService.GetGiftCardLines(groupId);
             }
             catch (UserNotFoundException)
             {
@@ -134,7 +134,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCardLinesIncludingZeros();
+                return _giftCardService.GetGiftCardLinesIncludingZeros(groupId);
             }
             catch (UserNotFoundException)
             {
@@ -211,7 +211,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.AddUpdateGiftCard(inputGiftCard, giftCardId);
+                return _giftCardService.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -250,7 +250,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetAllBalanceAndHistory();
+                return _giftCardService.GetAllBalanceAndHistory(groupId);
             }
             catch (UserNotFoundException)
             {

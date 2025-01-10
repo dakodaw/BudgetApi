@@ -80,7 +80,8 @@ namespace BudgetApi.ReceiptRecords
                 {
                     return Unauthorized();
                 }
-                return _receiptRecordService.Add(inputRecord);
+
+                return _receiptRecordService.Add(groupId, inputRecord);
             }
             catch (UserNotFoundException)
             {

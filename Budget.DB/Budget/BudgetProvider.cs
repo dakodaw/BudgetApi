@@ -24,13 +24,13 @@ namespace Budget.DB.Budget
             return _budgetTypeProvider.GetBudgetType(budgetTypeId);
         }
 
-        public bool AddUpdateBudgetType(BudgetTypeEntity budgetType, int budgetTypeId = -1)
+        public bool AddUpdateBudgetType(int groupId, BudgetTypeEntity budgetType, int budgetTypeId = -1)
         {
             if (budgetTypeId == -1)
             {
                 try
                 {
-                    _budgetTypeProvider.AddBudgetType(new BudgetType
+                    _budgetTypeProvider.AddBudgetType(groupId, new BudgetType
                     {
                         BudgetTypeId = budgetType.Id,
                         BudgetTypeName = budgetType.BudgetType

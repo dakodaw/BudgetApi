@@ -32,13 +32,13 @@ namespace Budget.DB.BudgetTypes
             };
         }
 
-        public bool AddUpdateBudgetType(BudgetType budgetType, int budgetTypeId = -1)
+        public bool AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
         {
             if (budgetTypeId == -1)
             {
                 try
                 {
-                    AddBudgetType(budgetType);
+                    AddBudgetType(groupId, budgetType);
 
                     return true;
                 }
@@ -61,13 +61,14 @@ namespace Budget.DB.BudgetTypes
             }
         }
 
-        public int AddBudgetType(BudgetType budgetType)
+        public int AddBudgetType(int groupId, BudgetType budgetType)
         {
             try
             {
                 var newBudgetType = new BudgetTypeEntity
                 {
-                    BudgetType = budgetType.BudgetTypeName
+                    BudgetType = budgetType.BudgetTypeName,
+                    BudgetingGroupId = groupId
                 };
 
                 _db.BudgetTypes.Add(newBudgetType);

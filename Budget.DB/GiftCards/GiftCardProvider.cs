@@ -30,21 +30,22 @@ public class GiftCardProvider: IGiftCardProvider
 		};
     }
 
-	public IEnumerable<GiftCard> GetAllGiftCards()
+	public IEnumerable<GiftCard> GetAllGiftCards(int groupId)
 	{
-		var giftCardList = _db.GiftCards.Select(gc => new GiftCard
-		{
-			AccessCode = gc.AccessCode,
-			InitialAmount = gc.InitialAmount,
-			CardNumber = gc.CardNumber,
-			Id = gc.Id,
-			Place = gc.Place
-		});
+		var giftCardList = _db.GiftCards.Where(x => x.BudgetingGroupId == groupId)
+            .Select(gc => new GiftCard
+		    {
+			    AccessCode = gc.AccessCode,
+			    InitialAmount = gc.InitialAmount,
+			    CardNumber = gc.CardNumber,
+			    Id = gc.Id,
+			    Place = gc.Place
+		    });
 
 		return giftCardList;
 	}
 
-	public bool AddUpdateGiftCard(GiftCard inputGiftCardStuff, int giftCardId = -1)
+	public bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCardStuff, int giftCardId = -1)
 	{
         if (inputGiftCardStuff == default)
             return false;
@@ -53,7 +54,7 @@ public class GiftCardProvider: IGiftCardProvider
         {
             try
             {
-                var resultingGiftCardId = AddGiftCard(inputGiftCardStuff);
+                var resultingGiftCardId = AddGiftCard(groupId, inputGiftCardStuff);
 
                 return true;
             }
@@ -76,7 +77,7 @@ public class GiftCardProvider: IGiftCardProvider
         }
     }
 
-    public int AddGiftCard(GiftCard inputGiftCardStuff)
+    public int AddGiftCard(int groupId, GiftCard inputGiftCardStuff)
     {
         if (inputGiftCardStuff == default)
             throw new Exception("Unable to add a null Gift Card");
@@ -87,7 +88,8 @@ public class GiftCardProvider: IGiftCardProvider
             InitialAmount = inputGiftCardStuff.InitialAmount,
             CardNumber = inputGiftCardStuff.CardNumber,
             Id = inputGiftCardStuff.Id,
-            Place = inputGiftCardStuff.Place
+            Place = inputGiftCardStuff.Place,
+            BudgetingGroupId = groupId
         };
 
         try

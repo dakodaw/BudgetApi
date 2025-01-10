@@ -26,14 +26,14 @@ namespace BudgetApi.BudgetTypes
                 .ToList();
         }
 
-        public bool AddUpdateBudgetType(BudgetType budgetType, int budgetTypeId = -1)
+        public bool AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
         {
-            return _budgetTypeProvider.AddUpdateBudgetType(budgetType, budgetTypeId);
+            return _budgetTypeProvider.AddUpdateBudgetType(groupId, budgetType, budgetTypeId);
         }
 
-        public int AddBudgetType(BudgetType budgetType)
+        public int AddBudgetType(int groupId, BudgetType budgetType)
         {
-            return _budgetTypeProvider.AddBudgetType(budgetType);
+            return _budgetTypeProvider.AddBudgetType(groupId, budgetType);
         }
 
         public void UpdateBudgetType(BudgetType budgetType)

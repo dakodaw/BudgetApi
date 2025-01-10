@@ -9,17 +9,17 @@ namespace BudgetApi.Incomes.Services
     public interface IIncomeService
     {
         List<IncomeSource> GetIncomeTypes();
-        List<IncomeLine> GetIncomeLines(DateTime monthYear);
+        List<IncomeLine> GetIncomeLines(int groupId, DateTime monthYear);
         List<IncomeSource> GetIncomeSources();
         List<IncomeSource> GetFullIncomeSources();
         List<ApplicablePurchase> GetApplicablePurchases(int groupId, DateTime monthYear);
-        bool AddUpdateIncome(Income inputIncome, int incomeId = -1);
+        bool AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1);
         bool DeleteIncomeEntry(int incomeId);
         bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1);
         bool DeleteJobEntry(int incomeSourceId);
         IncomeSource GetIncomeSource(int incomeSourceId);
         IncomeLine GetExistingIncome(int incomeId);
-        int AddIncome(Income inputIncome);
+        int AddIncome(int groupId, Income inputIncome);
         bool UpdateIncome(Income inputIncome);
     }
 }

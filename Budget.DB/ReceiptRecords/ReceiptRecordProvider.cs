@@ -45,14 +45,14 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         };
     }
 
-    public Guid Add(ReceiptRecord inputReceiptRecord)
+    public Guid Add(int groupId, ReceiptRecord inputReceiptRecord)
     {
         try
         {
             var receiptRecordEntity = new ReceiptRecordEntity
             {
                 Id = inputReceiptRecord.Id,
-                BudgetingGroupId = inputReceiptRecord.BudgetingGroupId,
+                BudgetingGroupId = groupId,
                 Date = inputReceiptRecord.Date,
                 Amount = inputReceiptRecord.Amount,
                 Location = inputReceiptRecord.Location

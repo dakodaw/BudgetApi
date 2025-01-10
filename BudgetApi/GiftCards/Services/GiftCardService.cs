@@ -28,10 +28,10 @@ public class GiftCardService: IGiftCardService
     }
 
     // GET api/<controller>
-    public List<GiftCardSelectLine> GetGiftCardLines()
+    public List<GiftCardSelectLine> GetGiftCardLines(int groupId)
     {
         var giftCardLines = new List<GiftCardSelectLine>();
-        var giftCards = _giftCardProvider.GetAllGiftCards();
+        var giftCards = _giftCardProvider.GetAllGiftCards(groupId);
         foreach (var giftCard in giftCards)
         {
             var remaining = GetGiftCardBalance(giftCard.Id);
@@ -50,10 +50,10 @@ public class GiftCardService: IGiftCardService
         return giftCardLines.OrderBy(i => i.Place).ToList();
     }
 
-    public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros()
+    public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros(int groupId)
     {
         var giftCardLines = new List<GiftCardSelectLine>();
-        var giftCards = _giftCardProvider.GetAllGiftCards();
+        var giftCards = _giftCardProvider.GetAllGiftCards(groupId);
 
         foreach (var giftCard in giftCards)
         {
@@ -139,14 +139,14 @@ public class GiftCardService: IGiftCardService
         };
     }
 
-    public bool AddUpdateGiftCard(GiftCard inputGiftCard, int giftCardId = -1)
+    public bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1)
     {
-        return _giftCardProvider.AddUpdateGiftCard(inputGiftCard, giftCardId);
+        return _giftCardProvider.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
     }
 
-    public int AddGiftCard(GiftCard inputGiftCard)
+    public int AddGiftCard(int groupId, GiftCard inputGiftCard)
     {
-        return _giftCardProvider.AddGiftCard(inputGiftCard);
+        return _giftCardProvider.AddGiftCard(groupId, inputGiftCard);
     }
 
     public void UpdateGiftCard(GiftCard inputGiftCard)
@@ -169,10 +169,10 @@ public class GiftCardService: IGiftCardService
         catch { return false; }
     }
 
-    public List<GiftCardHistoryBalance> GetAllBalanceAndHistory()
+    public List<GiftCardHistoryBalance> GetAllBalanceAndHistory(int groupId)
     {
         var balance = new List<GiftCardHistoryBalance>();
-        foreach (var giftCard in _giftCardProvider.GetAllGiftCards())
+        foreach (var giftCard in _giftCardProvider.GetAllGiftCards(groupId))
         {
             balance.Add(new GiftCardHistoryBalance
             {

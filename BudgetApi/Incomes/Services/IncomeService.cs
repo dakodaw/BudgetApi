@@ -37,10 +37,10 @@ namespace BudgetApi.Incomes.Services
             return incomeSources.OrderBy(i => i.SourceName).ToList();
         }
 
-        public List<IncomeLine> GetIncomeLines(DateTime monthYear)
+        public List<IncomeLine> GetIncomeLines(int groupId, DateTime monthYear)
         {
             // TODO: Probably fix this. It may have problems with mixing contexts.
-            return (from i in _incomeProvider.GetIncomes(monthYear)
+            return (from i in _incomeProvider.GetIncomes(groupId, monthYear)
                     join it in _incomeSourceProvider.GetIncomeSources() on i.SourceId equals it.Id
                     select new IncomeLine
                     {
@@ -92,14 +92,14 @@ namespace BudgetApi.Incomes.Services
             return applicablePurchases;
         }
 
-        public bool AddUpdateIncome(Income inputIncome, int incomeId = -1)
+        public bool AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
         {
-            return _incomeProvider.AddUpdateIncome(inputIncome, incomeId);
+            return _incomeProvider.AddUpdateIncome(groupId, inputIncome, incomeId);
         }
 
-        public int AddIncome(Income inputIncome)
+        public int AddIncome(int groupId, Income inputIncome)
         {
-            return _incomeProvider.AddIncome(inputIncome);
+            return _incomeProvider.AddIncome(groupId, inputIncome);
         }
 
         public bool UpdateIncome(Income inputIncome)

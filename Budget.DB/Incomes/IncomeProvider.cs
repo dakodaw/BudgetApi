@@ -12,9 +12,9 @@ public class IncomeProvider: IIncomeProvider
         _db = db;
     }
 
-    public IEnumerable<IncomeSource> GetIncomeSources(bool isActive = true)
+    public IEnumerable<IncomeSource> GetIncomeSources(int groupId, bool isActive = true)
     {
-        return _db.IncomeSources.Where(income => income.ActiveJob == isActive)
+        return _db.IncomeSources.Where(income => income.BudgetingGroupId == groupId && income.ActiveJob == isActive)
             .Select(x =>
             new IncomeSource()
             {
@@ -29,9 +29,9 @@ public class IncomeProvider: IIncomeProvider
         ).OrderBy(i => i.SourceName);
     }
 
-    public IEnumerable<Income> GetIncomes(DateTime monthYear)
+    public IEnumerable<Income> GetIncomes(int groupId, DateTime monthYear)
     {
-        var incomeLines = (from i in _db.Incomes.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year)
+        var incomeLines = (from i in _db.Incomes.Where(i => i.BudgetingGroupId == groupId && i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year)
                            join it in _db.IncomeSources on i.SourceId equals it.Id
                            select new Income
                            {
@@ -53,7 +53,7 @@ public class IncomeProvider: IIncomeProvider
         return incomeLines;
     }
 
-    public bool AddUpdateIncome(Income inputIncome, int incomeId = -1)
+    public bool AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
     {
         if (incomeId == -1)
         {
@@ -68,7 +68,8 @@ public class IncomeProvider: IIncomeProvider
                 IsCash = inputIncome.IsCash,
                 IsReimbursement = inputIncome.IsReimbursement,
                 PurchaseId = inputIncome.PurchaseId,
-                SourceDetails = inputIncome.SourceDetails
+                SourceDetails = inputIncome.SourceDetails,
+                BudgetingGroupId = groupId
             });
 
             _db.SaveChanges();
@@ -190,7 +191,7 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
-    public int AddIncome(Income inputIncome)
+    public int AddIncome(int groupId, Income inputIncome)
     {
         try
         {
@@ -202,7 +203,8 @@ public class IncomeProvider: IIncomeProvider
                 IsReimbursement = inputIncome.IsReimbursement,
                 PurchaseId = inputIncome.PurchaseId,
                 SourceDetails = inputIncome.SourceDetails,
-                SourceId = inputIncome.SourceId
+                SourceId = inputIncome.SourceId,
+                BudgetingGroupId = groupId
             });
             _db.SaveChanges();
 

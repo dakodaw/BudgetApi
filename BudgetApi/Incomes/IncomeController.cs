@@ -37,7 +37,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.AddIncome(inputIncome);
+                return _incomeService.AddIncome(groupId, inputIncome);
             }
             catch (UserNotFoundException)
             {
@@ -115,7 +115,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetIncomeLines(monthYear);
+                return _incomeService.GetIncomeLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -192,7 +192,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.AddUpdateIncome(inputIncome, incomeId);
+                return _incomeService.AddUpdateIncome(groupId, inputIncome, incomeId);
             }
             catch (UserNotFoundException)
             {
