@@ -12,11 +12,17 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         _db = db;
     }
 
-    public IEnumerable<ReceiptRecord> List(int groupId)
+    public IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null)
     {
-        return _db.ReceiptRecord
-            .Where(r => r.BudgetingGroupId == groupId)
-            .Select(x =>
+        var receiptRecords = monthYear.HasValue
+            ? _db.ReceiptRecord
+                .Where(r => r.BudgetingGroupId == groupId
+                    && r.Date.Month == monthYear.Value.Month
+                    && r.Date.Year == monthYear.Value.Year)
+            : _db.ReceiptRecord
+                .Where(r => r.BudgetingGroupId == groupId);
+
+        return receiptRecords.Select(x =>
             new ReceiptRecord()
             {
                 Id = x.Id,

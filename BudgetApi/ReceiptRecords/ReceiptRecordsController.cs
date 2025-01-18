@@ -31,7 +31,7 @@ namespace BudgetApi.ReceiptRecords
 
         [HttpGet]
         [Route("")]
-        public ActionResult<IEnumerable<ReceiptRecord>> List(int groupId)
+        public ActionResult<IEnumerable<ReceiptRecord>> List(int groupId, [FromQuery] DateTime? monthYear = null)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace BudgetApi.ReceiptRecords
                     return Unauthorized();
                 }
 
-                return Ok(_receiptRecordService.List(groupId));
+                return Ok(_receiptRecordService.List(groupId, monthYear));
             }
             catch (UserNotFoundException)
             {

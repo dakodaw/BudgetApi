@@ -26,9 +26,9 @@ public class ReceiptRecordService: IReceiptRecordService
         _purchaseService = purchasesService;
     }
 
-    public IEnumerable<ReceiptRecord> List(int groupId)
+    public IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null)
     {
-        var baseRecords = _receiptRecordProvider.List(groupId);
+        var baseRecords = _receiptRecordProvider.List(groupId, monthYear);
         foreach(var record in baseRecords)
         {
             HydrateReceiptRecord(record);

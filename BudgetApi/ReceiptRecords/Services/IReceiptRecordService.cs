@@ -6,7 +6,7 @@ namespace BudgetApi.ReceiptRecords.Services;
 
 public interface IReceiptRecordService
 {
-    IEnumerable<ReceiptRecord> List(int groupId);
+    IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null);
     ReceiptRecord Get(Guid id);
     ReceiptRecord Add(int groupId, ReceiptRecord record);
     //void Update(ReceiptRecord record);
