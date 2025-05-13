@@ -1,4 +1,4 @@
-﻿using Budget.DB.Incomes;
+using Budget.DB.Incomes;
 using Budget.DB.ReceiptRecordGroups;
 using Budget.Models;
 using BudgetApi.Models;
@@ -28,10 +28,12 @@ public class ReceiptRecordService: IReceiptRecordService
 
     public IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null)
     {
-        var baseRecords = _receiptRecordProvider.List(groupId, monthYear);
-        foreach(var record in baseRecords)
+        var baseRecords = _receiptRecordProvider.List(groupId, monthYear).ToList();
+
+        for (int i = 0; i < baseRecords.Count(); i++)
         {
-            HydrateReceiptRecord(record);
+            var receiptRecordGroups = GetReceiptRecordWithPurchases(baseRecords[i]);
+            baseRecords[i].ReceiptRecordGroups = receiptRecordGroups;
         }
 
         return baseRecords;
@@ -40,18 +42,23 @@ public class ReceiptRecordService: IReceiptRecordService
     public ReceiptRecord Get(Guid id)
     {
         var receiptRecord = _receiptRecordProvider.Get(id);
-        HydrateReceiptRecord(receiptRecord);
+        var receiptRecordGroups = GetReceiptRecordWithPurchases(receiptRecord);
+        receiptRecord.ReceiptRecordGroups = receiptRecordGroups;
 
         return receiptRecord;
     }
 
-    private void HydrateReceiptRecord(ReceiptRecord receiptRecord)
+    private IEnumerable<ReceiptRecordGroup> GetReceiptRecordWithPurchases(ReceiptRecord receiptRecord)
     {
-        receiptRecord.ReceiptRecordGroups = _receiptRecordGroupProvider.List(receiptRecord.Id);
-        foreach (var record in receiptRecord.ReceiptRecordGroups)
+        var receiptRecordGroups = _receiptRecordGroupProvider.List(receiptRecord.Id).ToList();
+        
+        for (int i = 0;i < receiptRecordGroups.Count(); i++)
         {
-            record.Purchases = _purchaseService.GetReceiptRecordGroupPurchases(record.ReceiptRecordId);
+            var purchases = _purchaseService.GetReceiptRecordGroupPurchases(receiptRecordGroups[i].Id);
+            receiptRecordGroups[i].Purchases = purchases;
         }
+
+        return receiptRecordGroups;
     }
 
     public ReceiptRecord Add(int groupId, ReceiptRecord record)
