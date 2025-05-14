@@ -1,4 +1,5 @@
 ﻿using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.GiftCards;
 
@@ -11,11 +12,11 @@ public class GiftCardProvider: IGiftCardProvider
 		_db = db;
     }
 
-	public GiftCard GetGiftCard(int giftCardId)
+	public async Task<GiftCard> GetGiftCard(int giftCardId)
 	{
-		var foundGiftCard = _db.GiftCards
+		var foundGiftCard = await _db.GiftCards
 			.Where(i => i.Id == giftCardId)
-			.FirstOrDefault();
+			.FirstOrDefaultAsync();
 
 		if (foundGiftCard == default)
 			return new GiftCard();
@@ -30,9 +31,9 @@ public class GiftCardProvider: IGiftCardProvider
 		};
     }
 
-	public IEnumerable<GiftCard> GetAllGiftCards(int groupId)
+	public async Task<IEnumerable<GiftCard>> GetAllGiftCards(int groupId)
 	{
-		var giftCardList = _db.GiftCards.Where(x => x.BudgetingGroupId == groupId)
+		var giftCardList = await _db.GiftCards.Where(x => x.BudgetingGroupId == groupId)
             .Select(gc => new GiftCard
 		    {
 			    AccessCode = gc.AccessCode,
@@ -40,12 +41,12 @@ public class GiftCardProvider: IGiftCardProvider
 			    CardNumber = gc.CardNumber,
 			    Id = gc.Id,
 			    Place = gc.Place
-		    });
+		    }).ToListAsync();
 
 		return giftCardList;
 	}
 
-	public bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCardStuff, int giftCardId = -1)
+	public async Task<bool> AddUpdateGiftCard(int groupId, GiftCard inputGiftCardStuff, int giftCardId = -1)
 	{
         if (inputGiftCardStuff == default)
             return false;
@@ -54,7 +55,7 @@ public class GiftCardProvider: IGiftCardProvider
         {
             try
             {
-                var resultingGiftCardId = AddGiftCard(groupId, inputGiftCardStuff);
+                var resultingGiftCardId = await AddGiftCard(groupId, inputGiftCardStuff);
 
                 return true;
             }
@@ -67,7 +68,7 @@ public class GiftCardProvider: IGiftCardProvider
         {
             try
             {
-                UpdateGiftCard(inputGiftCardStuff);
+                await UpdateGiftCard(inputGiftCardStuff);
                 return true;
             }
             catch
@@ -77,7 +78,7 @@ public class GiftCardProvider: IGiftCardProvider
         }
     }
 
-    public int AddGiftCard(int groupId, GiftCard inputGiftCardStuff)
+    public async Task<int> AddGiftCard(int groupId, GiftCard inputGiftCardStuff)
     {
         if (inputGiftCardStuff == default)
             throw new Exception("Unable to add a null Gift Card");
@@ -94,8 +95,8 @@ public class GiftCardProvider: IGiftCardProvider
 
         try
         {
-            _db.GiftCards.Add(inputGiftCard);
-            _db.SaveChanges();
+            await _db.GiftCards.AddAsync(inputGiftCard);
+            await _db.SaveChangesAsync();
 
             return inputGiftCard.Id;
         }
@@ -105,16 +106,16 @@ public class GiftCardProvider: IGiftCardProvider
         }
     }
 
-    public void UpdateGiftCard(GiftCard inputGiftCard)
+    public async Task UpdateGiftCard(GiftCard inputGiftCard)
     {
         try
         {
-            var existingGiftCard = _db.GiftCards.FirstOrDefault(x => x.Id == inputGiftCard.Id);
+            var existingGiftCard = await _db.GiftCards.FirstOrDefaultAsync(x => x.Id == inputGiftCard.Id);
             existingGiftCard.AccessCode = inputGiftCard.AccessCode;
             existingGiftCard.CardNumber = inputGiftCard.CardNumber;
             existingGiftCard.InitialAmount = inputGiftCard.InitialAmount;
             existingGiftCard.Place = inputGiftCard.Place;
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch(Exception ex)
         {
@@ -122,13 +123,13 @@ public class GiftCardProvider: IGiftCardProvider
         }
     }
 
-    public void DeleteGiftCardEntry(int giftCardId)
+    public async Task DeleteGiftCardEntry(int giftCardId)
     {
         try
         {
-            var toDelete = _db.GiftCards.Find(giftCardId);
+            var toDelete = await _db.GiftCards.FindAsync(giftCardId);
             _db.GiftCards.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch(Exception e) 
         {

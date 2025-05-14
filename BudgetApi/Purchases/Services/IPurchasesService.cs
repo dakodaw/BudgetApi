@@ -3,18 +3,18 @@ using BudgetApi.Purchases.Models;
 using BudgetApi.Shared;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace BudgetApi.Purchases.Services
+namespace BudgetApi.Purchases.Services;
+
+public interface IPurchasesService
 {
-    public interface IPurchasesService
-    {
-        public List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear);
-        public IEnumerable<Purchase> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId);
-        public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
-        public int AddPurchase(Purchase inputPurchase);
-        public void UpdatePurchase(Purchase inputPurchase);
-        public void DeletePurchaseEntry(int purchaseId);
-        public bool DeletePurchaseEntryObsolete(int purchaseId);
-        public PurchaseLine GetExistingPurchase(int purchaseId);
-    }
+    Task<List<PurchaseLine>> GetPurchaseLines(int groupId, DateTime monthYear);
+    Task<IEnumerable<Purchase>> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId);
+    Task<bool> AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
+    Task<int> AddPurchase(Purchase inputPurchase);
+    Task UpdatePurchase(Purchase inputPurchase);
+    Task DeletePurchaseEntry(int purchaseId);
+    Task<bool> DeletePurchaseEntryObsolete(int purchaseId);
+    Task<PurchaseLine> GetExistingPurchase(int purchaseId);
 }

@@ -4,11 +4,11 @@ namespace Budget.DB.Incomes;
 
 public interface IIncomeSourceProvider
 {
-    IEnumerable<IncomeSource> GetIncomeSources(bool includeInactiveJobs = false);
-    IncomeSource GetIncomeSource(int incomeSourceId);
-    bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1);
-    int AddIncomeSource(IncomeSource inputJob);
-    void UpdateIncomeSource(IncomeSource inputJob);
-    void DeleteIncomeSource(int incomeSourceId);
+    Task<IEnumerable<IncomeSource>> GetIncomeSources(bool includeInactiveJobs = false);
+    Task<IncomeSource> GetIncomeSource(int incomeSourceId);
+    Task<bool> AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1);
+    Task<int> AddIncomeSource(IncomeSource inputJob);
+    Task UpdateIncomeSource(IncomeSource inputJob);
+    Task DeleteIncomeSource(int incomeSourceId);
 }
 

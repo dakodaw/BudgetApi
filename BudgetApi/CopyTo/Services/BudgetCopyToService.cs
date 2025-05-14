@@ -4,6 +4,7 @@ using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.CopyTo.Services
 {
@@ -15,7 +16,7 @@ namespace BudgetApi.CopyTo.Services
             _budgetService = budgetService;
         }
 
-        public void CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request)
+        public async Task CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request)
         {
             var defaultLastMonth = monthYear.AddMonths(-1);
             var lastMonth = request.FromMethod switch
@@ -27,7 +28,7 @@ namespace BudgetApi.CopyTo.Services
             };
 
 
-            var lastMonthBudgetLines = _budgetService.GetBudgetLines(groupId, lastMonth);
+            var lastMonthBudgetLines = await _budgetService.GetBudgetLines(groupId, lastMonth);
 
             var copiedBudgetLines = new List<BudgetEntry>();
             lastMonthBudgetLines
@@ -47,7 +48,7 @@ namespace BudgetApi.CopyTo.Services
                     });
                 });
 
-            _budgetService.AddBudgetLines(groupId, copiedBudgetLines);
+            await _budgetService.AddBudgetLines(groupId, copiedBudgetLines);
         }
     }
 }

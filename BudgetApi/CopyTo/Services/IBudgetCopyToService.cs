@@ -1,10 +1,11 @@
 ﻿using BudgetApi.CopyTo.Models;
 using System;
+using System.Threading.Tasks;
 
 namespace BudgetApi.CopyTo.Services
 {
     public interface IBudgetCopyToService
     {
-        void CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request);
+        Task CopyFrom(int groupId, DateTime monthYear, CopyFromRequest request);
     }
 }

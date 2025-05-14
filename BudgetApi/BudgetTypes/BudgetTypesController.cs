@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.BudgetTypes
 {
@@ -25,7 +26,7 @@ namespace BudgetApi.BudgetTypes
 
         [Route("")]
         [HttpPost]
-        public ActionResult<int> AddBudgetType(int groupId, [FromBody] BudgetType budgetType)
+        public async Task<ActionResult<int>> AddBudgetType(int groupId, [FromBody] BudgetType budgetType)
         {
             try
             {
@@ -34,7 +35,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                return _budgetService.AddBudgetType(groupId, budgetType);
+                return await _budgetService.AddBudgetType(groupId, budgetType);
             }
             catch (UserNotFoundException)
             {
@@ -44,7 +45,7 @@ namespace BudgetApi.BudgetTypes
 
         [Route("{budgetTypeId}")]
         [HttpPut]
-        public ActionResult UpdateBudgetType([FromBody] BudgetType budgetType, int groupId, int budgetTypeId = -1)
+        public async Task<ActionResult> UpdateBudgetType([FromBody] BudgetType budgetType, int groupId, int budgetTypeId = -1)
         {
             try
             {
@@ -53,7 +54,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                _budgetService.UpdateBudgetType(budgetType);
+                await _budgetService.UpdateBudgetType(budgetType);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -64,7 +65,7 @@ namespace BudgetApi.BudgetTypes
 
         [Route("{budgetTypeId}")]
         [HttpDelete]
-        public ActionResult DeleteBudgetTypeEntry(int groupId, int budgetTypeId)
+        public async Task<ActionResult> DeleteBudgetTypeEntry(int groupId, int budgetTypeId)
         {
             try
             {
@@ -73,7 +74,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                _budgetService.DeleteBudgetTypeEntry(budgetTypeId);
+                await _budgetService.DeleteBudgetTypeEntry(budgetTypeId);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -84,7 +85,7 @@ namespace BudgetApi.BudgetTypes
 
         [Route("{budgetTypeId}")]
         [HttpGet]
-        public ActionResult<BudgetType> GetBudgetType(int groupId, int budgetTypeId)
+        public async Task<ActionResult<BudgetType>> GetBudgetType(int groupId, int budgetTypeId)
         {
             try
             {
@@ -93,7 +94,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                return _budgetService.GetBudgetType(budgetTypeId);
+                return await _budgetService.GetBudgetType(budgetTypeId);
             }
             catch (UserNotFoundException)
             {
@@ -103,7 +104,7 @@ namespace BudgetApi.BudgetTypes
 
         [Route("")]
         [HttpGet]
-        public ActionResult<List<BudgetType>> GetBudgetTypes(int groupId)
+        public async Task<ActionResult<List<BudgetType>>> GetBudgetTypes(int groupId)
         {
             try
             {
@@ -112,7 +113,7 @@ namespace BudgetApi.BudgetTypes
                     return Unauthorized();
                 }
 
-                return _budgetService.GetBudgetTypes();
+                return await _budgetService.GetBudgetTypes();
             }
             catch (UserNotFoundException)
             {

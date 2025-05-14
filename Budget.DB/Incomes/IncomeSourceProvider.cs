@@ -1,5 +1,6 @@
 ﻿using Budget.Models;
 using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.Incomes;
 
@@ -12,9 +13,9 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         _db = db;
 	}
 
-    public IEnumerable<IncomeSource> GetIncomeSources(bool includeInactiveJobs = false)
+    public async Task<IEnumerable<IncomeSource>> GetIncomeSources(bool includeInactiveJobs = false)
     {
-        var jobs = (from it in _db.IncomeSources
+        var jobs = await (from it in _db.IncomeSources
                 select new IncomeSource
                 {
                     Id = it.Id,
@@ -24,18 +25,18 @@ public class IncomeSourceProvider: IIncomeSourceProvider
                     ActiveJob = it.ActiveJob,
                     EstimatedIncome = it.EstimatedIncome,
                     PayFrequency = it.PayFrequency
-                }).ToList();
+                }).ToListAsync();
 
         return includeInactiveJobs
             ? jobs
             : jobs.Where(x => x.ActiveJob = !includeInactiveJobs);
     }
 
-    public IncomeSource GetIncomeSource(int incomeSourceId)
+    public async Task<IncomeSource> GetIncomeSource(int incomeSourceId)
     {
-        var incomeSource = _db.IncomeSources
+        var incomeSource = await _db.IncomeSources
             .Where(i => i.Id == incomeSourceId)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         return new IncomeSource
         {
@@ -49,13 +50,13 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         };
     }
 
-    public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
+    public async Task<bool> AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
     {
         if (incomeSourceId == -1)
         {
             try
             {
-                AddIncomeSource(inputJob);
+                await AddIncomeSource(inputJob);
                 return true;
             }
             catch
@@ -67,7 +68,7 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         {
             try
             {
-                UpdateIncomeSource(inputJob);
+                await UpdateIncomeSource(inputJob);
                 return true;
             }
             catch
@@ -77,7 +78,7 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         }
     }
 
-    public int AddIncomeSource(IncomeSource inputJob)
+    public async Task<int> AddIncomeSource(IncomeSource inputJob)
     {
         try
         {
@@ -91,8 +92,8 @@ public class IncomeSourceProvider: IIncomeSourceProvider
                 SourceName = inputJob.SourceName
             };
 
-            _db.IncomeSources.Add(jobToAdd);
-            _db.SaveChanges();
+            await _db.IncomeSources.AddAsync(jobToAdd);
+            await _db.SaveChangesAsync();
 
             return jobToAdd.Id;
         }
@@ -101,11 +102,11 @@ public class IncomeSourceProvider: IIncomeSourceProvider
             throw new Exception("Failed to Add Income Source", ex);
         }
     }
-    public void UpdateIncomeSource(IncomeSource inputJob)
+    public async Task UpdateIncomeSource(IncomeSource inputJob)
     {
         try
         {
-            var jobToAddUpdate = _db.IncomeSources.Find(inputJob.Id);
+            var jobToAddUpdate = await _db.IncomeSources.FindAsync(inputJob.Id);
             jobToAddUpdate.ActiveJob = inputJob.ActiveJob;
             jobToAddUpdate.EstimatedIncome = inputJob.EstimatedIncome;
             jobToAddUpdate.JobOf = inputJob.JobOf;
@@ -113,7 +114,7 @@ public class IncomeSourceProvider: IIncomeSourceProvider
             jobToAddUpdate.PositionName = inputJob.PositionName;
             jobToAddUpdate.SourceName = inputJob.SourceName;
             
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch(Exception ex)
         {
@@ -121,13 +122,13 @@ public class IncomeSourceProvider: IIncomeSourceProvider
         }
     }
 
-    public void DeleteIncomeSource(int incomeSourceId)
+    public async Task DeleteIncomeSource(int incomeSourceId)
     {
         try
         {
-            var toDelete = _db.IncomeSources.FirstOrDefault(x => x.Id == incomeSourceId);
+            var toDelete = await _db.IncomeSources.FirstOrDefaultAsync(x => x.Id == incomeSourceId);
             _db.IncomeSources.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch (Exception ex)
         {

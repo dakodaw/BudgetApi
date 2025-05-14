@@ -1,54 +1,51 @@
 using Budget.DB.Budget;
 using Budget.DB.BudgetTypes;
-using BudgetApi.Budgeting.Models;
 using BudgetApi.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.BudgetTypes
 {
     public class BudgetTypeService: IBudgetTypeService
     {
-        //BudgetEntities _db;
         IBudgetTypeProvider _budgetTypeProvider;
 
         public BudgetTypeService(IBudgetProvider budgetProvider, IBudgetTypeProvider budgetTypeProvider)
         {
-            //_db = db;
             _budgetTypeProvider = budgetTypeProvider;
         }
 
-        public List<BudgetType> GetBudgetTypes()
+        public async Task<List<BudgetType>> GetBudgetTypes()
         {
-            return _budgetTypeProvider.GetBudgetTypes()
+            return (await _budgetTypeProvider.GetBudgetTypes())
                 .OrderBy(i => i.BudgetTypeName)
                 .ToList();
         }
 
-        public bool AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
+        public async Task<bool> AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
         {
-            return _budgetTypeProvider.AddUpdateBudgetType(groupId, budgetType, budgetTypeId);
+            return await _budgetTypeProvider.AddUpdateBudgetType(groupId, budgetType, budgetTypeId);
         }
 
-        public int AddBudgetType(int groupId, BudgetType budgetType)
+        public async Task<int> AddBudgetType(int groupId, BudgetType budgetType)
         {
-            return _budgetTypeProvider.AddBudgetType(groupId, budgetType);
+            return await _budgetTypeProvider.AddBudgetType(groupId, budgetType);
         }
 
-        public void UpdateBudgetType(BudgetType budgetType)
+        public async Task UpdateBudgetType(BudgetType budgetType)
         {
-            _budgetTypeProvider.UpdateBudgetType(budgetType);
+            await _budgetTypeProvider.UpdateBudgetType(budgetType);
         }
 
-        public void DeleteBudgetTypeEntry(int budgetTypeId)
+        public async Task DeleteBudgetTypeEntry(int budgetTypeId)
         {
-            _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
+            await _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
         }
 
-        public BudgetType GetBudgetType(int budgetTypeId)
+        public async Task<BudgetType> GetBudgetType(int budgetTypeId)
         {
-            return _budgetTypeProvider.GetBudgetType(budgetTypeId);
+            return await _budgetTypeProvider.GetBudgetType(budgetTypeId);
         }
     }
 }

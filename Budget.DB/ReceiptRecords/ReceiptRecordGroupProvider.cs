@@ -1,5 +1,6 @@
 ﻿using Budget.Models;
 using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.ReceiptRecordGroups;
 
@@ -12,11 +13,13 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
         _db = db;
 	}
 
-    public IEnumerable<ReceiptRecordGroup> List(Guid? recordGroupId)
+    public async Task<IEnumerable<ReceiptRecordGroup>> List(Guid? recordGroupId)
     {
-        return _db.ReceiptRecordGroup
+        var list = await _db.ReceiptRecordGroup
             .Where(x => recordGroupId.HasValue ? x.ReceiptRecordId == recordGroupId.Value : true)
-            .Select(rrg => 
+            .ToListAsync();
+
+        return list.Select(rrg => 
             new ReceiptRecordGroup
             {
                 Id = rrg.Id,
@@ -26,11 +29,11 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
             });
     }
 
-    public ReceiptRecordGroup Get(Guid id)
+    public async Task<ReceiptRecordGroup> Get(Guid id)
     {
-        var receiptRecordGroup = _db.ReceiptRecordGroup
+        var receiptRecordGroup = await _db.ReceiptRecordGroup
             .Where(i => i.Id == id)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         return new ReceiptRecordGroup
         {
@@ -41,7 +44,7 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
         };
     }
 
-    public Guid Add(ReceiptRecordGroup inputReceiptRecordGroup)
+    public async Task<Guid> Add(ReceiptRecordGroup inputReceiptRecordGroup)
     {
         try
         {
@@ -52,8 +55,8 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
                 Amount = inputReceiptRecordGroup.Sum
             };
 
-            _db.ReceiptRecordGroup.Add(jobToAdd);
-            _db.SaveChanges();
+            await _db.ReceiptRecordGroup.AddAsync(jobToAdd);
+            await _db.SaveChangesAsync();
 
             return jobToAdd.Id;
         }
@@ -63,17 +66,16 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
         }
     }
 
-    public void Update(ReceiptRecordGroup inputReceiptRecordGroup)
+    public async Task Update(ReceiptRecordGroup inputReceiptRecordGroup)
     {
         try
         {
-            var receiptRecordGroup = _db.ReceiptRecordGroup.Find(inputReceiptRecordGroup.Id);
-            receiptRecordGroup.Id = receiptRecordGroup.Id;
-            receiptRecordGroup.ReceiptRecordId = receiptRecordGroup.ReceiptRecordId;
-            receiptRecordGroup.BudgetTypeId = receiptRecordGroup.BudgetTypeId;
-            receiptRecordGroup.Amount = receiptRecordGroup.Amount;
+            var receiptRecordGroup = await _db.ReceiptRecordGroup.FindAsync(inputReceiptRecordGroup.Id);
+            receiptRecordGroup.ReceiptRecordId = inputReceiptRecordGroup.ReceiptRecordId;
+            receiptRecordGroup.BudgetTypeId = inputReceiptRecordGroup.BudgetTypeId;
+            receiptRecordGroup.Amount = inputReceiptRecordGroup.Sum;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch(Exception ex)
         {
@@ -81,13 +83,13 @@ public class ReceiptRecordGroupProvider : IReceiptRecordGroupProvider
         }
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         try
         {
-            var toDelete = _db.ReceiptRecordGroup.FirstOrDefault(x => x.Id == id);
+            var toDelete = await _db.ReceiptRecordGroup.FirstOrDefaultAsync(x => x.Id == id);
             _db.ReceiptRecordGroup.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch (Exception ex)
         {

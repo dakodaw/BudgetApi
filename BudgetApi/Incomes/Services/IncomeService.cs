@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Incomes.Services
 {
@@ -31,17 +32,17 @@ namespace BudgetApi.Incomes.Services
             _budgetProvider = budgetProvider;
         }
 
-        public List<IncomeSource> GetIncomeTypes()
+        public async Task<List<IncomeSource>> GetIncomeTypes()
         {
-            var incomeSources = _incomeSourceProvider.GetIncomeSources().ToList();
+            var incomeSources = (await _incomeSourceProvider.GetIncomeSources()).ToList();
             return incomeSources.OrderBy(i => i.SourceName).ToList();
         }
 
-        public List<IncomeLine> GetIncomeLines(int groupId, DateTime monthYear)
+        public async Task<List<IncomeLine>> GetIncomeLines(int groupId, DateTime monthYear)
         {
             // TODO: Probably fix this. It may have problems with mixing contexts.
-            return (from i in _incomeProvider.GetIncomes(groupId, monthYear)
-                    join it in _incomeSourceProvider.GetIncomeSources() on i.SourceId equals it.Id
+            return (from i in await _incomeProvider.GetIncomes(groupId, monthYear)
+                    join it in await _incomeSourceProvider.GetIncomeSources() on i.SourceId equals it.Id
                     select new IncomeLine
                     {
                         IncomeId = i.Id,
@@ -55,15 +56,15 @@ namespace BudgetApi.Incomes.Services
                     }).ToList();
         }
 
-        public List<IncomeSource> GetIncomeSources()
+        public async Task<List<IncomeSource>> GetIncomeSources()
         {
-            return _incomeSourceProvider.GetIncomeSources()
+            return (await _incomeSourceProvider.GetIncomeSources())
                 .Where(i => i.ActiveJob == true).ToList();
         }
 
-        public List<IncomeSource> GetFullIncomeSources()
+        public async Task<List<IncomeSource>> GetFullIncomeSources()
         {
-            var incomeSourceLines = (from it in _incomeSourceProvider.GetIncomeSources()
+            var incomeSourceLines = (from it in (await _incomeSourceProvider.GetIncomeSources())
                                         .Where(i => i.ActiveJob == true)
                                      select new IncomeSource
                                      {
@@ -79,49 +80,50 @@ namespace BudgetApi.Incomes.Services
             return incomeSourceLines;
         }
 
-        public List<ApplicablePurchase> GetApplicablePurchases(int groupId, DateTime monthYear)
+        public async Task<List<ApplicablePurchase>> GetApplicablePurchases(int groupId, DateTime monthYear)
         {
-            var applicablePurchases = (from it in _purchaseProvider.GetPurchasesByMonthYear(monthYear)
-                                       join pt in _budgetProvider.GetBudgetTypes(groupId) on it.PurchaseTypeId equals pt.BudgetTypeId
+            var applicablePurchases = (from it in await _purchaseProvider.GetPurchasesByMonthYear(monthYear)
+                                       join pt in await _budgetProvider.GetBudgetTypes(groupId) on it.PurchaseTypeId equals pt.BudgetTypeId
                                        select new ApplicablePurchase
                                        {
                                            Id = it.Id,
                                            PurchaseType = pt.BudgetTypeName,
                                            Amount = it.Amount
                                        }).ToList();
+
             return applicablePurchases;
         }
 
-        public bool AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
+        public async Task<bool> AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
         {
-            return _incomeProvider.AddUpdateIncome(groupId, inputIncome, incomeId);
+            return await _incomeProvider.AddUpdateIncome(groupId, inputIncome, incomeId);
         }
 
-        public int AddIncome(int groupId, Income inputIncome)
+        public async Task<int> AddIncome(int groupId, Income inputIncome)
         {
-            return _incomeProvider.AddIncome(groupId, inputIncome);
+            return await _incomeProvider.AddIncome(groupId, inputIncome);
         }
 
-        public bool UpdateIncome(Income inputIncome)
+        public async Task<bool> UpdateIncome(Income inputIncome)
         {
-            return _incomeProvider.UpdateIncome(inputIncome);
+            return await _incomeProvider.UpdateIncome(inputIncome);
         }
 
-        public bool DeleteIncomeEntry(int incomeId)
+        public async Task<bool> DeleteIncomeEntry(int incomeId)
         {
-            return _incomeProvider.DeleteIncomeEntry(incomeId);
+            return await _incomeProvider.DeleteIncomeEntry(incomeId);
         }
 
-        public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
+        public async Task<bool> AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
         {
-            return _incomeSourceProvider.AddUpdateJob(inputJob, incomeSourceId);
+            return await _incomeSourceProvider.AddUpdateJob(inputJob, incomeSourceId);
         }
 
-        public bool DeleteJobEntry(int incomeSourceId)
+        public async Task<bool> DeleteJobEntry(int incomeSourceId)
         {
             try
             {
-                _incomeSourceProvider.DeleteIncomeSource(incomeSourceId);
+                await _incomeSourceProvider.DeleteIncomeSource(incomeSourceId);
                 return true;
             }
             catch
@@ -130,9 +132,9 @@ namespace BudgetApi.Incomes.Services
             }
         }
 
-        public IncomeSource GetIncomeSource(int incomeSourceId)
+        public async Task<IncomeSource> GetIncomeSource(int incomeSourceId)
         {
-            var incomeSources = _incomeSourceProvider.GetIncomeSources().ToList();
+            var incomeSources = (await _incomeSourceProvider.GetIncomeSources()).ToList();
             var incomeToReturn = (from ins in incomeSources
                                   where ins.Id == incomeSourceId
                                   select new IncomeSource
@@ -150,9 +152,9 @@ namespace BudgetApi.Incomes.Services
             return incomeToReturn;
         }
 
-        public IncomeLine GetExistingIncome(int incomeId)
+        public async Task<IncomeLine> GetExistingIncome(int incomeId)
         {
-            var income = _incomeProvider.GetExistingIncome(incomeId);
+            var income = await _incomeProvider.GetExistingIncome(incomeId);
 
             return new IncomeLine
             {

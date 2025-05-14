@@ -3,21 +3,22 @@ using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BudgetApi.GiftCards.Services;
 
 public interface IGiftCardService
 {
-    List<GiftCardSelectLine> GetGiftCardLines(int groupId);
-    List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros(int groupId);
-    decimal GetGiftCardBalance(int giftCardId);
-    List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear);
-    GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId);
-    bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1);
-    void DeleteGiftCardEntry(int giftCardId);
-    bool DeleteGiftCardObsolete(int giftCardId);
-    List<GiftCardHistoryBalance> GetAllBalanceAndHistory(int groupId);
-    GiftCard GetGiftCard(int giftCardId);
-    void UpdateGiftCard(GiftCard inputGiftCard);
-    int AddGiftCard(int groupId, GiftCard inputGiftCard);
+    Task<List<GiftCardSelectLine>> GetGiftCardLines(int groupId);
+    Task<List<GiftCardSelectLine>> GetGiftCardLinesIncludingZeros(int groupId);
+    Task<decimal> GetGiftCardBalance(int giftCardId);
+    Task<List<PurchaseLine>> GetPurchaseLines(int groupId, DateTime monthYear);
+    Task<GiftCardHistoryBalance> GetBalanceAndHistory(int giftCardId);
+    Task<bool> AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1);
+    Task DeleteGiftCardEntry(int giftCardId);
+    Task<bool> DeleteGiftCardObsolete(int giftCardId);
+    Task<List<GiftCardHistoryBalance>> GetAllBalanceAndHistory(int groupId);
+    Task<GiftCard> GetGiftCard(int giftCardId);
+    Task UpdateGiftCard(GiftCard inputGiftCard);
+    Task<int> AddGiftCard(int groupId, GiftCard inputGiftCard);
 }

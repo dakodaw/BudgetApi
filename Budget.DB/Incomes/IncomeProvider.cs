@@ -1,5 +1,6 @@
 ﻿using Budget.Models;
 using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.Incomes;
 
@@ -12,9 +13,10 @@ public class IncomeProvider: IIncomeProvider
         _db = db;
     }
 
-    public IEnumerable<IncomeSource> GetIncomeSources(int groupId, bool isActive = true)
+    public async Task<IEnumerable<IncomeSource>> GetIncomeSources(int groupId, bool isActive = true)
     {
-        return _db.IncomeSources.Where(income => income.BudgetingGroupId == groupId && income.ActiveJob == isActive)
+        return (await _db.IncomeSources.Where(income => income.BudgetingGroupId == groupId && income.ActiveJob == isActive)
+            .ToListAsync())
             .Select(x =>
             new IncomeSource()
             {
@@ -29,9 +31,9 @@ public class IncomeProvider: IIncomeProvider
         ).OrderBy(i => i.SourceName);
     }
 
-    public IEnumerable<Income> GetIncomes(int groupId, DateTime monthYear)
+    public async Task<IEnumerable<Income>> GetIncomes(int groupId, DateTime monthYear)
     {
-        var incomeLines = (from i in _db.Incomes.Where(i => i.BudgetingGroupId == groupId && i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year)
+        var incomeLines = await (from i in _db.Incomes.Where(i => i.BudgetingGroupId == groupId && i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Year)
                            join it in _db.IncomeSources on i.SourceId equals it.Id
                            select new Income
                            {
@@ -42,23 +44,24 @@ public class IncomeProvider: IIncomeProvider
                                Amount = i.Amount,
                                IsReimbursement = i.IsReimbursement,
                                IsCash = i.IsCash
-                           });
+                           }).ToListAsync();
+
         foreach (var line in incomeLines)
         {
             if (line.IsReimbursement)
             {
-                line.PurchaseId = (int)_db.Incomes.Where(i => i.Id == line.Id).FirstOrDefault().PurchaseId;
+                line.PurchaseId = (int)(await _db.Incomes.Where(i => i.Id == line.Id).FirstOrDefaultAsync()).PurchaseId;
             }
         }
         return incomeLines;
     }
 
-    public bool AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
+    public async Task<bool> AddUpdateIncome(int groupId, Income inputIncome, int incomeId = -1)
     {
         if (incomeId == -1)
         {
             bool success = false;
-            _db.Incomes.Add(new IncomeEntity
+            await _db.Incomes.AddAsync(new IncomeEntity
             {
                 Amount = inputIncome.Amount,
                 Date = inputIncome.Date,
@@ -72,15 +75,15 @@ public class IncomeProvider: IIncomeProvider
                 BudgetingGroupId = groupId
             });
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             try
             {
                 var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
                 if (inputIncome.IsReimbursement == true)
                 {
-                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                    _db.SaveChanges();
+                    (await _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefaultAsync()).FutureReimbursement = true;
+                    await _db.SaveChangesAsync();
                 }
                 success = true;
             }
@@ -95,19 +98,20 @@ public class IncomeProvider: IIncomeProvider
         {
             bool success = false;
             //_db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IncomeSource = inputIncome.SourceDetails;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IsCash = inputIncome.IsCash;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().IsReimbursement = inputIncome.IsReimbursement;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().SourceDetails = inputIncome.SourceDetails;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().SourceId = inputIncome.SourceId;
-            _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().Amount = inputIncome.Amount;
-            _db.SaveChanges();
+            var income = await _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefaultAsync();
+            income.IsCash = inputIncome.IsCash;
+            income.IsReimbursement = inputIncome.IsReimbursement;
+            income.SourceDetails = inputIncome.SourceDetails;
+            income.SourceId = inputIncome.SourceId;
+            income.Amount = inputIncome.Amount;
+            await _db.SaveChangesAsync();
 
             try
             {
-                var checkIncome = _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault();
+                var checkIncome = await _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefaultAsync();
                 if (inputIncome.IsReimbursement == true)
                 {
-                    _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
+                    (await _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefaultAsync()).FutureReimbursement = true;
                     _db.SaveChanges();
                 }
                 success = true;
@@ -120,13 +124,13 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
-    public bool DeleteIncomeEntry(int incomeId)
+    public async Task<bool> DeleteIncomeEntry(int incomeId)
     {
         try
         {
-            var toDelete = _db.Incomes.Find(incomeId);
+            var toDelete = await _db.Incomes.FindAsync(incomeId);
             _db.Incomes.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return true;
         }
         catch
@@ -137,7 +141,7 @@ public class IncomeProvider: IIncomeProvider
         return false;
     }
 
-    public bool AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
+    public async Task<bool> AddUpdateJob(IncomeSource inputJob, int incomeSourceId = -1)
     {
         if (incomeSourceId == -1)
         {
@@ -153,8 +157,8 @@ public class IncomeProvider: IIncomeProvider
 
             try
             {
-                _db.IncomeSources.Add(jobToAddUpdate);
-                _db.SaveChanges();
+                await _db.IncomeSources.AddAsync(jobToAddUpdate);
+                await _db.SaveChangesAsync();
                 return true;
             }
             catch
@@ -175,13 +179,14 @@ public class IncomeProvider: IIncomeProvider
             };
             try
             {
-                _db.IncomeSources.Find(incomeSourceId).ActiveJob = jobToAddUpdate.ActiveJob;
-                _db.IncomeSources.Find(incomeSourceId).EstimatedIncome = jobToAddUpdate.EstimatedIncome;
-                _db.IncomeSources.Find(incomeSourceId).JobOf = jobToAddUpdate.JobOf;
-                _db.IncomeSources.Find(incomeSourceId).PayFrequency = jobToAddUpdate.PayFrequency;
-                _db.IncomeSources.Find(incomeSourceId).PositionName = jobToAddUpdate.PositionName;
-                _db.IncomeSources.Find(incomeSourceId).SourceName = jobToAddUpdate.SourceName;
-                _db.SaveChanges();
+                var incomeSource = await _db.IncomeSources.FindAsync(incomeSourceId);
+                incomeSource.ActiveJob = jobToAddUpdate.ActiveJob;
+                incomeSource.EstimatedIncome = jobToAddUpdate.EstimatedIncome;
+                incomeSource.JobOf = jobToAddUpdate.JobOf;
+                incomeSource.PayFrequency = jobToAddUpdate.PayFrequency;
+                incomeSource.PositionName = jobToAddUpdate.PositionName;
+                incomeSource.SourceName = jobToAddUpdate.SourceName;
+                await _db.SaveChangesAsync();
                 return true;
             }
             catch
@@ -191,11 +196,11 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
-    public int AddIncome(int groupId, Income inputIncome)
+    public async Task<int> AddIncome(int groupId, Income inputIncome)
     {
         try
         {
-            _db.Incomes.Add(new IncomeEntity
+            await _db.Incomes.AddAsync(new IncomeEntity
             {
                 Amount = inputIncome.Amount,
                 Date = inputIncome.Date,
@@ -206,13 +211,13 @@ public class IncomeProvider: IIncomeProvider
                 SourceId = inputIncome.SourceId,
                 BudgetingGroupId = groupId
             });
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
-            var checkIncome = _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefault();
+            var checkIncome = await _db.Incomes.Where(i => i.Amount == inputIncome.Amount).FirstOrDefaultAsync();
             if (inputIncome.IsReimbursement == true)
             {
-                _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                _db.SaveChanges();
+                (await _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefaultAsync()).FutureReimbursement = true;
+                await _db.SaveChangesAsync();
             }
 
             return inputIncome.Id;
@@ -223,10 +228,10 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
-    public bool UpdateIncome(Income inputIncome)
+    public async Task<bool> UpdateIncome(Income inputIncome)
     {
         bool success = false;
-        var incomeToUpdate = _db.Incomes.Where(i => i.Id == inputIncome.Id).FirstOrDefault();
+        var incomeToUpdate = await _db.Incomes.Where(i => i.Id == inputIncome.Id).FirstOrDefaultAsync();
         if (incomeToUpdate == default)
             throw new Exception($"Custom Income Not found Exception for {inputIncome.Id}");
 
@@ -239,12 +244,12 @@ public class IncomeProvider: IIncomeProvider
             incomeToUpdate.Amount = inputIncome.Amount;
             incomeToUpdate.Date = inputIncome.Date;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             if (incomeToUpdate.IsReimbursement == true)
             {
-                _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefault().FutureReimbursement = true;
-                _db.SaveChanges();
+                (await _db.Purchases.Where(i => i.Id == inputIncome.PurchaseId).FirstOrDefaultAsync()).FutureReimbursement = true;
+                await _db.SaveChangesAsync();
             }
             success = true;
         }
@@ -256,13 +261,13 @@ public class IncomeProvider: IIncomeProvider
         return success;
     }
 
-    public bool DeleteJobEntry(int incomeSourceId)
+    public async Task<bool> DeleteJobEntry(int incomeSourceId)
     {
         try
         {
-            var toDelete = _db.IncomeSources.Where(i => i.Id == incomeSourceId).FirstOrDefault();
+            var toDelete = await _db.IncomeSources.Where(i => i.Id == incomeSourceId).FirstOrDefaultAsync();
             _db.IncomeSources.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return true;
         }
         catch
@@ -271,9 +276,9 @@ public class IncomeProvider: IIncomeProvider
         }
     }
 
-    public IncomeSource GetIncomeSource(int incomeSourceId)
+    public async Task<IncomeSource> GetIncomeSource(int incomeSourceId)
     {
-        var incomeToReturn = (from ins in _db.IncomeSources
+        var incomeToReturn = await (from ins in _db.IncomeSources
                               where ins.Id == incomeSourceId
                               select new IncomeSource
                               {
@@ -282,15 +287,17 @@ public class IncomeProvider: IIncomeProvider
                                   JobOf = ins.JobOf,
                                   PayFrequency = ins.PayFrequency,
                                   PositionName = ins.PositionName
-                              }).FirstOrDefault();
-        if (_db.IncomeSources.Find(incomeSourceId).EstimatedIncome != null)
-            incomeToReturn.EstimatedIncome = (decimal)_db.IncomeSources.Find(incomeSourceId).EstimatedIncome;
+                              }).FirstOrDefaultAsync();
+
+        if ((await _db.IncomeSources.FindAsync(incomeSourceId)).EstimatedIncome != null)
+            incomeToReturn.EstimatedIncome = (decimal)(await _db.IncomeSources.FindAsync(incomeSourceId)).EstimatedIncome;
+        
         return incomeToReturn;
     }
 
-    public Income GetExistingIncome(int incomeId)
+    public async Task<Income> GetExistingIncome(int incomeId)
     {
-        var income = (from inc in _db.Incomes.Where(i => i.Id == incomeId)
+        var income = await (from inc in _db.Incomes.Where(i => i.Id == incomeId)
                       select new Income
                       {
                           Id = inc.Id,
@@ -300,11 +307,13 @@ public class IncomeProvider: IIncomeProvider
                           SourceId = inc.IncomeSource.Id,
                           IsCash = inc.IsCash,
                           IsReimbursement = inc.IsReimbursement,
-                      }).FirstOrDefault();
+                      }).FirstOrDefaultAsync();
+
         if (income.IsReimbursement)
         {
-            income.PurchaseId = Convert.ToInt32(_db.Incomes.Where(i => i.Id == incomeId).FirstOrDefault().PurchaseId);
+            income.PurchaseId = Convert.ToInt32((await _db.Incomes.Where(i => i.Id == incomeId).FirstOrDefaultAsync()).PurchaseId);
         }
+
         return income;
     }
 }

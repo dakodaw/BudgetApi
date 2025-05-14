@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.GiftCards
 {
@@ -28,7 +29,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("{giftCardId}")]
-        public ActionResult<GiftCard> GetGiftCard(int groupId, int giftCardId)
+        public async Task<ActionResult<GiftCard>> GetGiftCard(int groupId, int giftCardId)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCard(giftCardId);
+                return await _giftCardService.GetGiftCard(giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -47,7 +48,7 @@ namespace BudgetApi.GiftCards
 
         [HttpPost]
         [Route("")]
-        public ActionResult<int> AddGiftCard(int groupId, [FromBody] GiftCard inputGiftCard)
+        public async Task<ActionResult<int>> AddGiftCard(int groupId, [FromBody] GiftCard inputGiftCard)
         {
             try
             {
@@ -56,7 +57,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.AddGiftCard(groupId, inputGiftCard);
+                return await _giftCardService.AddGiftCard(groupId, inputGiftCard);
             }
             catch (UserNotFoundException)
             {
@@ -66,7 +67,7 @@ namespace BudgetApi.GiftCards
 
         [HttpPut]
         [Route("{giftCardId}")]
-        public ActionResult UpdateGiftCard(int groupId, int giftCardId, [FromBody] GiftCard inputGiftCard)
+        public async Task<ActionResult> UpdateGiftCard(int groupId, int giftCardId, [FromBody] GiftCard inputGiftCard)
         {
             try
             {
@@ -75,7 +76,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                _giftCardService.UpdateGiftCard(inputGiftCard);
+                await _giftCardService.UpdateGiftCard(inputGiftCard);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -86,7 +87,7 @@ namespace BudgetApi.GiftCards
 
         [HttpDelete]
         [Route("{giftCardId}")]
-        public ActionResult DeleteGiftCard(int groupId, int giftCardId)
+        public async Task<ActionResult> DeleteGiftCard(int groupId, int giftCardId)
         {
             try
             {
@@ -95,7 +96,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                _giftCardService.DeleteGiftCardEntry(giftCardId);
+                await _giftCardService.DeleteGiftCardEntry(giftCardId);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -106,7 +107,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getGiftCardLines")]
-        public ActionResult<List<GiftCardSelectLine>> GetGiftCardLines(int groupId)
+        public async Task<ActionResult<List<GiftCardSelectLine>>> GetGiftCardLines(int groupId)
         {
             try
             {
@@ -115,7 +116,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCardLines(groupId);
+                return await _giftCardService.GetGiftCardLines(groupId);
             }
             catch (UserNotFoundException)
             {
@@ -125,7 +126,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getGiftCardLinesIncludingZeros")]
-        public ActionResult<List<GiftCardSelectLine>> GetGiftCardLinesIncludingZeros(int groupId)
+        public async Task<ActionResult<List<GiftCardSelectLine>>> GetGiftCardLinesIncludingZeros(int groupId)
         {
             try
             {
@@ -134,7 +135,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCardLinesIncludingZeros(groupId);
+                return await _giftCardService.GetGiftCardLinesIncludingZeros(groupId);
             }
             catch (UserNotFoundException)
             {
@@ -144,7 +145,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getGiftCardBalance")]
-        public ActionResult<decimal> GetGiftCardBalance(int groupId, [FromQuery] int giftCardId)
+        public async Task<ActionResult<decimal>> GetGiftCardBalance(int groupId, [FromQuery] int giftCardId)
         {
             try
             {
@@ -153,7 +154,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCardBalance(giftCardId);
+                return await _giftCardService.GetGiftCardBalance(giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -163,7 +164,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getPurchaseLines")]
-        public ActionResult<List<PurchaseLine>> GetPurchaseLines(int groupId, [FromQuery] DateTime monthYear)
+        public async Task<ActionResult<List<PurchaseLine>>> GetPurchaseLines(int groupId, [FromQuery] DateTime monthYear)
         {
             try
             {
@@ -172,7 +173,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetPurchaseLines(groupId, monthYear);
+                return await _giftCardService.GetPurchaseLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -182,7 +183,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getBalanceAndHistory")]
-        public ActionResult<GiftCardHistoryBalance> GetBalanceAndHistory(int groupId, [FromQuery] int giftCardId)
+        public async Task<ActionResult<GiftCardHistoryBalance>> GetBalanceAndHistory(int groupId, [FromQuery] int giftCardId)
         {
             try
             {
@@ -191,7 +192,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetBalanceAndHistory(giftCardId);
+                return await _giftCardService.GetBalanceAndHistory(giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -202,7 +203,7 @@ namespace BudgetApi.GiftCards
         [Obsolete("Please use Post and Put to add and update gift card instead")]
         [HttpPost]
         [Route("addUpdateGiftCard")]
-        public ActionResult<bool> AddUpdateGiftCard(int groupId, [FromBody] GiftCard inputGiftCard, [FromQuery] int giftCardId = -1)
+        public async Task<ActionResult<bool>> AddUpdateGiftCard(int groupId, [FromBody] GiftCard inputGiftCard, [FromQuery] int giftCardId = -1)
         {
             try
             {
@@ -211,7 +212,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
+                return await _giftCardService.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -222,7 +223,7 @@ namespace BudgetApi.GiftCards
         [Obsolete("Please use delete at the base gift card instead")]
         [HttpGet]
         [Route("deleteGiftCardEntry")]
-        public ActionResult<bool> DeleteGiftCardEntry(int groupId, [FromQuery] int giftCardId)
+        public async Task<ActionResult<bool>> DeleteGiftCardEntry(int groupId, [FromQuery] int giftCardId)
         {
             try
             {
@@ -231,7 +232,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.DeleteGiftCardObsolete(giftCardId);
+                return await _giftCardService.DeleteGiftCardObsolete(giftCardId);
             }
             catch (UserNotFoundException)
             {
@@ -241,7 +242,7 @@ namespace BudgetApi.GiftCards
 
         [HttpGet]
         [Route("getAllBalanceAndHistory")]
-        public ActionResult<List<GiftCardHistoryBalance>> GetAllBalanceAndHistory(int groupId)
+        public async Task<ActionResult<List<GiftCardHistoryBalance>>> GetAllBalanceAndHistory(int groupId)
         {
             try
             {
@@ -250,7 +251,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetAllBalanceAndHistory(groupId);
+                return await _giftCardService.GetAllBalanceAndHistory(groupId);
             }
             catch (UserNotFoundException)
             {
@@ -261,7 +262,7 @@ namespace BudgetApi.GiftCards
         [Obsolete("Please use get at the base route to get gift card instead")]
         [HttpGet]
         [Route("getGiftCard")]
-        public ActionResult<GiftCard> GetGiftCardEntry(int groupId, [FromQuery] int giftCardId)
+        public async Task<ActionResult<GiftCard>> GetGiftCardEntry(int groupId, [FromQuery] int giftCardId)
         {
             try
             {
@@ -270,7 +271,7 @@ namespace BudgetApi.GiftCards
                     return Unauthorized();
                 }
 
-                return _giftCardService.GetGiftCard(giftCardId);
+                return await _giftCardService.GetGiftCard(giftCardId);
             }
             catch (UserNotFoundException)
             {

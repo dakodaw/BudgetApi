@@ -3,16 +3,16 @@
 namespace Budget.DB;
 public interface IPurchaseProvider
 {
-    IEnumerable<Purchase> GetPurchasesByMonthYear(DateTime monthYear);
-    IEnumerable<Purchase> GetPurchasesByReceiptRecordGroup(Guid id);
-    Purchase GetPurchase(int purchaseId);
-    IEnumerable<Purchase> GetGiftCardPurchases(int giftCardId);
-    IEnumerable<Purchase> GetAllGiftCardPurchases();
-    IEnumerable<Purchase> GetMonthGiftCardPurchases(DateTime monthYear);
-    bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
-    int AddPurchase(Purchase inputPurchase);
-    void UpdatePurchase(Purchase inputPurchase);
-    void DeletePurchaseEntry(int purchaseId);
-    bool DeletePurchaseEntryObsolete(int purchaseId);
+    Task<IEnumerable<Purchase>> GetPurchasesByMonthYear(DateTime monthYear);
+    Task<IEnumerable<Purchase>> GetPurchasesByReceiptRecordGroup(Guid id);
+    Task<Purchase> GetPurchase(int purchaseId);
+    Task<IEnumerable<Purchase>> GetGiftCardPurchases(int giftCardId);
+    Task<IEnumerable<Purchase>> GetAllGiftCardPurchases();
+    Task<IEnumerable<Purchase>> GetMonthGiftCardPurchases(DateTime monthYear);
+    Task<bool> AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1);
+    Task<int> AddPurchase(Purchase inputPurchase);
+    Task UpdatePurchase(Purchase inputPurchase);
+    Task DeletePurchaseEntry(int purchaseId);
+    Task<bool> DeletePurchaseEntryObsolete(int purchaseId);
 }
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Budgeting
 {
@@ -27,7 +28,7 @@ namespace BudgetApi.Budgeting
 
         [Route("getBudgetLines")]
         [HttpGet]
-        public ActionResult<List<BudgetWithPurchaseInfo>> GetBudgetLines(int groupId, [FromQuery] DateTime monthYear)
+        public async Task<ActionResult<List<BudgetWithPurchaseInfo>>> GetBudgetLines(int groupId, [FromQuery] DateTime monthYear)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.GetBudgetLines(groupId, monthYear);
+                return await _budgetService.GetBudgetLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -46,7 +47,7 @@ namespace BudgetApi.Budgeting
 
         [Route("")]
         [HttpPost]
-        public ActionResult<int> AddBudget(int groupId, [FromBody] BudgetEntry inputBudget)
+        public async Task<ActionResult<int>> AddBudget(int groupId, [FromBody] BudgetEntry inputBudget)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.AddBudget(groupId, inputBudget);
+                return await _budgetService.AddBudget(groupId, inputBudget);
             }
             catch (UserNotFoundException)
             {
@@ -65,7 +66,7 @@ namespace BudgetApi.Budgeting
 
         [Route("{budgetId}")]
         [HttpPut]
-        public ActionResult UpdateBudget(int budgetId, int groupId, [FromBody] BudgetEntry inputBudget)
+        public async Task<ActionResult> UpdateBudget(int budgetId, int groupId, [FromBody] BudgetEntry inputBudget)
         {
             try
             {
@@ -74,7 +75,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                _budgetService.UpdateBudget(inputBudget);
+                await _budgetService.UpdateBudget(inputBudget);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -124,7 +125,7 @@ namespace BudgetApi.Budgeting
 
         [Route("scenarioCheck")]
         [HttpPost]
-        public ActionResult<decimal> ScenarioCheck([FromBody] ScenarioInput scenarioInput, int groupId)
+        public async Task<ActionResult<decimal>> ScenarioCheck([FromBody] ScenarioInput scenarioInput, int groupId)
         {
             try
             {
@@ -133,7 +134,7 @@ namespace BudgetApi.Budgeting
                     return Unauthorized();
                 }
 
-                return _budgetService.ScenarioCheck(groupId, scenarioInput);
+                return await _budgetService.ScenarioCheck(groupId, scenarioInput);
             }
             catch (UserNotFoundException)
             {
