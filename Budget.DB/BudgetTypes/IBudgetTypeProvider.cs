@@ -4,11 +4,11 @@ namespace Budget.DB.BudgetTypes;
 
 public interface IBudgetTypeProvider
 {
-    IEnumerable<BudgetType> GetBudgetTypes();
-    BudgetType GetBudgetType(int budgetTypeId);
-    bool AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1);
-    int AddBudgetType(int groupId, BudgetType budgetType);
-    void UpdateBudgetType(BudgetType budgetType);
-    void DeleteBudgetTypeEntry(int budgetTypeId);
+    Task<IEnumerable<BudgetType>> GetBudgetTypes();
+    Task<BudgetType> GetBudgetType(int budgetTypeId);
+    Task<bool> AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1);
+    Task<int> AddBudgetType(int groupId, BudgetType budgetType);
+    Task UpdateBudgetType(BudgetType budgetType);
+    Task DeleteBudgetTypeEntry(int budgetTypeId);
 }
 

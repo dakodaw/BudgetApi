@@ -5,6 +5,7 @@ using BudgetApi.Purchases.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Purchases.Services;
 
@@ -21,11 +22,11 @@ public class PurchasesService: IPurchasesService
         _budgetProvider = budgetProvider;
     }
 
-    public List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear)
+    public async Task<List<PurchaseLine>> GetPurchaseLines(int groupId, DateTime monthYear)
     {
-        var purchases = (from p in _purchaseProvider.GetPurchasesByMonthYear(monthYear)
+        var purchases = (from p in (await _purchaseProvider.GetPurchasesByMonthYear(monthYear))
                             .Where(i => i.PaymentType == PurchaseTypeNames.Normal)
-                         join t in _budgetProvider.GetBudgetTypes(groupId) on p.PurchaseTypeId equals t.BudgetTypeId
+                         join t in (await _budgetProvider.GetBudgetTypes(groupId)) on p.PurchaseTypeId equals t.BudgetTypeId
                          select new PurchaseLine
                          {
                              PurchaseType = new BudgetType
@@ -52,38 +53,38 @@ public class PurchasesService: IPurchasesService
         return purchases.OrderBy(i => i.PurchaseType.BudgetTypeName).ToList();
     }
 
-    public IEnumerable<Purchase> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId)
+    public async Task<IEnumerable<Purchase>> GetReceiptRecordGroupPurchases(Guid receiptRecordGroupId)
     {
-        return _purchaseProvider.GetPurchasesByReceiptRecordGroup(receiptRecordGroupId);
+        return await _purchaseProvider.GetPurchasesByReceiptRecordGroup(receiptRecordGroupId);
     }
 
-    public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
+    public async Task<bool> AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
     {
-        return _purchaseProvider.AddUpdatePurchase(inputPurchase, purchaseId);
+        return await _purchaseProvider.AddUpdatePurchase(inputPurchase, purchaseId);
     }
 
-    public int AddPurchase(Purchase inputPurchase)
+    public async Task<int> AddPurchase(Purchase inputPurchase)
     {
-        return _purchaseProvider.AddPurchase(inputPurchase);
+        return await _purchaseProvider.AddPurchase(inputPurchase);
     }
 
-    public void UpdatePurchase(Purchase inputPurchase)
+    public async Task UpdatePurchase(Purchase inputPurchase)
     {
-        _purchaseProvider.UpdatePurchase(inputPurchase);
+        await _purchaseProvider.UpdatePurchase(inputPurchase);
     }
 
-    public void DeletePurchaseEntry(int purchaseId)
+    public async Task DeletePurchaseEntry(int purchaseId)
     {
-        _purchaseProvider.DeletePurchaseEntry(purchaseId);
+        await _purchaseProvider.DeletePurchaseEntry(purchaseId);
     }
-    public bool DeletePurchaseEntryObsolete(int purchaseId)
+    public async Task<bool> DeletePurchaseEntryObsolete(int purchaseId)
     {
-        return _purchaseProvider.DeletePurchaseEntryObsolete(purchaseId);
+        return await _purchaseProvider.DeletePurchaseEntryObsolete(purchaseId);
     }
 
-    public PurchaseLine GetExistingPurchase(int purchaseId)
+    public async Task<PurchaseLine> GetExistingPurchase(int purchaseId)
     {
-        var p = _purchaseProvider.GetPurchase(purchaseId);
+        var p = await _purchaseProvider.GetPurchase(purchaseId);
         return new PurchaseLine
         {
             Amount = p.Amount,

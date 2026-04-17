@@ -1,5 +1,6 @@
 ﻿using Budget.Models;
 using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.Incomes;
 
@@ -12,15 +13,17 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         _db = db;
     }
 
-    public IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null)
+    public async Task<IEnumerable<ReceiptRecord>> List(int groupId, DateTime? monthYear = null)
     {
         var receiptRecords = monthYear.HasValue
-            ? _db.ReceiptRecord
+            ? await _db.ReceiptRecord
                 .Where(r => r.BudgetingGroupId == groupId
                     && r.Date.Month == monthYear.Value.Month
                     && r.Date.Year == monthYear.Value.Year)
-            : _db.ReceiptRecord
-                .Where(r => r.BudgetingGroupId == groupId);
+                .ToListAsync()
+            : await _db.ReceiptRecord
+                .Where(r => r.BudgetingGroupId == groupId)
+                .ToListAsync();
 
         return receiptRecords.Select(x =>
             new ReceiptRecord()
@@ -33,10 +36,10 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
             }).OrderBy(i => i.Date);
     }
 
-    public ReceiptRecord Get(Guid id)
+    public async Task<ReceiptRecord> Get(Guid id)
     {
-        var receiptRecord = _db.ReceiptRecord
-            .FirstOrDefault(x => x.Id == id);
+        var receiptRecord = await _db.ReceiptRecord
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (receiptRecord == default)
             throw new Exception("Failed to get a Receipt Record");
@@ -51,7 +54,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         };
     }
 
-    public Guid Add(int groupId, ReceiptRecord inputReceiptRecord)
+    public async Task<Guid> Add(int groupId, ReceiptRecord inputReceiptRecord)
     {
         try
         {
@@ -64,8 +67,8 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
                 Location = inputReceiptRecord.Location
             };
 
-            _db.ReceiptRecord.Add(receiptRecordEntity);
-            _db.SaveChanges();
+            await _db.ReceiptRecord.AddAsync(receiptRecordEntity);
+            await _db.SaveChangesAsync();
 
             return receiptRecordEntity.Id;
         }
@@ -75,11 +78,11 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         }
     }
 
-    public void Update(ReceiptRecord inputReceiptRecord)
+    public async Task Update(ReceiptRecord inputReceiptRecord)
     {
-        var receiptRecordToUpdate = _db.ReceiptRecord
+        var receiptRecordToUpdate = await _db.ReceiptRecord
             .Where(i => i.Id == inputReceiptRecord.Id)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         if (receiptRecordToUpdate == default)
             throw new Exception($"Custom ReceiptRecord Not found Exception for {inputReceiptRecord.Id}");
@@ -92,7 +95,7 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
             receiptRecordToUpdate.Amount = inputReceiptRecord.Amount;
             receiptRecordToUpdate.Location = inputReceiptRecord.Location;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -100,13 +103,13 @@ public class ReceiptRecordProvider : IReceiptRecordProvider
         }
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         try
         {
-            var toDelete = _db.ReceiptRecord.Where(i => i.Id == id).FirstOrDefault();
+            var toDelete = await _db.ReceiptRecord.Where(i => i.Id == id).FirstOrDefaultAsync();
             _db.ReceiptRecord.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch(Exception ex)
         {

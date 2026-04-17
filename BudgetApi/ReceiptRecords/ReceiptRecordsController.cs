@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace BudgetApi.ReceiptRecords
 {
@@ -31,7 +32,7 @@ namespace BudgetApi.ReceiptRecords
 
         [HttpGet]
         [Route("")]
-        public ActionResult<IEnumerable<ReceiptRecord>> List(int groupId, [FromQuery] DateTime? monthYear = null)
+        public async Task<ActionResult<IEnumerable<ReceiptRecord>>> List(int groupId, [FromQuery] DateTime? monthYear = null)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace BudgetApi.ReceiptRecords
                     return Unauthorized();
                 }
 
-                return Ok(_receiptRecordService.List(groupId, monthYear));
+                return Ok(await _receiptRecordService.List(groupId, monthYear));
             }
             catch (UserNotFoundException)
             {
@@ -51,7 +52,7 @@ namespace BudgetApi.ReceiptRecords
 
         [HttpGet]
         [Route("{receiptRecordId}")]
-        public ActionResult<ReceiptRecord> GetReceiptRecord(int groupId, Guid receiptRecordId)
+        public async Task<ActionResult<ReceiptRecord>> GetReceiptRecord(int groupId, Guid receiptRecordId)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace BudgetApi.ReceiptRecords
                     return Unauthorized();
                 }
 
-                return _receiptRecordService.Get(receiptRecordId);
+                return await _receiptRecordService.Get(receiptRecordId);
             }
             catch (UserNotFoundException)
             {
@@ -71,7 +72,7 @@ namespace BudgetApi.ReceiptRecords
 
         [HttpPost]
         [Route("")]
-        public ActionResult<ReceiptRecord> AddReceiptRecord(int groupId, [FromBody] ReceiptRecord inputRecord)
+        public async Task<ActionResult<ReceiptRecord>> AddReceiptRecord(int groupId, [FromBody] ReceiptRecord inputRecord)
         {
             try
             {
@@ -81,7 +82,47 @@ namespace BudgetApi.ReceiptRecords
                     return Unauthorized();
                 }
 
-                return _receiptRecordService.Add(groupId, inputRecord);
+                return await _receiptRecordService.Add(groupId, inputRecord);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [HttpPut]
+        [Route("{receiptRecordId}")]
+        public async Task<ActionResult<ReceiptRecord>> UpdateReceiptRecord(int groupId, Guid receiptRecordId, [FromBody] ReceiptRecord inputRecord)
+        {
+            try
+            {
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                return await _receiptRecordService.Update(groupId, inputRecord);
+            }
+            catch (UserNotFoundException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [HttpDelete]
+        [Route("{receiptRecordId}")]
+        public async Task<ActionResult> DeleteReceiptRecord(int groupId, Guid receiptRecordId)
+        {
+            try
+            {
+                // TODO: Need to still add groupIds on purchases, etc.
+                if (!_authorizationService.IsUserInGroup(ExternalLoginId, groupId))
+                {
+                    return Unauthorized();
+                }
+
+                await _receiptRecordService.Delete(receiptRecordId);
+                return Ok();
             }
             catch (UserNotFoundException)
             {

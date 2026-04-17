@@ -1,5 +1,6 @@
 ﻿using BudgetApi.Models;
 using BudgetApi.Purchases.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB;
 public class PurchaseProvider: IPurchaseProvider
@@ -11,12 +12,13 @@ public class PurchaseProvider: IPurchaseProvider
         _db = db;
     }
 
-    public IEnumerable<Purchase> GetPurchasesByMonthYear(DateTime monthYear)
+    public async Task<IEnumerable<Purchase>> GetPurchasesByMonthYear(DateTime monthYear)
     {
-        return _db.Purchases
+        return (await _db.Purchases
             .Where(i =>
                 i.Date.Month == monthYear.Month
                 && i.Date.Year == monthYear.Year)
+            .ToListAsync())
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
@@ -31,10 +33,11 @@ public class PurchaseProvider: IPurchaseProvider
             });
     }
 
-    public IEnumerable<Purchase> GetPurchasesByReceiptRecordGroup(Guid id)
+    public async Task<IEnumerable<Purchase>> GetPurchasesByReceiptRecordGroup(Guid id)
     {
-        return _db.Purchases
+        return (await _db.Purchases
             .Where(i => i.ReceiptRecordGroupId == id)
+            .ToListAsync())
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
@@ -49,11 +52,11 @@ public class PurchaseProvider: IPurchaseProvider
             });
     }
 
-    public Purchase GetPurchase(int purchaseId)
+    public async Task<Purchase> GetPurchase(int purchaseId)
     {
-        var purchaseEntity = _db.Purchases
+        var purchaseEntity = await _db.Purchases
             .Where(i => i.Id == purchaseId)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         return purchaseEntity == null
             ? default
@@ -71,10 +74,11 @@ public class PurchaseProvider: IPurchaseProvider
             };
     }
 
-    public IEnumerable<Purchase> GetGiftCardPurchases(int giftCardId)
+    public async Task<IEnumerable<Purchase>> GetGiftCardPurchases(int giftCardId)
     {
-        return _db.Purchases
+        return (await _db.Purchases
             .Where(x => x.GiftCardId == giftCardId)
+            .ToListAsync())
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
@@ -89,10 +93,11 @@ public class PurchaseProvider: IPurchaseProvider
             });
     }
 
-    public IEnumerable<Purchase> GetAllGiftCardPurchases()
+    public async Task<IEnumerable<Purchase>> GetAllGiftCardPurchases()
     {
-        return _db.Purchases
+        return (await _db.Purchases
             .Where(x => x.PaymentType == PurchaseTypeNames.GiftCard)
+            .ToListAsync())
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
@@ -107,12 +112,13 @@ public class PurchaseProvider: IPurchaseProvider
             });
     }
 
-    public IEnumerable<Purchase> GetMonthGiftCardPurchases(DateTime monthYear)
+    public async Task<IEnumerable<Purchase>> GetMonthGiftCardPurchases(DateTime monthYear)
     {
-        return _db.Purchases
+        return (await _db.Purchases
             .Where(x => x.PaymentType == PurchaseTypeNames.GiftCard
                         && x.Date.Month == monthYear.Date.Month
                         && x.Date.Year == monthYear.Year)
+            .ToListAsync())
             .Select(x => new Purchase
             {
                 Amount = x.Amount,
@@ -127,12 +133,12 @@ public class PurchaseProvider: IPurchaseProvider
             });
     }
 
-    public bool AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
+    public async Task<bool> AddUpdatePurchase(Purchase inputPurchase, int purchaseId = -1)
     {
         bool success = false;
         if (purchaseId == -1)
         {
-            _db.Purchases.Add(new PurchaseEntity
+            await _db.Purchases.AddAsync(new PurchaseEntity
             {
                 Amount = inputPurchase.Amount,
                 BudgetingGroupId = inputPurchase.BudgetingGroupId,
@@ -145,11 +151,11 @@ public class PurchaseProvider: IPurchaseProvider
                 PurchaseTypeId = inputPurchase.PurchaseTypeId
             });
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             try
             {
-                var checkPurchase = _db.Purchases.Where(i => i.Amount == inputPurchase.Amount).FirstOrDefault();
+                var checkPurchase = _db.Purchases.Where(i => i.Amount == inputPurchase.Amount).FirstOrDefaultAsync();
                 success = true;
             }
             catch
@@ -161,15 +167,15 @@ public class PurchaseProvider: IPurchaseProvider
         {
             try
             {
-                var checkPurchase = _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault();
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Amount = inputPurchase.Amount;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Date = inputPurchase.Date;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().Description = inputPurchase.Description;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().FutureReimbursement = inputPurchase.FutureReimbursement;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().GiftCardId = inputPurchase.GiftCardId;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PaymentType = inputPurchase.PaymentType;
-                _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault().PurchaseTypeId = inputPurchase.PurchaseTypeId;
-                _db.SaveChanges();
+                var checkPurchase = await _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefaultAsync();
+                checkPurchase.Amount = inputPurchase.Amount;
+                checkPurchase.Date = inputPurchase.Date;
+                checkPurchase.Description = inputPurchase.Description;
+                checkPurchase.FutureReimbursement = inputPurchase.FutureReimbursement;
+                checkPurchase.GiftCardId = inputPurchase.GiftCardId;
+                checkPurchase.PaymentType = inputPurchase.PaymentType;
+                checkPurchase.PurchaseTypeId = inputPurchase.PurchaseTypeId;
+                await _db.SaveChangesAsync();
                 success = true;
             }
             catch (Exception ee)
@@ -181,7 +187,7 @@ public class PurchaseProvider: IPurchaseProvider
         return success;
     }
 
-    public int AddPurchase(Purchase inputPurchase)
+    public async Task<int> AddPurchase(Purchase inputPurchase)
     {
         try
         {
@@ -198,9 +204,9 @@ public class PurchaseProvider: IPurchaseProvider
                 PurchaseTypeId = inputPurchase.PurchaseTypeId,
                 ReceiptRecordGroupId = inputPurchase.ReceiptRecordGroupId
             };
-            _db.Purchases.Add(newPurchaseEntity);
+            await _db.Purchases.AddAsync(newPurchaseEntity);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return newPurchaseEntity.Id;
         }
         catch(Exception ex)
@@ -209,11 +215,11 @@ public class PurchaseProvider: IPurchaseProvider
         }
     }
 
-    public void UpdatePurchase(Purchase inputPurchase)
+    public async Task UpdatePurchase(Purchase inputPurchase)
     {
         try
         {
-            var purchaseToUpdate = _db.Purchases.Where(i => i.Id == inputPurchase.Id).FirstOrDefault();
+            var purchaseToUpdate = await _db.Purchases.Where(i => i.Id == inputPurchase.Id).FirstOrDefaultAsync();
             purchaseToUpdate.Amount = inputPurchase.Amount;
             purchaseToUpdate.BudgetingGroupId = inputPurchase.BudgetingGroupId;
             purchaseToUpdate.Date = inputPurchase.Date;
@@ -224,7 +230,7 @@ public class PurchaseProvider: IPurchaseProvider
             purchaseToUpdate.PurchaseTypeId = inputPurchase.PurchaseTypeId;
             purchaseToUpdate.ReceiptRecordGroupId = inputPurchase.ReceiptRecordGroupId;
                 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch (Exception ee)
         {
@@ -232,13 +238,13 @@ public class PurchaseProvider: IPurchaseProvider
         }
     }
 
-    public void DeletePurchaseEntry(int purchaseId)
+    public async Task DeletePurchaseEntry(int purchaseId)
     {
         try
         {
-            var toDelete = _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefault();
+            var toDelete = await _db.Purchases.Where(i => i.Id == purchaseId).FirstOrDefaultAsync();
             _db.Purchases.Remove(toDelete);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -246,12 +252,12 @@ public class PurchaseProvider: IPurchaseProvider
         }
     }
 
-    public bool DeletePurchaseEntryObsolete(int purchaseId)
+    public async Task<bool> DeletePurchaseEntryObsolete(int purchaseId)
     {
         bool success = false;
         try
         {
-            DeletePurchaseEntry(purchaseId);
+            await DeletePurchaseEntry(purchaseId);
             return success;
         }
         catch

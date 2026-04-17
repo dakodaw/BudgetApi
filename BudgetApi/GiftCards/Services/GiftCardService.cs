@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Budget.DB;
 using Budget.DB.Budget;
 using Budget.DB.GiftCards;
@@ -28,13 +29,13 @@ public class GiftCardService: IGiftCardService
     }
 
     // GET api/<controller>
-    public List<GiftCardSelectLine> GetGiftCardLines(int groupId)
+    public async Task<List<GiftCardSelectLine>> GetGiftCardLines(int groupId)
     {
         var giftCardLines = new List<GiftCardSelectLine>();
-        var giftCards = _giftCardProvider.GetAllGiftCards(groupId);
+        var giftCards = await _giftCardProvider.GetAllGiftCards(groupId);
         foreach (var giftCard in giftCards)
         {
-            var remaining = GetGiftCardBalance(giftCard.Id);
+            var remaining = await GetGiftCardBalance(giftCard.Id);
             if (remaining > 0)
             {
                 var card = new GiftCardSelectLine
@@ -44,20 +45,21 @@ public class GiftCardService: IGiftCardService
                     Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
                     RemainingAmount = remaining
                 };
+
                 giftCardLines.Add(card);
             }
         }
         return giftCardLines.OrderBy(i => i.Place).ToList();
     }
 
-    public List<GiftCardSelectLine> GetGiftCardLinesIncludingZeros(int groupId)
+    public async Task<List<GiftCardSelectLine>> GetGiftCardLinesIncludingZeros(int groupId)
     {
         var giftCardLines = new List<GiftCardSelectLine>();
-        var giftCards = _giftCardProvider.GetAllGiftCards(groupId);
+        var giftCards = await _giftCardProvider.GetAllGiftCards(groupId);
 
         foreach (var giftCard in giftCards)
         {
-            var remaining = GetGiftCardBalance(giftCard.Id);
+            var remaining = await GetGiftCardBalance(giftCard.Id);
             if (remaining > 0)
             {
                 var card = new GiftCardSelectLine
@@ -67,6 +69,7 @@ public class GiftCardService: IGiftCardService
                     Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
                     RemainingAmount = remaining
                 };
+
                 giftCardLines.Add(card);
             }
             else
@@ -77,30 +80,37 @@ public class GiftCardService: IGiftCardService
                     Place = giftCard.Place,
                     Last4ofCardNumber = giftCard.CardNumber.GetLast(4),
                 };
+
                 giftCardLines.Add(card);
             }
         }
+
         return giftCardLines.OrderBy(i => i.Place).ToList();
     }
 
-    public decimal GetGiftCardBalance(int giftCardId)
+    public async Task<decimal> GetGiftCardBalance(int giftCardId)
     {
-        var history = _purchaseProvider.GetGiftCardPurchases(giftCardId).ToList();
-        var giftCard = _giftCardProvider.GetGiftCard(giftCardId);
+        var history = await _purchaseProvider.GetGiftCardPurchases(giftCardId);
+        var giftCard = await _giftCardProvider.GetGiftCard(giftCardId);
         var initialBalance = giftCard?.InitialAmount ?? 0;
         decimal currentBalance = initialBalance;
+
         foreach (var purchase in history)
         {
             currentBalance = currentBalance - purchase.Amount;
         }
+
         return currentBalance;
     }
 
-    public List<PurchaseLine> GetPurchaseLines(int groupId, DateTime monthYear)
+    public async Task<List<PurchaseLine>> GetPurchaseLines(int groupId, DateTime monthYear)
     {
-        var giftCardPurchases = _purchaseProvider.GetAllGiftCardPurchases();
-        var purchases = (from p in _purchaseProvider.GetMonthGiftCardPurchases(monthYear)
-                         join t in _budgetProvider.GetBudgetTypes(groupId) on p.PurchaseTypeId equals t.BudgetTypeId
+        //var giftCardPurchases = _purchaseProvider.GetAllGiftCardPurchases();
+        var monthGiftCardPurchases = await _purchaseProvider.GetMonthGiftCardPurchases(monthYear);
+        var budgetTypes = await _budgetProvider.GetBudgetTypes(groupId);
+
+        var purchases = (from p in monthGiftCardPurchases
+                         join t in budgetTypes on p.PurchaseTypeId equals t.BudgetTypeId
                          select new PurchaseLine
                          {
                              PurchaseType = new BudgetType
@@ -116,68 +126,71 @@ public class GiftCardService: IGiftCardService
                              //GiftCardId = p.GiftCardId,
                              IsReimbursement = p.FutureReimbursement
                          }).ToList();
+
         foreach (var purchase in purchases)
         {
             if (purchase.PaymentType == PurchaseTypeNames.GiftCard)
             {
-                var foundPurchase = _purchaseProvider
+                var foundPurchase = await _purchaseProvider
                     .GetPurchase(purchase.Id);
+
                 purchase.GiftCardId = foundPurchase != default
                     ? foundPurchase.GiftCardId
                     : 0;
             }
         }
+
         return purchases;
     }
 
-    public GiftCardHistoryBalance GetBalanceAndHistory(int giftCardId)
+    public async Task<GiftCardHistoryBalance> GetBalanceAndHistory(int giftCardId)
     {
         return new GiftCardHistoryBalance
         {
-            Balance = GetGiftCardBalance(giftCardId),
-            History = _purchaseProvider.GetGiftCardPurchases(giftCardId).ToList()
+            Balance = await GetGiftCardBalance(giftCardId),
+            History = (await _purchaseProvider.GetGiftCardPurchases(giftCardId)).ToList()
         };
     }
 
-    public bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1)
+    public async Task<bool> AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1)
     {
-        return _giftCardProvider.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
+        return await _giftCardProvider.AddUpdateGiftCard(groupId, inputGiftCard, giftCardId);
     }
 
-    public int AddGiftCard(int groupId, GiftCard inputGiftCard)
+    public async Task<int> AddGiftCard(int groupId, GiftCard inputGiftCard)
     {
-        return _giftCardProvider.AddGiftCard(groupId, inputGiftCard);
+        return await _giftCardProvider.AddGiftCard(groupId, inputGiftCard);
     }
 
-    public void UpdateGiftCard(GiftCard inputGiftCard)
+    public async Task UpdateGiftCard(GiftCard inputGiftCard)
     {
-        _giftCardProvider.UpdateGiftCard(inputGiftCard);
+        await _giftCardProvider.UpdateGiftCard(inputGiftCard);
     }
 
-    public void DeleteGiftCardEntry(int giftCardId)
+    public async Task DeleteGiftCardEntry(int giftCardId)
     {
-        _giftCardProvider.DeleteGiftCardEntry(giftCardId);
+        await _giftCardProvider.DeleteGiftCardEntry(giftCardId);
     }
 
-    public bool DeleteGiftCardObsolete(int giftCardId)
+    public async Task<bool> DeleteGiftCardObsolete(int giftCardId)
     {
         try
         {
-            DeleteGiftCardEntry(giftCardId);
+            await DeleteGiftCardEntry(giftCardId);
             return true;
         }
         catch { return false; }
     }
 
-    public List<GiftCardHistoryBalance> GetAllBalanceAndHistory(int groupId)
+    public async Task<List<GiftCardHistoryBalance>> GetAllBalanceAndHistory(int groupId)
     {
         var balance = new List<GiftCardHistoryBalance>();
-        foreach (var giftCard in _giftCardProvider.GetAllGiftCards(groupId))
+        foreach (var giftCard in await _giftCardProvider.GetAllGiftCards(groupId))
         {
             balance.Add(new GiftCardHistoryBalance
             {
-                Balance = GetGiftCardBalance(giftCard.Id),
-                History = _purchaseProvider.GetGiftCardPurchases(giftCard.Id).ToList(),
+                Balance = await GetGiftCardBalance(giftCard.Id),
+                History = (await _purchaseProvider.GetGiftCardPurchases(giftCard.Id)).ToList(),
                 Place = giftCard.Place,
                 CardNo = giftCard.CardNumber,
                 AccessCode = giftCard.AccessCode
@@ -186,8 +199,8 @@ public class GiftCardService: IGiftCardService
         return balance;
     }
 
-    public GiftCard GetGiftCard(int giftCardId)
+    public async Task<GiftCard> GetGiftCard(int giftCardId)
     {
-        return _giftCardProvider.GetGiftCard(giftCardId);
+        return await _giftCardProvider.GetGiftCard(giftCardId);
     }
 }

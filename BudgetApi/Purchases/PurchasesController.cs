@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Purchases
 {
@@ -27,7 +28,7 @@ namespace BudgetApi.Purchases
 
         [HttpGet]
         [Route("{purchaseId}")]
-        public ActionResult<PurchaseLine> GetPurchase(int groupId, int purchaseId)
+        public async Task<ActionResult<PurchaseLine>> GetPurchase(int groupId, int purchaseId)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.GetExistingPurchase(purchaseId);
+                return await _purchasesService.GetExistingPurchase(purchaseId);
             }
             catch (UserNotFoundException)
             {
@@ -46,7 +47,7 @@ namespace BudgetApi.Purchases
 
         [HttpPost]
         [Route("")]
-        public ActionResult<int> AddPurchase(int groupId, [FromBody] Purchase incomePurchase)
+        public async Task<ActionResult<int>> AddPurchase(int groupId, [FromBody] Purchase incomePurchase)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.AddPurchase(incomePurchase);
+                return await _purchasesService.AddPurchase(incomePurchase);
             }
             catch (UserNotFoundException)
             {
@@ -65,7 +66,7 @@ namespace BudgetApi.Purchases
 
         [HttpPut]
         [Route("{purchaseId}")]
-        public ActionResult UpdatePurchase(int groupId, int purchaseId, [FromBody] Purchase incomePurchase)
+        public async Task<ActionResult> UpdatePurchase(int groupId, int purchaseId, [FromBody] Purchase incomePurchase)
         {
             try
             {
@@ -74,7 +75,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                _purchasesService.UpdatePurchase(incomePurchase);
+                await _purchasesService.UpdatePurchase(incomePurchase);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -85,7 +86,7 @@ namespace BudgetApi.Purchases
 
         [HttpDelete]
         [Route("{purchaseId}")]
-        public ActionResult DeletePurchase(int groupId, int purchaseId)
+        public async Task<ActionResult> DeletePurchase(int groupId, int purchaseId)
         {
             try
             {
@@ -94,7 +95,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                _purchasesService.DeletePurchaseEntry(purchaseId);
+                await _purchasesService.DeletePurchaseEntry(purchaseId);
                 return Ok();
             }
             catch (UserNotFoundException)
@@ -105,7 +106,7 @@ namespace BudgetApi.Purchases
 
         [HttpGet]
         [Route("getPurchaseLines")]
-        public ActionResult<List<PurchaseLine>> GetPurchaseLines(int groupId, [FromQuery] DateTime monthYear)
+        public async Task<ActionResult<List<PurchaseLine>>> GetPurchaseLines(int groupId, [FromQuery] DateTime monthYear)
         {
             try
             {
@@ -114,7 +115,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.GetPurchaseLines(groupId, monthYear);
+                return await _purchasesService.GetPurchaseLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -125,7 +126,7 @@ namespace BudgetApi.Purchases
         [Obsolete("Please use the http post and http put on the base route instead")]
         [HttpPost]
         [Route("addUpdatePurchase")]
-        public ActionResult<bool> AddUpdatePurchase(int groupId, [FromBody] Purchase inputPurchase, [FromQuery] int purchaseId = -1)
+        public async Task<ActionResult<bool>> AddUpdatePurchase(int groupId, [FromBody] Purchase inputPurchase, [FromQuery] int purchaseId = -1)
         {
             try
             {
@@ -134,7 +135,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.AddUpdatePurchase(inputPurchase, purchaseId);
+                return await _purchasesService.AddUpdatePurchase(inputPurchase, purchaseId);
             }
             catch (UserNotFoundException)
             {
@@ -146,7 +147,7 @@ namespace BudgetApi.Purchases
         [Obsolete("Please use the http delete on the base route instead")]
         [HttpGet]
         [Route("deletePurchaseEntry")]
-        public ActionResult<bool> DeletePurchaseEntry(int groupId, [FromQuery] int purchaseId)
+        public async Task<ActionResult<bool>> DeletePurchaseEntry(int groupId, [FromQuery] int purchaseId)
         {
             try
             {
@@ -155,7 +156,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.DeletePurchaseEntryObsolete(purchaseId);
+                return await _purchasesService.DeletePurchaseEntryObsolete(purchaseId);
             }
             catch (UserNotFoundException)
             {
@@ -166,7 +167,7 @@ namespace BudgetApi.Purchases
         [Obsolete("Please use the http get on the base route instead")]
         [HttpGet]
         [Route("getExistingPurchase")]
-        public ActionResult<PurchaseLine> GetExistingPurchase(int groupId, [FromQuery] int purchaseId)
+        public async Task<ActionResult<PurchaseLine>> GetExistingPurchase(int groupId, [FromQuery] int purchaseId)
         {
             try
             {
@@ -175,7 +176,7 @@ namespace BudgetApi.Purchases
                     return Unauthorized();
                 }
 
-                return _purchasesService.GetExistingPurchase(purchaseId);
+                return await _purchasesService.GetExistingPurchase(purchaseId);
             }
             catch (UserNotFoundException)
             {

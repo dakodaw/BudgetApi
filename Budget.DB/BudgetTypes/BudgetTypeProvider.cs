@@ -1,4 +1,6 @@
 ﻿using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace Budget.DB.BudgetTypes
 {
@@ -11,19 +13,19 @@ namespace Budget.DB.BudgetTypes
             _db = db;
         }
 
-        public IEnumerable<BudgetType> GetBudgetTypes()
+        public async Task<IEnumerable<BudgetType>> GetBudgetTypes()
         {
-            return _db.BudgetTypes.Select(x => new BudgetType
+            return (await _db.BudgetTypes.ToListAsync()).Select(x => new BudgetType
             {
                 BudgetTypeId = x.Id,
                 BudgetTypeName = x.BudgetType
             });
         }
 
-        public BudgetType GetBudgetType(int budgetTypeId)
+        public async Task<BudgetType> GetBudgetType(int budgetTypeId)
         {
-            var matchingType = _db.BudgetTypes
-                .Where(i => i.Id == budgetTypeId).FirstOrDefault();
+            var matchingType = await _db.BudgetTypes
+                .Where(i => i.Id == budgetTypeId).FirstOrDefaultAsync();
 
             return new BudgetType
             {
@@ -32,13 +34,13 @@ namespace Budget.DB.BudgetTypes
             };
         }
 
-        public bool AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
+        public async Task<bool> AddUpdateBudgetType(int groupId, BudgetType budgetType, int budgetTypeId = -1)
         {
             if (budgetTypeId == -1)
             {
                 try
                 {
-                    AddBudgetType(groupId, budgetType);
+                    await AddBudgetType(groupId, budgetType);
 
                     return true;
                 }
@@ -51,7 +53,7 @@ namespace Budget.DB.BudgetTypes
             {
                 try
                 {
-                    UpdateBudgetType(budgetType);
+                    await UpdateBudgetType(budgetType);
                     return true;
                 }
                 catch
@@ -61,7 +63,7 @@ namespace Budget.DB.BudgetTypes
             }
         }
 
-        public int AddBudgetType(int groupId, BudgetType budgetType)
+        public async Task<int> AddBudgetType(int groupId, BudgetType budgetType)
         {
             try
             {
@@ -71,8 +73,8 @@ namespace Budget.DB.BudgetTypes
                     BudgetingGroupId = groupId
                 };
 
-                _db.BudgetTypes.Add(newBudgetType);
-                _db.SaveChanges();
+                await _db.BudgetTypes.AddAsync(newBudgetType);
+                await _db.SaveChangesAsync();
 
                 return newBudgetType.Id;
             }
@@ -82,14 +84,14 @@ namespace Budget.DB.BudgetTypes
             }
         }
 
-        public void UpdateBudgetType(BudgetType budgetType)
+        public async Task UpdateBudgetType(BudgetType budgetType)
         {
             try
             {
-                var foundBudgetType = _db.BudgetTypes.Find(budgetType.BudgetTypeId);
+                var foundBudgetType = await _db.BudgetTypes.FindAsync(budgetType.BudgetTypeId);
                 foundBudgetType.BudgetType = budgetType.BudgetTypeName;
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -97,13 +99,13 @@ namespace Budget.DB.BudgetTypes
             }
         }
 
-        public void DeleteBudgetTypeEntry(int budgetTypeId)
+        public async Task DeleteBudgetTypeEntry(int budgetTypeId)
         {
             try
             {
-                var toDelete = _db.BudgetTypes.Find(budgetTypeId);
+                var toDelete = await _db.BudgetTypes.FindAsync(budgetTypeId);
                 _db.BudgetTypes.Remove(toDelete);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 ﻿using Budget.DB.BudgetTypes;
 using BudgetApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Budget.DB.Budget
 {
@@ -14,23 +15,23 @@ namespace Budget.DB.Budget
             _budgetTypeProvider = budgetTypeProvider;
 		}
 
-		public IEnumerable<BudgetType> GetBudgetTypes(int groupId)
+		public async Task<IEnumerable<BudgetType>> GetBudgetTypes(int groupId)
 		{
-			return _budgetTypeProvider.GetBudgetTypes();
+			return await _budgetTypeProvider.GetBudgetTypes();
         }
 
-        public BudgetType GetBudgetType(int budgetTypeId)
+        public async Task<BudgetType> GetBudgetType(int budgetTypeId)
         {
-            return _budgetTypeProvider.GetBudgetType(budgetTypeId);
+            return await _budgetTypeProvider.GetBudgetType(budgetTypeId);
         }
 
-        public bool AddUpdateBudgetType(int groupId, BudgetTypeEntity budgetType, int budgetTypeId = -1)
+        public async Task<bool> AddUpdateBudgetType(int groupId, BudgetTypeEntity budgetType, int budgetTypeId = -1)
         {
             if (budgetTypeId == -1)
             {
                 try
                 {
-                    _budgetTypeProvider.AddBudgetType(groupId, new BudgetType
+                    await _budgetTypeProvider.AddBudgetType(groupId, new BudgetType
                     {
                         BudgetTypeId = budgetType.Id,
                         BudgetTypeName = budgetType.BudgetType
@@ -47,11 +48,12 @@ namespace Budget.DB.Budget
             {
                 try
                 {
-                    _budgetTypeProvider.UpdateBudgetType(new BudgetType
+                    await _budgetTypeProvider.UpdateBudgetType(new BudgetType
                     {
                         BudgetTypeId = budgetType.Id,
                         BudgetTypeName = budgetType.BudgetType
                     });
+
                     return true;
                 }
                 catch
@@ -61,11 +63,11 @@ namespace Budget.DB.Budget
             }
         }
 
-        public bool DeleteBudgetTypeEntry(int budgetTypeId)
+        public async Task<bool> DeleteBudgetTypeEntry(int budgetTypeId)
         {
             try
             {
-                _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
+                await _budgetTypeProvider.DeleteBudgetTypeEntry(budgetTypeId);
                 return true;
             }
             catch
@@ -74,13 +76,13 @@ namespace Budget.DB.Budget
             }
         }
 
-        public void DeleteBudgetEntry(int budgetId)
+        public async Task DeleteBudgetEntry(int budgetId)
         {
             try
             {
-                var toDelete = _db.Budgets.Find(budgetId);
+                var toDelete = await _db.Budgets.FindAsync(budgetId);
                 _db.Budgets.Remove(toDelete);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch(Exception ex) 
             {
@@ -88,9 +90,9 @@ namespace Budget.DB.Budget
             }
         }
 
-        public BudgetEntry GetBudgetEntry(int budgetId)
+        public async Task<BudgetEntry> GetBudgetEntry(int budgetId)
         {
-            return (from b in _db.Budgets.Where(i => i.Id == budgetId)
+            return await (from b in _db.Budgets.Where(i => i.Id == budgetId)
                     select new BudgetEntry
                     {
                         Amount = b.Amount,
@@ -98,10 +100,10 @@ namespace Budget.DB.Budget
                         BudgetTypeId = b.BudgetTypeId,
                         BudgetingGroupId = b.BudgetingGroupId,
                         Id = b.Id
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
         }
 
-		public int AddBudget(int groupId, BudgetEntry inputBudget)
+		public async Task<int> AddBudget(int groupId, BudgetEntry inputBudget)
 		{
             try
             {
@@ -113,8 +115,8 @@ namespace Budget.DB.Budget
                     Date = inputBudget.Date,
                     Id = inputBudget.Id
                 };
-                _db.Budgets.Add(newBudgetEntry);
-                _db.SaveChanges();
+                await _db.Budgets.AddAsync(newBudgetEntry);
+                await _db.SaveChangesAsync();
                 return newBudgetEntry.Id;
             }
             catch(Exception ex)
@@ -123,14 +125,14 @@ namespace Budget.DB.Budget
             }
         }
 
-        public void UpdateBudget(BudgetEntry inputBudget)
+        public async Task UpdateBudget(BudgetEntry inputBudget)
         {
             try
             {
                 var budgetId = inputBudget.Id;
                 //Get the Budget from the Database with a given id
                 //Update the Budget that matches the one from the database
-                var selectedBudgetEntry = _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefault();
+                var selectedBudgetEntry = await _db.Budgets.Where(i => i.Id == budgetId).FirstOrDefaultAsync();
                 selectedBudgetEntry.Amount = inputBudget.Amount;
                 selectedBudgetEntry.BudgetTypeId = inputBudget.BudgetTypeId;
                 selectedBudgetEntry.BudgetingGroupId = inputBudget.BudgetingGroupId;
@@ -146,7 +148,7 @@ namespace Budget.DB.Budget
                 //});
 
                 //Save Changes
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex) 
             {
@@ -154,9 +156,9 @@ namespace Budget.DB.Budget
             }
         }
 
-        public IEnumerable<BudgetEntry> GetBudgetEntries(int groupId, DateTime monthYear)
+        public async Task<IEnumerable<BudgetEntry>> GetBudgetEntries(int groupId, DateTime monthYear)
         {
-            return (from b in _db.Budgets.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Date.Year)
+            return await (from b in _db.Budgets.Where(i => i.Date.Month == monthYear.Month && i.Date.Year == monthYear.Date.Year)
              join bt in _db.BudgetTypes on b.BudgetTypeId equals bt.Id
              select new BudgetEntry
              {
@@ -165,12 +167,12 @@ namespace Budget.DB.Budget
                  BudgetingGroupId = b.BudgetingGroupId,
                  Date = b.Date,
                  Amount = b.Amount
-             }).ToList();
+             }).ToListAsync();
         }
 
-        public IEnumerable<BudgetEntry> GetBudgetEntriesInTimeSpan(int groupId, DateTime startMonth, DateTime endMonth)
+        public async Task<IEnumerable<BudgetEntry>> GetBudgetEntriesInTimeSpan(int groupId, DateTime startMonth, DateTime endMonth)
         {
-            return _db.Budgets
+            return await _db.Budgets
                 .Where(i =>
                     i.Date >= startMonth &&
                     i.Date <= endMonth).Select(x => new BudgetEntry
@@ -180,15 +182,15 @@ namespace Budget.DB.Budget
                         BudgetingGroupId = x.BudgetingGroupId,
                         Date = x.Date,
                         Id = x.Id
-                    });
+                    }).ToListAsync();
         }
 
-        public bool AddBudgetEntries(int groupId, IEnumerable<BudgetEntry> budgetEntries) // TODO: Revisit this with the resulting ids
+        public async Task<bool> AddBudgetEntries(int groupId, IEnumerable<BudgetEntry> budgetEntries) // TODO: Revisit this with the resulting ids
         {
             bool success = false;
             try
             {
-                _db.Budgets.AddRange(budgetEntries.Select(x => new BudgetEntity
+                await _db.Budgets.AddRangeAsync(budgetEntries.Select(x => new BudgetEntity
                 {
                     Amount = x.Amount,
                     BudgetTypeId = x.BudgetTypeId,
@@ -196,7 +198,8 @@ namespace Budget.DB.Budget
                     Id = x.Id,
                     Date = x.Date
                 }));
-                _db.SaveChanges();
+                
+                await _db.SaveChangesAsync();
 
                 success = true;
             }
@@ -204,6 +207,7 @@ namespace Budget.DB.Budget
             {
                 throw new Exception("Failed to Add Budget Range", ex);
             }
+
             return success;
         }
     }

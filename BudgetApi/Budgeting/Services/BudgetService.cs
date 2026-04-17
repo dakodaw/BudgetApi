@@ -2,12 +2,11 @@ using Budget.DB;
 using Budget.DB.Budget;
 using Budget.DB.Incomes;
 using BudgetApi.Budgeting.Models;
-using BudgetApi.BudgetTypes;
 using BudgetApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Budgeting.Services
 {
@@ -30,13 +29,13 @@ namespace BudgetApi.Budgeting.Services
             _incomeSourceProvider = incomeSourceProvider;
         }
 
-        public List<BudgetWithPurchaseInfo> GetBudgetLines(int groupId, DateTime monthYear)
+        public async Task<List<BudgetWithPurchaseInfo>> GetBudgetLines(int groupId, DateTime monthYear)
         {
             var budgetLinesToReturn = new List<BudgetWithPurchaseInfo>();
 
-            var budgetTypes = _budgetProvider.GetBudgetTypes(groupId);
-            var budgetingEntries = _budgetProvider.GetBudgetEntries(groupId, monthYear);
-            var budgetEntries = _purchaseProvider.GetPurchasesByMonthYear(monthYear);
+            var budgetTypes = await _budgetProvider.GetBudgetTypes(groupId);
+            var budgetingEntries = await _budgetProvider.GetBudgetEntries(groupId, monthYear);
+            var budgetEntries = await _purchaseProvider.GetPurchasesByMonthYear(monthYear);
             var budgetPurchases = budgetEntries.GroupBy(x => x.PurchaseTypeId);
 
             foreach(var budgetEntry in budgetingEntries)
@@ -91,29 +90,29 @@ namespace BudgetApi.Budgeting.Services
             return budgetLinesToReturn;
         }
 
-        public int AddBudget(int groupId, BudgetEntry inputBudget)
+        public async Task<int> AddBudget(int groupId, BudgetEntry inputBudget)
         {
-            return _budgetProvider.AddBudget(groupId, inputBudget);
+            return await _budgetProvider.AddBudget(groupId, inputBudget);
         }
 
-        public bool AddBudgetLines(int groupId, IEnumerable<BudgetEntry> inputBudgetLines)
+        public async Task<bool> AddBudgetLines(int groupId, IEnumerable<BudgetEntry> inputBudgetLines)
         {
-            return _budgetProvider.AddBudgetEntries(groupId, inputBudgetLines);
+            return await _budgetProvider.AddBudgetEntries(groupId, inputBudgetLines);
         }
 
-        public void UpdateBudget(BudgetEntry inputBudget)
+        public async Task UpdateBudget(BudgetEntry inputBudget)
         {
-            _budgetProvider.UpdateBudget(inputBudget);
+            await _budgetProvider.UpdateBudget(inputBudget);
         }
 
-        public void DeleteBudgetEntry(int budgetId)
+        public async Task DeleteBudgetEntry(int budgetId)
         {
-            _budgetProvider.DeleteBudgetEntry(budgetId);
+            await _budgetProvider.DeleteBudgetEntry(budgetId);
         }
 
-        public BudgetInfo GetExistingBudget(int budgetId)
+        public async Task<BudgetInfo> GetExistingBudget(int budgetId)
         {
-            var existingBudget = _budgetProvider.GetBudgetEntry(budgetId);
+            var existingBudget = await _budgetProvider.GetBudgetEntry(budgetId);
             return new BudgetInfo
             {
                 Amount = existingBudget.Amount,
@@ -127,10 +126,10 @@ namespace BudgetApi.Budgeting.Services
             };
         }
 
-        public decimal ScenarioCheck(int groupId, ScenarioInput scenarioInput)
+        public async Task<decimal> ScenarioCheck(int groupId, ScenarioInput scenarioInput)
         {
-            var applicableBudget = _budgetProvider
-                .GetBudgetEntriesInTimeSpan(groupId, scenarioInput.startMonth, scenarioInput.endMonth)
+            var applicableBudget = (await _budgetProvider
+                .GetBudgetEntriesInTimeSpan(groupId, scenarioInput.startMonth, scenarioInput.endMonth))
                 .ToList();
 
             decimal amountPlannedToSpend = default;
@@ -139,7 +138,7 @@ namespace BudgetApi.Budgeting.Services
                 amountPlannedToSpend += budgetItem.Amount;
             }
             
-            var income = _incomeSourceProvider.GetIncomeSources()
+            var income = (await _incomeSourceProvider.GetIncomeSources())
                 .Where(i => i.EstimatedIncome != null)
                 .ToList();
 

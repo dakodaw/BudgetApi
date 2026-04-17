@@ -1,14 +1,15 @@
 ﻿using Budget.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BudgetApi.ReceiptRecords.Services;
 
 public interface IReceiptRecordService
 {
-    IEnumerable<ReceiptRecord> List(int groupId, DateTime? monthYear = null);
-    ReceiptRecord Get(Guid id);
-    ReceiptRecord Add(int groupId, ReceiptRecord record);
-    //void Update(ReceiptRecord record);
-    //void Delete(ReceiptRecord record);
+    Task<IEnumerable<ReceiptRecord>> List(int groupId, DateTime? monthYear = null);
+    Task<ReceiptRecord> Get(Guid id);
+    Task<ReceiptRecord> Add(int groupId, ReceiptRecord record);
+    Task<ReceiptRecord> Update(int groupId, ReceiptRecord record);
+    Task Delete(Guid id);
 }

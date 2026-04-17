@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BudgetApi.Incomes
 {
@@ -28,7 +29,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("")]
-        public ActionResult<int> AddIncome(int groupId, [FromBody] Income inputIncome)
+        public async Task<ActionResult<int>> AddIncome(int groupId, [FromBody] Income inputIncome)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.AddIncome(groupId, inputIncome);
+                return await _incomeService.AddIncome(groupId, inputIncome);
             }
             catch (UserNotFoundException)
             {
@@ -47,7 +48,7 @@ namespace BudgetApi.Incomes
 
         [HttpPut]
         [Route("{incomeId}")]
-        public ActionResult<bool> UpdateIncome(int groupId, [FromBody] Income inputIncome, int incomeId = -1)
+        public async Task<ActionResult<bool>> UpdateIncome(int groupId, [FromBody] Income inputIncome, int incomeId = -1)
         {
             try
             {
@@ -57,7 +58,7 @@ namespace BudgetApi.Incomes
                 }
 
                 // TODO: Handle Not found and incomeId of less than 1 passed through
-                return _incomeService.UpdateIncome(inputIncome);
+                return await _incomeService.UpdateIncome(inputIncome);
             }
             catch (UserNotFoundException)
             {
@@ -67,7 +68,7 @@ namespace BudgetApi.Incomes
 
         [HttpDelete]
         [Route("{incomeId}")]
-        public ActionResult<bool> DeleteIncome(int groupId, int incomeId = -1)
+        public async Task<ActionResult<bool>> DeleteIncome(int groupId, int incomeId = -1)
         {
             try
             {
@@ -77,7 +78,7 @@ namespace BudgetApi.Incomes
                 }
 
                 // TODO: Handle Not found and incomeId of less than 1 passed through
-                return _incomeService.DeleteIncomeEntry(incomeId);
+                return await _incomeService.DeleteIncomeEntry(incomeId);
             }
             catch (UserNotFoundException)
             {
@@ -87,7 +88,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeTypes")]
-        public ActionResult<List<IncomeSource>> GetIncomeTypes(int groupId)
+        public async Task<ActionResult<List<IncomeSource>>> GetIncomeTypes(int groupId)
         {
             try
             {
@@ -96,7 +97,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetIncomeTypes();
+                return await _incomeService.GetIncomeTypes();
             }
             catch (UserNotFoundException)
             {
@@ -106,7 +107,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeLines")]
-        public ActionResult<List<IncomeLine>> GetIncomeLines(int groupId, [FromQuery] DateTime monthYear)
+        public async Task<ActionResult<List<IncomeLine>>> GetIncomeLines(int groupId, [FromQuery] DateTime monthYear)
         {
             try
             {
@@ -115,7 +116,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetIncomeLines(groupId, monthYear);
+                return await _incomeService.GetIncomeLines(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -125,7 +126,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSources")]
-        public ActionResult<List<IncomeSource>> GetIncomeSources(int groupId)
+        public async Task<ActionResult<List<IncomeSource>>> GetIncomeSources(int groupId)
         {
             try
             {
@@ -134,7 +135,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetIncomeSources();
+                return await _incomeService.GetIncomeSources();
             }
             catch (UserNotFoundException)
             {
@@ -144,7 +145,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getFullIncomeSources")]
-        public ActionResult<List<IncomeSource>> GetFullIncomeSources(int groupId)
+        public async Task<ActionResult<List<IncomeSource>>> GetFullIncomeSources(int groupId)
         {
             try
             {
@@ -153,7 +154,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetFullIncomeSources();
+                return await _incomeService.GetFullIncomeSources();
             }
             catch (UserNotFoundException)
             {
@@ -163,7 +164,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getApplicablePurchases")]
-        public ActionResult<List<ApplicablePurchase>> GetApplicablePurchases(int groupId, [FromQuery] DateTime monthYear)
+        public async Task<ActionResult<List<ApplicablePurchase>>> GetApplicablePurchases(int groupId, [FromQuery] DateTime monthYear)
         {
             try
             {
@@ -172,7 +173,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetApplicablePurchases(groupId, monthYear);
+                return await _incomeService.GetApplicablePurchases(groupId, monthYear);
             }
             catch (UserNotFoundException)
             {
@@ -183,7 +184,7 @@ namespace BudgetApi.Incomes
         [Obsolete("The base route using post, and put will be used moving forward")]
         [HttpPost]
         [Route("addUpdateIncome")]
-        public ActionResult<bool> AddUpdateIncome(int groupId, [FromBody] Income inputIncome, [FromQuery] int incomeId = -1)
+        public async Task<ActionResult<bool>> AddUpdateIncome(int groupId, [FromBody] Income inputIncome, [FromQuery] int incomeId = -1)
         {
             try
             {
@@ -192,7 +193,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.AddUpdateIncome(groupId, inputIncome, incomeId);
+                return await _incomeService.AddUpdateIncome(groupId, inputIncome, incomeId);
             }
             catch (UserNotFoundException)
             {
@@ -203,7 +204,7 @@ namespace BudgetApi.Incomes
         [Obsolete("The base route using delete will be used moving forward")]
         [HttpGet]
         [Route("deleteIncomeEntry")]
-        public ActionResult<bool> DeleteIncomeEntry(int groupId, [FromQuery] int incomeId)
+        public async Task<ActionResult<bool>> DeleteIncomeEntry(int groupId, [FromQuery] int incomeId)
         {
             try
             {
@@ -212,7 +213,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.DeleteIncomeEntry(incomeId);
+                return await _incomeService.DeleteIncomeEntry(incomeId);
             }
             catch (UserNotFoundException)
             {
@@ -222,7 +223,7 @@ namespace BudgetApi.Incomes
 
         [HttpPost]
         [Route("addUpdateJob")]
-        public ActionResult<bool> AddUpdateJob(int groupId, [FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
+        public async Task<ActionResult<bool>> AddUpdateJob(int groupId, [FromBody] IncomeSource inputJob, [FromQuery] int incomeSourceId = -1)
         {
             try
             {
@@ -231,7 +232,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.AddUpdateJob(inputJob, incomeSourceId);
+                return await _incomeService.AddUpdateJob(inputJob, incomeSourceId);
             }
             catch (UserNotFoundException)
             {
@@ -241,7 +242,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("deleteJobEntry")]
-        public ActionResult<bool> DeleteJobEntry(int groupId, [FromQuery] int incomeSourceId)
+        public async Task<ActionResult<bool>> DeleteJobEntry(int groupId, [FromQuery] int incomeSourceId)
         {
             try
             {
@@ -250,7 +251,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.DeleteJobEntry(incomeSourceId);
+                return await _incomeService.DeleteJobEntry(incomeSourceId);
             }
             catch (UserNotFoundException)
             {
@@ -260,7 +261,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getIncomeSource")]
-        public ActionResult<IncomeSource> GetIncomeSource(int groupId, [FromQuery] int incomeSourceId)
+        public async Task<ActionResult<IncomeSource>> GetIncomeSource(int groupId, [FromQuery] int incomeSourceId)
         {
             try
             {
@@ -269,7 +270,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetIncomeSource(incomeSourceId);
+                return await _incomeService.GetIncomeSource(incomeSourceId);
             }
             catch (UserNotFoundException)
             {
@@ -279,7 +280,7 @@ namespace BudgetApi.Incomes
 
         [HttpGet]
         [Route("getExistingIncome")]
-        public ActionResult<IncomeLine> GetExistingIncome(int groupId, [FromQuery] int incomeId)
+        public async Task<ActionResult<IncomeLine>> GetExistingIncome(int groupId, [FromQuery] int incomeId)
         {
             try
             {
@@ -288,7 +289,7 @@ namespace BudgetApi.Incomes
                     return Unauthorized();
                 }
 
-                return _incomeService.GetExistingIncome(incomeId);
+                return await _incomeService.GetExistingIncome(incomeId);
             }
             catch (UserNotFoundException)
             {

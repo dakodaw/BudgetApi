@@ -4,11 +4,11 @@ namespace Budget.DB.GiftCards;
 
 public interface IGiftCardProvider
 {
-	GiftCard GetGiftCard(int giftCardId);
-	IEnumerable<GiftCard> GetAllGiftCards(int groupId);
-	bool AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1);
-	int AddGiftCard(int groupId, GiftCard inputGiftCard);
-	void UpdateGiftCard(GiftCard inputGiftCard);
-    void DeleteGiftCardEntry(int giftCardId);
+	Task<GiftCard> GetGiftCard(int giftCardId);
+	Task<IEnumerable<GiftCard>> GetAllGiftCards(int groupId);
+	Task<bool> AddUpdateGiftCard(int groupId, GiftCard inputGiftCard, int giftCardId = -1);
+	Task<int> AddGiftCard(int groupId, GiftCard inputGiftCard);
+	Task UpdateGiftCard(GiftCard inputGiftCard);
+    Task DeleteGiftCardEntry(int giftCardId);
 }
 
