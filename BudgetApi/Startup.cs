@@ -113,9 +113,9 @@ public class Startup
 
         app.UseRouting();
 
-        app.UseAuthentication();
-
         app.UseAuthorization();
+
+        app.UseAuthentication();
 
         app.UseEndpoints(endpoints =>
         {
