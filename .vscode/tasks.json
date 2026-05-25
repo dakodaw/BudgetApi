@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build BudgetApi",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/BudgetApi/BudgetApi.csproj",
+        "-c",
+        "Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Run BudgetApi",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/BudgetApi/BudgetApi.csproj",
+        "--launch-profile",
+        "BudgetApi"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": {
+        "owner": "aspnetcore",
+        "pattern": {
+          "regexp": "^\\s*(\\d+>)?\\s*(.*):(\\d+):(\\d+):\\s+(error|warning)\\s+([^:]+):\\s+(.*)$",
+          "file": 2,
+          "line": 3,
+          "column": 4,
+          "severity": 5,
+          "code": 6,
+          "message": 7
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*(Building|Restore)",
+          "endsPattern": "(Now listening on:|Application started\\. Press Ctrl\\+C to shut down\\.)"
+        }
+      }
+    }
+  ]
+}
